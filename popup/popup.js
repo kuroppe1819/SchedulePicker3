@@ -38,8 +38,9 @@ document.getElementById('save').addEventListener('click', save_options);
 const garoon = new GaroonSoap(`https://bozuman.cybozu.com/g/`);
 
 async function getMyGroups() {
-    const myGroupIds = await garoon.base.getMyGroupVersions([]);
-    return garoon.base.getMyGroupsById(myGroupIds);
+    const myGroupVersions = await garoon.base.getMyGroupVersions([]);
+    const myGroupIds = myGroupVersions.map(g => g.id);
+    return await garoon.base.getMyGroupsById(myGroupIds);
 }
 
 async function getMyGroupSchedule(myGroup) {
@@ -47,8 +48,7 @@ async function getMyGroupSchedule(myGroup) {
     const startDate = new Date(now.getFullYear(), now.getMonth(), now.getDay());
     const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDay(), 23, 59, 59);
     const events = await garoon.schedule.getEventsByTarget(startDate, endDate, undefined, undefined, myGroup.belong_member);
-
-    const users = await garoon.base.getUsersById(myGroup[0].belong_member);
+    const users = await garoon.base.getUsersById(myGroup.belong_member);
 
     events.map(function (event) {
         const userIds = event.members.users.map(u => u.id)
@@ -63,11 +63,19 @@ async function getMyGroupSchedule(myGroup) {
         }
         return event;
     });
+    return events;
 }
 
-async function getMyGroupSchedules() {
-    const hoge = await getMyGroups()
-    hoge.events.map(g => getMyGroupSchedule(g))
+function getMyGroupSchedules() {
+    const groupSchedules = [];
+    getMyGroups().then(myGroups => {
+        myGroups.map(g => {
+            getMyGroupSchedule(g).then(events => {
+                groupSchedules.push({ "mygroup": g.key, "events": events });
+            })
+        });
+    });
+    console.log(groupSchedules);
 }
 
 window.onload = getMyGroupSchedules;
