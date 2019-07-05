@@ -40,7 +40,7 @@ const garoon = new GaroonSoap(`https://bozuman.cybozu.com/g/`);
 async function getMyGroups() {
     const myGroupVersions = await garoon.base.getMyGroupVersions([]);
     const myGroupIds = myGroupVersions.map(g => g.id);
-    return await garoon.base.getMyGroupsById(myGroupIds);
+    return garoon.base.getMyGroupsById(myGroupIds);
 }
 
 async function getMyGroupSchedule(myGroup) {
@@ -66,16 +66,15 @@ async function getMyGroupSchedule(myGroup) {
     return events;
 }
 
-function getMyGroupSchedules() {
+async function getMyGroupSchedules() {
     const groupSchedules = [];
-    getMyGroups().then(myGroups => {
-        myGroups.map(g => {
-            getMyGroupSchedule(g).then(events => {
-                groupSchedules.push({ "mygroup": g.key, "events": events });
-            })
+    const myGroups = await getMyGroups();
+    myGroups.map(async g => {
+        const events = await getMyGroupSchedule(g);
+        events.map(event => {
+            groupSchedules.push({ "mygroup": g.key, "events": events }); 
         });
     });
-    console.log(groupSchedules);
 }
 
 window.onload = getMyGroupSchedules;
