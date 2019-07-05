@@ -1,4 +1,4 @@
-chrome.extension.onMessage.addListener(function(request) {
+chrome.extension.onMessage.addListener(function(menuItem) {
   chrome.storage.sync.get(null, function(items) {
 	  // 現在フォーカスが与えられている要素を取得する
 	 	const active_element = document.activeElement;
@@ -20,9 +20,9 @@ chrome.extension.onMessage.addListener(function(request) {
 		// オプション画面の日付情報を取得
 		const selected_date = items.select;
 		//date変数にそれぞれの場合の日付を代入
-		switch (request) {
+		switch (menuItem.title) { // FIXME menuItem.parentId or menuItem.id で分岐したい
 			case 'Today':
-			case 'Form':
+			case 'Template':
 				date = today;
 				break;
 			case 'Tomorrow':
@@ -41,14 +41,14 @@ chrome.extension.onMessage.addListener(function(request) {
 			const form = items.form;
 
 			// スケジュールの挿入部分
-			switch (request) {
+			switch (menuItem.title) {  // FIXME menuItem.parentId or menuItem.id で分岐したい
 				case 'Today':
 					target.innerHTML += makehtml(schedule, type, today.format('YYYY-MM-DD'));
 					break;
 				case 'Tomorrow':
 					target.innerHTML += makehtml(schedule, type, tomorrow.format('YYYY-MM-DD'));
 					break;
-				case 'Form':
+				case 'Template':
 					getSchedule(tomorrow).done(function(tomorrow_json) {
 						const tomorrow_schedule = formatSchedule($(tomorrow_json));
 						target.innerHTML += makeForm(form, schedule, tomorrow_schedule, type, today, tomorrow);

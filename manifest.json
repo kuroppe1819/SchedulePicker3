@@ -41,6 +41,7 @@
     ],
     "scripts": [
       "js/jquery-3.2.1.min.js",
+      "js/garoon-soap.js",
       "js/background.js"
     ]
   },
