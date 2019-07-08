@@ -26,7 +26,7 @@
         "js/lib/garoon-soap.js",
         "js/lib/jquery-3.2.1.min.js",
         "js/lib/moment.js",
-        "js/getSchedule.js",
+        "js/getRequest.js",
         "js/formatSchedule.js",
         "js/sortSchedule.js",
         "js/checkScheduleType.js",
