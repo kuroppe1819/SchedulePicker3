@@ -16,32 +16,35 @@
     "background",
     "contextMenus"
   ],
-  "content_scripts": [{
-    "matches": [
-      "https://bozuman.cybozu.com/*",
-      "https://bozuman.s.cybozu.com/*"
-    ],
-    "js": [
-      "js/moment.js",
-      "js/jquery-3.2.1.min.js",
-      "js/getSchedule.js",
-      "js/formatSchedule.js",
-      "js/sortSchedule.js",
-      "js/checkScheduleType.js",
-      "js/setColor.js",
-      "js/makehtml.js",
-      "js/script.js",
-      "js/form.js"
-    ]
-  }],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://bozuman.cybozu.com/*",
+        "https://bozuman.s.cybozu.com/*"
+      ],
+      "js": [
+        "js/lib/garoon-soap.js",
+        "js/lib/jquery-3.2.1.min.js",
+        "js/lib/moment.js",
+        "js/getSchedule.js",
+        "js/formatSchedule.js",
+        "js/sortSchedule.js",
+        "js/checkScheduleType.js",
+        "js/setColor.js",
+        "js/makehtml.js",
+        "js/script.js",
+        "js/form.js"
+      ]
+    }
+  ],
   "background": {
     "matches": [
       "https://bozuman.cybozu.com/*",
       "https://bozuman.s.cybozu.com/*"
     ],
     "scripts": [
-      "js/jquery-3.2.1.min.js",
-      "js/garoon-soap.js",
+      "js/lib/garoon-soap.js",
+      "js/lib/jquery-3.2.1.min.js",
       "js/background.js"
     ]
   },
