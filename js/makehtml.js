@@ -4,7 +4,7 @@ const formatTime = function(object) {
 
 const checkEventType = function(ele, type) {
   if (ele.visibilityType === 'PRIVATE' && !type) return;
-  text += '<div class="listTime" style="line-height: 1.2; white-space: nowrap;">'
+  text += '<div class="listTime" style="white-space: pre-wrap;">'
   if (ele.isAllDay) text += set_eventMenu('終日');
   if (ele.isStartOnly) {
     if (ele.eventType === 'REPESTING') str_start_datetime = formatTime(ele.start.dateTime);
@@ -42,8 +42,7 @@ const makehtml = function(schedule, type, date) {
     }
     html_text = html_text + text;
   }, this);
-  html_text = html_text + '</div></div>'
-  html_text += '<div class="textarea-resize-cybozu"></div>';
+  html_text = html_text + '</div>'
   return html_text;
 };
 
