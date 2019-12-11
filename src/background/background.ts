@@ -293,13 +293,15 @@ chrome.runtime.onMessage.addListener((message, sender) => {
     }
 });
 
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.sync.set({
-        dateType: DateType.TODAY,
-        isIncludePrivateEvent: true,
-        isIncludeAllDayEvent: true,
-        templateText: `今日の予定を取得できるよ<br>{%TODAY%}<div><br><div>翌営業日の予定を取得できるよ<br>{%NEXT_BUSINESS_DAY%}</div><div><br></div><div>前営業日の予定を取得できるよ<br>{%PREVIOUS_BUSINESS_DAY%}</div></div>`,
-    });
+chrome.runtime.onInstalled.addListener(details => {
+    if (details.reason === 'install') {
+        chrome.storage.sync.set({
+            dateType: DateType.TODAY,
+            isIncludePrivateEvent: true,
+            isIncludeAllDayEvent: true,
+            templateText: `今日の予定を取得できるよ<br>{%TODAY%}<div><br><div>翌営業日の予定を取得できるよ<br>{%NEXT_BUSINESS_DAY%}</div><div><br></div><div>前営業日の予定を取得できるよ<br>{%PREVIOUS_BUSINESS_DAY%}</div></div>`,
+        });
+    }
 });
 
 setupContextMenus();
