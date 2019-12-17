@@ -1,6 +1,6 @@
 {
     "name": "SchedulePicker",
-    "version": "3.0.5",
+    "version": "3.0.6",
     "manifest_version": 2,
     "description": "ガルーンの今日のスケジュール情報を取得して、kintoneスレッドなどに挿入するChrome拡張。ハッカソン2019",
     "icons": {
