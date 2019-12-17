@@ -3,19 +3,6 @@ import { EventInfo, Participant, RecieveEventMessage, MyGroupEvent, TemplateEven
 import { formatDate } from '../background/dateutil';
 import { eventMenuColor } from './eventmenucolor';
 
-const isAlldayInRegularEvent = (eventInfo: EventInfo): boolean => {
-    if (eventInfo.isStartOnly) {
-        return false;
-    }
-    const startTime = formatDate(new Date(eventInfo.startTime), 'HH:mm');
-
-    if (eventInfo.endTime == null) {
-        return false;
-    }
-    const endTime = formatDate(new Date(eventInfo.endTime), 'HH:mm');
-    return startTime === '00:00' && endTime === '23:59';
-};
-
 const createHtmlScheduleTitle = (date: Date): string => {
     return `<div>【 ${formatDate(date, 'yyyy-MM-dd')} の予定 】</div>`;
 };
@@ -118,7 +105,7 @@ const createHtmlForEventList = (eventInfoList: EventInfo[]): string => {
     let body = '';
     body += regularEventList
         .map(eventInfo => {
-            if (isAlldayInRegularEvent(eventInfo)) {
+            if (eventInfo.isAllDay) {
                 return createHtmlForAllDayEvent(eventInfo);
             } else {
                 return createHtmlForRegularEvent(eventInfo);
@@ -127,7 +114,7 @@ const createHtmlForEventList = (eventInfoList: EventInfo[]): string => {
         .join('');
 
     if (allDayEventList.length !== 0) {
-        body += '<br><div>［終日予定］</div>';
+        body += '<br><div>［期間予定］</div>';
         body += allDayEventList.map(eventInfo => createHtmlForAllDayEvent(eventInfo)).join('');
     }
     return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
@@ -148,7 +135,7 @@ const createHtmlForMyGroupEventList = (myGroupEventList: MyGroupEvent[], date: D
     let body = '';
     body += regularEventList
         .map(groupEvent => {
-            if (isAlldayInRegularEvent(groupEvent.eventInfo)) {
+            if (groupEvent.eventInfo.isAllDay) {
                 return createHtmlForAllDayEvent(groupEvent.eventInfo);
             } else {
                 return createHtmlForRegularEventIncludeParticipant(groupEvent.eventInfo, date, groupEvent.participants);
@@ -157,7 +144,7 @@ const createHtmlForMyGroupEventList = (myGroupEventList: MyGroupEvent[], date: D
         .join('');
 
     if (allDayEventList.length !== 0) {
-        body += '<br><div>［終日予定］</div>';
+        body += '<br><div>［期間予定］</div>';
         body += allDayEventList.map(groupEvent => createHtmlForAllDayEvent(groupEvent.eventInfo)).join('');
     }
     return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
