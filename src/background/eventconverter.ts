@@ -13,7 +13,7 @@ export default class EventConverter {
             id: event.id,
             subject: event.subject,
             startTime: new Date(event.start.dateTime),
-            endTime: new Date(event.end.dateTime),
+            endTime: 'end' in event ? new Date(event.end.dateTime) : null,
             eventType: event.eventType,
             eventMenu: event.eventMenu,
             attendees: event.attendees.map(attendee => {

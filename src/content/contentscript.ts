@@ -4,7 +4,14 @@ import { formatDate } from '../background/dateutil';
 import { eventMenuColor } from './eventmenucolor';
 
 const isAlldayInRegularEvent = (eventInfo: EventInfo): boolean => {
+    if (eventInfo.isStartOnly) {
+        return false;
+    }
     const startTime = formatDate(new Date(eventInfo.startTime), 'HH:mm');
+
+    if (eventInfo.endTime == null) {
+        return false;
+    }
     const endTime = formatDate(new Date(eventInfo.endTime), 'HH:mm');
     return startTime === '00:00' && endTime === '23:59';
 };
@@ -29,8 +36,12 @@ const createEventMenu = (planName: string): string => {
 
 const createHtmlForTimeRange = (eventInfo: EventInfo): string => {
     const startTime = formatDate(new Date(eventInfo.startTime), 'HH:mm');
-    const endTime = formatDate(new Date(eventInfo.endTime), 'HH:mm');
-    return `<span>${startTime}-${endTime}</span>`;
+    if (eventInfo.isStartOnly || eventInfo.endTime == null) {
+        return `<span>${startTime}</span>`;
+    } else {
+        const endTime = formatDate(new Date(eventInfo.endTime), 'HH:mm');
+        return `<span>${startTime}-${endTime}</span>`;
+    }
 };
 
 const createHtmlForEventName = (eventInfo: EventInfo): string => {

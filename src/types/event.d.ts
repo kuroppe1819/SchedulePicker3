@@ -4,7 +4,7 @@ export interface EventInfo {
     id: string;
     subject: string;
     startTime: Date;
-    endTime: Date;
+    endTime: Date | null;
     eventType: string;
     eventMenu: string;
     visibilityType: string;
