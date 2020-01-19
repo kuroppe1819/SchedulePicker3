@@ -92,19 +92,12 @@ const createHtmlForRegularEventIncludeParticipant = (
 };
 
 const createHtmlForEventList = (eventInfoList: EventInfo[]): string => {
-    const regularEventList: EventInfo[] = [];
-    const allDayEventList: EventInfo[] = [];
-
-    eventInfoList.forEach(eventInfo => {
-        if (eventInfo.eventType === 'REGULAR' || eventInfo.eventType === 'REPEATING') {
-            regularEventList.push(eventInfo);
-        } else if (eventInfo.eventType === 'ALL_DAY') {
-            allDayEventList.push(eventInfo);
-        }
-    });
+    const regularAndRepeatingEvents: EventInfo[] = eventInfoList.filter(
+        eventInfo => eventInfo.eventType === 'REGULAR' || eventInfo.eventType === 'REPEATING'
+    );
 
     let body = '';
-    body += regularEventList
+    body += regularAndRepeatingEvents
         .map(eventInfo => {
             if (eventInfo.isAllDay) {
                 return createHtmlForAllDayEvent(eventInfo);
@@ -113,28 +106,16 @@ const createHtmlForEventList = (eventInfoList: EventInfo[]): string => {
             }
         })
         .join('');
-
-    if (allDayEventList.length !== 0) {
-        body += '<br><div>［期間予定］</div>';
-        body += allDayEventList.map(eventInfo => createHtmlForAllDayEvent(eventInfo)).join('');
-    }
     return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
 };
 
 const createHtmlForMyGroupEventList = (myGroupEventList: MyGroupEvent[], date: Date): string => {
-    const regularEventList: MyGroupEvent[] = [];
-    const allDayEventList: MyGroupEvent[] = [];
-
-    myGroupEventList.forEach(groupEvent => {
-        if (groupEvent.eventInfo.eventType === 'REGULAR' || groupEvent.eventInfo.eventType === 'REPEATING') {
-            regularEventList.push(groupEvent);
-        } else if (groupEvent.eventInfo.eventType === 'ALL_DAY') {
-            allDayEventList.push(groupEvent);
-        }
-    });
+    const regularAndRepeatingEvents: MyGroupEvent[] = myGroupEventList.filter(
+        groupEvent => groupEvent.eventInfo.eventType === 'REGULAR' || groupEvent.eventInfo.eventType === 'REPEATING'
+    );
 
     let body = '';
-    body += regularEventList
+    body += regularAndRepeatingEvents
         .map(groupEvent => {
             if (groupEvent.eventInfo.isAllDay) {
                 return createHtmlForAllDayEvent(groupEvent.eventInfo);
@@ -143,11 +124,6 @@ const createHtmlForMyGroupEventList = (myGroupEventList: MyGroupEvent[], date: D
             }
         })
         .join('');
-
-    if (allDayEventList.length !== 0) {
-        body += '<br><div>［期間予定］</div>';
-        body += allDayEventList.map(groupEvent => createHtmlForAllDayEvent(groupEvent.eventInfo)).join('');
-    }
     return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
 };
 
