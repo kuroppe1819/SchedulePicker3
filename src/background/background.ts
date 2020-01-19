@@ -65,7 +65,7 @@ const defaultMenuItems = [
     },
 ];
 
-const createContextMenuItems = async (myGroupMenuItems): Promise<any> => {
+const createContextMenuItems = (myGroupMenuItems): any => {
     return defaultMenuItems.concat(myGroupMenuItems);
 };
 
@@ -117,14 +117,13 @@ const addMenu = (menu: any): void => {
     });
 };
 
-const updateContextMenus = (): void => {
-    // FIXME 全部消すんじゃなくて、MyGroupのメニューだけを消すようにする popupからの更新
-    chrome.contextMenus.removeAll(async () => {
-        const myGroups = await logic.getMyGroups();
+const updateContextMenus = async (): Promise<void> => {
+    const myGroups = await logic.getMyGroups();
+    chrome.contextMenus.removeAll(() => {
         const myGroupMenuItems = myGroups.map(g => {
             return { id: g.key, title: g.name, parentId: ContextMenuIds.MYGROUP, type: 'normal' };
         });
-        const contextMenuItems = await createContextMenuItems(myGroupMenuItems);
+        const contextMenuItems = createContextMenuItems(myGroupMenuItems);
         contextMenuItems.forEach(item => {
             addMenu(item);
         });
