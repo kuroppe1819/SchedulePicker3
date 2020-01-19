@@ -51,6 +51,7 @@ const createHtmlForEventParticipant = (date: Date, participants: Participant[]):
 
 const createHtmlForAllDayEvent = (eventInfo: EventInfo): string => {
     let body = '';
+    body += createEventMenu('終日');
     if (eventInfo.eventMenu !== '') {
         body += createEventMenu(eventInfo.eventMenu);
     }
