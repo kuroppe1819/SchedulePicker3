@@ -5,6 +5,7 @@ import { EventInfo, Participant, MyGroupEvent, SpecialTemplateCharactorIndexs, T
 import EventConverter from '../background/eventconverter';
 import { DateRange } from '../types/date';
 import { SpecialTemplateCharactor } from './eventtype';
+import { formatDate } from './dateutil';
 
 interface ScheduleEventsLogic {
     getMyEvents(
@@ -39,8 +40,14 @@ export default class ScheduleEventsLogicImpl implements ScheduleEventsLogic {
         this.garoonDataSource = new GaroonDataSourceImpl(domain);
     }
 
-    private sortByTimeFunc(eventInfo: EventInfo, nextEventInfo: EventInfo): number {
-        return eventInfo.startTime.getTime() > nextEventInfo.startTime.getTime() ? 1 : -1;
+    private sortByTimeAndAllDayEventToTailEndFunc(eventInfo: EventInfo, nextEventInfo: EventInfo): number {
+        if (eventInfo.isAllDay) {
+            return 1;
+        } else if (nextEventInfo.isAllDay) {
+            return -1;
+        } else {
+            return eventInfo.startTime.getTime() > nextEventInfo.startTime.getTime() ? 1 : -1;
+        }
     }
 
     async getMyEvents(
@@ -86,7 +93,7 @@ export default class ScheduleEventsLogicImpl implements ScheduleEventsLogic {
             targetType,
             target
         );
-        return eventInfoList.sort(this.sortByTimeFunc);
+        return eventInfoList.sort(this.sortByTimeAndAllDayEventToTailEndFunc);
     }
 
     // TODO: 型定義ファイルを作る
@@ -146,7 +153,7 @@ export default class ScheduleEventsLogicImpl implements ScheduleEventsLogic {
                 }
                 return uniqueEvents;
             }, [])
-            .sort(this.sortByTimeFunc)
+            .sort(this.sortByTimeAndAllDayEventToTailEndFunc)
             .map(eventInfo => {
                 const participantList: Participant[] = [];
                 eventInfo.attendees.forEach((participant: Participant) => {
