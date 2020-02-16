@@ -51,7 +51,8 @@ export interface SpecialTemplateCharactorIndexs {
 
 export type StrageItems = {
     dateType: DateType;
-    isIncludePrivateEvent: bpolean;
+    selectedDate: string;
+    isIncludePrivateEvent: boolean;
     isIncludeAllDayEvent: boolean;
     templateText: string;
 };
