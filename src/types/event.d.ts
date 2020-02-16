@@ -1,4 +1,4 @@
-import { EventsType } from '../background/eventtype';
+import { EventsType, DateType } from '../background/eventtype';
 
 export interface EventInfo {
     id: string;
@@ -48,3 +48,10 @@ export interface SpecialTemplateCharactorIndexs {
     nextDayIndexes: number[];
     previousDayIndexes: number[];
 }
+
+export type StrageItems = {
+    dateType: DateType;
+    isIncludePrivateEvent: bpolean;
+    isIncludeAllDayEvent: boolean;
+    templateText: string;
+};
