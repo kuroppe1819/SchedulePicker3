@@ -7,12 +7,6 @@ const showPopupWindow = (): void => {
     window.open('../calendar.html', 'extension_calendar', 'width=300, height=100, status=no');
 };
 
-const setupContextMenu = (): void => {
-    defaultMenuItems.forEach(item => {
-        ContextMenuHelper.addMenu(item);
-    });
-};
-
 const getDefaultValueFromStrage = (): Promise<StrageItems> =>
     new Promise((): void =>
         chrome.storage.sync.get(
@@ -44,5 +38,5 @@ const setDefaultValueToStrage = (items: StrageItems): Promise<void> =>
 chrome.runtime.onInstalled.addListener(async () => {
     const items = await getDefaultValueFromStrage();
     await setDefaultValueToStrage(items);
-    setupContextMenu();
+    ContextMenuHelper.addAll(defaultMenuItems);
 });
