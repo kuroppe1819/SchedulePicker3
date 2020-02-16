@@ -7,6 +7,7 @@ export interface GaroonDataSource {
     getScheduleEvents(rangeStart: string, rangeEnd: string, targetType: string, target: string): Promise<EventInfo[]>;
     getMyGroupVersions(myGroupItems: base.ItemVersionType[]): Promise<base.ItemVersionResultType[]>;
     getMyGroupsById(id: string[]): Promise<base.MyGroupType[]>;
+    getCalendarEvents(): Promise<base.BaseGetCalendarEventType[]>;
 }
 
 export class GaroonDataSourceImpl implements GaroonDataSource {
@@ -19,7 +20,12 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
         this.soap = new GaroonSoap(this.baseUrl);
     }
 
-    async getScheduleEvents(rangeStart: string, rangeEnd: string, targetType = '', target = ''): Promise<EventInfo[]> {
+    public async getScheduleEvents(
+        rangeStart: string,
+        rangeEnd: string,
+        targetType = '',
+        target = ''
+    ): Promise<EventInfo[]> {
         const url = new URL(`${this.baseUrl}${this.PATH}schedule/events`);
         url.searchParams.append('orderBy', 'start asc');
 
@@ -55,7 +61,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
         });
     }
 
-    getMyGroupVersions(myGroupItems: base.ItemVersionType[]): Promise<base.ItemVersionResultType[]> {
+    public getMyGroupVersions(myGroupItems: base.ItemVersionType[]): Promise<base.ItemVersionResultType[]> {
         try {
             return this.soap.base.getMyGroupVersions(myGroupItems);
         } catch (error) {
@@ -63,7 +69,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
         }
     }
 
-    getMyGroupsById(groupIds: string[]): Promise<base.MyGroupType[]> {
+    public getMyGroupsById(groupIds: string[]): Promise<base.MyGroupType[]> {
         try {
             return this.soap.base.getMyGroupsById(groupIds);
         } catch (error) {
@@ -71,7 +77,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
         }
     }
 
-    getCalendarEvents(): Promise<base.BaseGetCalendarEventType[]> {
+    public getCalendarEvents(): Promise<base.BaseGetCalendarEventType[]> {
         try {
             return this.soap.base.getCalendarEvents();
         } catch (error) {
