@@ -16,7 +16,7 @@ export enum ContextMenuActionId {
 }
 
 export enum ContextMenuDateId {
-    TODAY = 'root',
+    TODAY = 'today',
     NEXT_BUSINESS_DAY = 'next_business_day',
     PREVIOUS_BUSINESS_DAY = 'previous_business_day',
     SELECT_DATE = 'select_date',
