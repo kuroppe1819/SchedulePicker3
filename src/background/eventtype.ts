@@ -1,18 +1,3 @@
-export enum DateType {
-    TODAY,
-    NEXT_BUSINESS_DAY,
-    PREVIOUS_BUSINESS_DAY,
-    SELECT_DAY,
-}
-
-export enum EventsType {
-    MY_EVENTS,
-    MY_GROUP_EVENTS,
-    TEMPLATE,
-    NOW_LOADING,
-    ERROR,
-}
-
 export enum StorageKeys {
     IS_INCLUDE_PRIVATE_EVENT = 'isIncludePrivateEvent',
     IS_INCLUDE_ALL_DAY_EVENT = 'isIncludeAllDayEvent',

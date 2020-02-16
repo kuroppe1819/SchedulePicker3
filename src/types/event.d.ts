@@ -1,4 +1,5 @@
-import { EventsType, DateType } from '../background/eventtype';
+import { ContextMenuActionId, ContextMenuDateId } from './contextmenu';
+import { NoticeEventType } from './notice';
 
 export interface EventInfo {
     id: string;
@@ -30,13 +31,6 @@ export interface TemplateEvent {
     indexes: SpecialTemplateCharactorIndexs;
 }
 
-export interface RecieveEventMessage {
-    eventType: EventsType;
-    dateStr: string;
-    events: any;
-    templateText: string;
-}
-
 export interface EventMenuColor {
     r: number;
     g: number;
@@ -49,8 +43,8 @@ export interface SpecialTemplateCharactorIndexs {
     previousDayIndexes: number[];
 }
 
-export type StrageItems = {
-    dateType: DateType;
+export type StorageItems = {
+    dateId: ContextMenuDateId;
     selectedDate: string;
     isIncludePrivateEvent: boolean;
     isIncludeAllDayEvent: boolean;
