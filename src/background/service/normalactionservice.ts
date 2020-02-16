@@ -1,10 +1,14 @@
 import ScheduleEventsLogic from '../scheduleeventslogic';
-import { ContextMenuParentId, defaultMenuItems, ContextMenuRootId } from '../contextmenu/defaultcontextmenu';
 import { ContextMenuHelper } from '../contextmenu/contextmenuhelper';
-import { ContextMenu } from 'src/types/contextmenu';
+import { ContextMenu, ContextMenuParentId } from 'src/types/contextmenu';
+import { EventInfo, StorageItems } from 'src/types/event';
+import { DateRange } from 'src/types/date';
+import { defaultMenuItems } from '../contextmenu/defaultcontextmenu';
 
 export interface NormalActionService {
     updateContextMenus(): Promise<void>;
+    getEventsByMySelf(items: StorageItems, dateRange: DateRange): Promise<EventInfo[]>;
+    getPublicHolidays(specificDate: Date): Promise<string[]>;
 }
 
 export class NormalActionServiceImpl implements NormalActionService {
@@ -26,5 +30,26 @@ export class NormalActionServiceImpl implements NormalActionService {
         const myGroupMenuItems = await this.getMyGroupMenuItems();
         const newContextMenuItems = defaultMenuItems.concat(myGroupMenuItems);
         ContextMenuHelper.addAll(newContextMenuItems);
+    }
+
+    public async getEventsByMySelf(items: StorageItems, dateRange: DateRange): Promise<EventInfo[]> {
+        const events = await this.logic.getSortedMyEvents(dateRange);
+        return events.filter(event => {
+            let isIncludeEvent = true;
+
+            if (!items.isIncludePrivateEvent) {
+                isIncludeEvent = event.visibilityType !== 'PRIVATE';
+            }
+
+            if (!items.isIncludeAllDayEvent) {
+                isIncludeEvent = !event.isAllDay;
+            }
+
+            return isIncludeEvent;
+        });
+    }
+
+    public async getPublicHolidays(specificDate: Date): Promise<string[]> {
+        return await this.logic.getNarrowedDownPublicHolidays(specificDate);
     }
 }

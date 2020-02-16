@@ -1,8 +1,13 @@
-import { StrageItems } from 'src/types/event';
+import { StorageItems, EventInfo, MyGroupEvent } from 'src/types/event';
 import { StorageKeys } from './eventtype';
-import { ContextMenuActionId, ContextMenuDateId } from 'src/background/contextmenu/defaultcontextmenu';
 import { NormalActionServiceImpl } from './service/normalactionservice';
 import ScheduleEventsLogicImpl from './scheduleeventslogic';
+import { GaroonDataSourceImpl } from './data/garoondatasource';
+import { NoticeEventType } from 'src/types/notice';
+import { DateHelper } from './service/datehelper';
+import { ContextMenuDateId, ContextMenuActionId } from 'src/types/contextmenu';
+import { DateRange } from 'src/types/date';
+import { ContextMenuHelper } from './contextmenu/contextmenuhelper';
 
 let currentDomain = '';
 
@@ -13,7 +18,7 @@ const changeDomain = (message: { domain: string }): void => {
     currentDomain = message.domain;
 };
 
-const getStrageItems = (): Promise<StrageItems> =>
+const getStorageItems = (): Promise<StorageItems> =>
     new Promise((): void =>
         chrome.storage.sync.get(
             [
@@ -26,26 +31,74 @@ const getStrageItems = (): Promise<StrageItems> =>
         )
     );
 
-const isContextMenuDateId = (menuId: ContextMenuActionId | ContextMenuDateId): boolean => {
-    return (
-        menuId === ContextMenuDateId.TODAY ||
-        menuId === ContextMenuDateId.NEXT_BUSINESS_DAY ||
-        menuId === ContextMenuDateId.PREVIOUS_BUSINESS_DAY ||
-        menuId === ContextMenuDateId.SELECT_DATE
-    );
+const findDateRangeFromDateId = (
+    dateId: ContextMenuDateId,
+    selectedDate?: Date,
+    publicHolidays?: string[]
+): DateRange => {
+    switch (dateId) {
+        case ContextMenuDateId.TODAY: {
+            return DateHelper.makeDateRange(new Date());
+        }
+        case ContextMenuDateId.NEXT_BUSINESS_DAY: {
+            if (publicHolidays === undefined) {
+                throw new Error('RuntimeErrorException: publicHolidays is undefined');
+            }
+            return DateHelper.makeDateRange(DateHelper.assignBusinessDate(new Date(), publicHolidays, 1));
+        }
+        case ContextMenuDateId.PREVIOUS_BUSINESS_DAY: {
+            if (publicHolidays === undefined) {
+                throw new Error('RuntimeErrorException: publicHolidays is undefined');
+            }
+            return DateHelper.makeDateRange(DateHelper.assignBusinessDate(new Date(), publicHolidays, -1));
+        }
+        case ContextMenuDateId.SELECT_DAY: {
+            if (selectedDate === undefined) {
+                throw new Error('RuntimeErrorException: selectedDate is undefined');
+            }
+            return DateHelper.makeDateRange(selectedDate);
+        }
+        default: {
+            throw new Error('RuntimeErrorException: コンテキストメニューに存在しない日付のIDが選択されています');
+        }
+    }
 };
 
-const executeNormalAction = (menuItemId: ContextMenuActionId, tab?: chrome.tabs.Tab): void => {
-    const service = new NormalActionServiceImpl(new ScheduleEventsLogicImpl(currentDomain));
+const noticeStateToContent = (tabId: number, state: NoticeEventType): void =>
+    chrome.tabs.sendMessage(tabId, { state: state });
+
+const noticeEventMessageToContent = (
+    tabId: number,
+    actionId: ContextMenuActionId,
+    selectedDate: Date,
+    events: EventInfo[]
+): void => chrome.tabs.sendMessage(tabId, { actionId: actionId, selectedDate: selectedDate, events: events });
+
+const executeNormalAction = async (
+    tabId: number,
+    items: StorageItems,
+    menuItemId: ContextMenuActionId
+): Promise<void> => {
+    const service = new NormalActionServiceImpl(new ScheduleEventsLogicImpl(new GaroonDataSourceImpl(currentDomain)));
+
     switch (menuItemId) {
-        case ContextMenuActionId.MYSELF:
+        case ContextMenuActionId.MYSELF: {
+            const dateRange = findDateRangeFromDateId(items.dateId);
+            const events = await service.getEventsByMySelf(items, dateRange);
+            noticeEventMessageToContent(tabId, menuItemId, new Date(items.selectedDate), events);
             break;
-        case ContextMenuActionId.MYGROUP_UPDATE:
+        }
+        case ContextMenuActionId.MYGROUP_UPDATE: {
             service.updateContextMenus();
             break;
-        case ContextMenuActionId.TEMPLATE:
+        }
+        case ContextMenuActionId.TEMPLATE: {
             break;
-        default:
+        }
+        default: {
+            // マイグループがくる
+            break;
+        }
     }
 };
 
@@ -54,10 +107,24 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnClickData, tab?: chrome.tabs.Tab) => {
+    if (tab === undefined || tab.id === undefined) {
+        return;
+    }
+
+    const tabId = tab.id;
     const menuItemId = info.menuItemId;
-    if (isContextMenuDateId(menuItemId)) {
+    const items = await getStorageItems();
+    if (ContextMenuHelper.isContextMenuDateId(menuItemId)) {
         return; // TODO: DateIDが選択されたときの処理
-    } else {
-        executeNormalAction(menuItemId, tab);
+    }
+
+    try {
+        noticeStateToContent(tabId, NoticeEventType.NOW_LOADING);
+        await executeNormalAction(tabId, items, menuItemId);
+    } catch (error) {
+        noticeStateToContent(tabId, NoticeEventType.ERROR);
+        throw new Error(`RuntimeErrorException: ${error.message}`);
+    } finally {
+        noticeStateToContent(tabId, NoticeEventType.FINISHED);
     }
 });
