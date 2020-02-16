@@ -1,26 +1,10 @@
-import { ContextMenu } from 'src/types/contextmenu';
-
-export enum ContextMenuRootId {
-    DEFAULT = '',
-}
-
-export enum ContextMenuParentId {
-    ROOT = 'root',
-    MYGROUP = 'mygroup',
-}
-
-export enum ContextMenuActionId {
-    MYSELF = 'myself',
-    MYGROUP_UPDATE = 'mygroup_update',
-    TEMPLATE = 'template',
-}
-
-export enum ContextMenuDateId {
-    TODAY = 'today',
-    NEXT_BUSINESS_DAY = 'next_business_day',
-    PREVIOUS_BUSINESS_DAY = 'previous_business_day',
-    SELECT_DATE = 'select_date',
-}
+import {
+    ContextMenuRootId,
+    ContextMenuParentId,
+    ContextMenuActionId,
+    ContextMenuDateId,
+    ContextMenu,
+} from 'src/types/contextmenu';
 
 export const defaultMenuItems: ContextMenu[] = [
     { id: ContextMenuParentId.ROOT, title: 'SchedulePicker', parentId: ContextMenuRootId.DEFAULT, type: 'normal' },
