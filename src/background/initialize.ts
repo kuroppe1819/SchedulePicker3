@@ -3,11 +3,7 @@ import { ContextMenuHelper } from 'src/background/contextmenu/contextmenuhelper'
 import { DateType, StorageKeys } from './eventtype';
 import { StrageItems } from 'src/types/event';
 
-const showPopupWindow = (): void => {
-    window.open('../calendar.html', 'extension_calendar', 'width=300, height=100, status=no');
-};
-
-const getDefaultValueFromStrage = (): Promise<StrageItems> =>
+const getDefaultValueFromStorage = (): Promise<StrageItems> =>
     new Promise((): void =>
         chrome.storage.sync.get(
             [
@@ -36,7 +32,7 @@ const setDefaultValueToStrage = (items: StrageItems): Promise<void> =>
     );
 
 chrome.runtime.onInstalled.addListener(async () => {
-    const items = await getDefaultValueFromStrage();
+    const items = await getDefaultValueFromStorage();
     await setDefaultValueToStrage(items);
     ContextMenuHelper.addAll(defaultMenuItems);
 });

@@ -8,6 +8,7 @@ import { DateHelper } from './service/datehelper';
 import { ContextMenuDateId, ContextMenuActionId } from 'src/types/contextmenu';
 import { DateRange } from 'src/types/date';
 import { ContextMenuHelper } from './contextmenu/contextmenuhelper';
+import { RadioActionServiceImpl } from './service/radioactionservice';
 
 let currentDomain = '';
 
@@ -74,6 +75,13 @@ const noticeEventMessageToContent = (
     events: EventInfo[]
 ): void => chrome.tabs.sendMessage(tabId, { actionId: actionId, selectedDate: selectedDate, events: events });
 
+const executeRadioAction = (menuItemId: ContextMenuDateId): void => {
+    RadioActionServiceImpl.setDateIdInStorage(menuItemId);
+    if (menuItemId === ContextMenuDateId.SELECT_DAY) {
+        RadioActionServiceImpl.showPopupWindow();
+    }
+};
+
 const executeNormalAction = async (
     tabId: number,
     items: StorageItems,
@@ -115,7 +123,7 @@ chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnCli
     const menuItemId = info.menuItemId;
     const items = await getStorageItems();
     if (ContextMenuHelper.isContextMenuDateId(menuItemId)) {
-        return; // TODO: DateIDが選択されたときの処理
+        executeRadioAction(menuItemId);
     }
 
     try {
