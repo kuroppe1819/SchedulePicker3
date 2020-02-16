@@ -1,6 +1,6 @@
-import { EventInfo, MyGroupEvent, Participant } from '../types/event';
+import { EventInfo, MyGroupEvent, Participant } from '../../types/event';
 
-export default class EventConverter {
+export class EventConverter {
     static convertToMyGroupEvent(eventInfo: EventInfo, participants: Participant[]): MyGroupEvent {
         return {
             eventInfo: eventInfo,

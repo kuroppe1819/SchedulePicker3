@@ -1,15 +1,15 @@
 import GaroonSoap from 'garoon-soap';
 import * as base from 'garoon-soap/dist/type/base';
-import { EventInfo } from '../types/event';
-import EventConverter from './eventconverter';
+import { EventInfo } from '../../types/event';
+import { EventConverter } from './eventconverter';
 
-interface GaroonDataSource {
+export interface GaroonDataSource {
     getScheduleEvents(rangeStart: string, rangeEnd: string, targetType: string, target: string): Promise<EventInfo[]>;
     getMyGroupVersions(myGroupItems: base.ItemVersionType[]): Promise<base.ItemVersionResultType[]>;
     getMyGroupsById(id: string[]): Promise<base.MyGroupType[]>;
 }
 
-export default class GaroonDataSourceImpl implements GaroonDataSource {
+export class GaroonDataSourceImpl implements GaroonDataSource {
     private baseUrl: string;
     private PATH = 'api/v1/';
     private soap: GaroonSoap;
@@ -43,21 +43,39 @@ export default class GaroonDataSourceImpl implements GaroonDataSource {
             method: 'GET',
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
         });
-        const respJson = await respStream.json();
+
+        let respJson = { events: [] };
+        try {
+            respJson = await respStream.json();
+        } catch (error) {
+            throw new Error(`RuntimeErrorException: ${error.message}`);
+        }
         return respJson.events.map(event => {
             return EventConverter.convertToEventInfo(event);
         });
     }
 
     getMyGroupVersions(myGroupItems: base.ItemVersionType[]): Promise<base.ItemVersionResultType[]> {
-        return this.soap.base.getMyGroupVersions(myGroupItems);
+        try {
+            return this.soap.base.getMyGroupVersions(myGroupItems);
+        } catch (error) {
+            throw new Error(`RuntimeErrorException: ${error.message}`);
+        }
     }
 
     getMyGroupsById(groupIds: string[]): Promise<base.MyGroupType[]> {
-        return this.soap.base.getMyGroupsById(groupIds);
+        try {
+            return this.soap.base.getMyGroupsById(groupIds);
+        } catch (error) {
+            throw new Error(`RuntimeErrorException: ${error.message}`);
+        }
     }
 
     getCalendarEvents(): Promise<base.BaseGetCalendarEventType[]> {
-        return this.soap.base.getCalendarEvents();
+        try {
+            return this.soap.base.getCalendarEvents();
+        } catch (error) {
+            throw new Error(`RuntimeErrorException: ${error.message}`);
+        }
     }
 }
