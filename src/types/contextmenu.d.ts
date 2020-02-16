@@ -2,11 +2,12 @@ import {
     ContextMenuParentId,
     ContextMenuActionId,
     ContextMenuDateId,
-} from 'src/background/contextmenu/contextmenutype';
+    ContextMenuRootId,
+} from 'src/background/contextmenu/defaultcontextmenu';
 
 export type ContextMenu = {
     id: string;
     title: string;
-    parentId: string;
-    type: ContextMenuParentId | ContextMenuActionId | ContextMenuDateId;
+    parentId: ContextMenuRootId | ContextMenuParentId | ContextMenuActionId | ContextMenuDateId;
+    type: string;
 };
