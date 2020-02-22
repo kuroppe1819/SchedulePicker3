@@ -8,7 +8,7 @@ export type UserSetting = {
     templateText: string;
 };
 
-export enum StorageKeys {
+export const enum StorageKeys {
     IS_INCLUDE_PRIVATE_EVENT = 'isIncludePrivateEvent',
     IS_INCLUDE_ALL_DAY_EVENT = 'isIncludeAllDayEvent',
     DATE = 'date',

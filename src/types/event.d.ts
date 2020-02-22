@@ -39,7 +39,7 @@ export type TemplateCharactorInText = {
     isIncludePreviousDay: boolean;
 };
 
-export enum SpecialTemplateCharactor {
+export const enum SpecialTemplateCharactor {
     SELECTED_DAY = '{%SELECTED_DAY%}',
     NEXT_BUSINESS_DAY = '{%NEXT_BUSINESS_DAY%}',
     PREVIOUS_BUSINESS_DAY = '{%PREVIOUS_BUSINESS_DAY%}',

@@ -1,7 +1,7 @@
-import { defaultMenuItems } from 'src/background/contextmenu/defaultcontextmenu';
-import { ContextMenuHelper } from 'src/background/contextmenu/contextmenuhelper';
 import { UserSetting, StorageKeys } from 'src/types/storage';
 import { ContextMenuDateId } from 'src/types/contextmenu';
+import { ContextMenuHelper } from './contextmenu/contextmenuhelper';
+import { defaultMenuItems } from './contextmenu/defaultcontextmenu';
 
 chrome.runtime.onInstalled.addListener(async () => {
     const getDefaultValueFromStorage = (): Promise<UserSetting> =>

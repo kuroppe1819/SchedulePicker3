@@ -1,7 +1,7 @@
 import { LitElement, html, property, customElement, TemplateResult, css } from 'lit-element';
-import { StorageKeys } from '../background/eventtype';
 import '../components/selectdate';
 import '../components/savebutton';
+import { StorageKeys } from 'src/types/storage';
 
 @customElement('calendar-view')
 export class CalendarView extends LitElement {

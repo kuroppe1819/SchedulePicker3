@@ -1,10 +1,10 @@
 import { LitElement, html, css, property, customElement, TemplateResult } from 'lit-element';
-import { StorageKeys } from '../background/eventtype';
 import './changeshowprivateevent';
 import './changeshowalldayevent';
 import './selectdate';
 import './editabletemplate';
 import './savebutton';
+import { StorageKeys } from 'src/types/storage';
 
 @customElement('setting-view')
 export class SettingView extends LitElement {

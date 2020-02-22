@@ -1,7 +1,7 @@
 import { ContextMenuActionId } from './contextmenu';
 import { EventInfo, MyGroupEvent, TemplateEvent } from './event';
 
-export enum NoticeStateType {
+export const enum NoticeStateType {
     NOW_LOADING,
     FINISHED,
 }

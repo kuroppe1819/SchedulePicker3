@@ -1,20 +1,20 @@
-export enum ContextMenuRootId {
+export const enum ContextMenuRootId {
     DEFAULT = '',
 }
 
-export enum ContextMenuParentId {
+export const enum ContextMenuParentId {
     ROOT = 'root',
     MYGROUPS = 'mygroups',
 }
 
-export enum ContextMenuActionId {
+export const enum ContextMenuActionId {
     MYSELF = 'myself',
     MYGROUP = 'mygroup',
     MYGROUP_UPDATE = 'mygroup_update',
     TEMPLATE = 'template',
 }
 
-export enum ContextMenuDateId {
+export const enum ContextMenuDateId {
     TODAY = 'today',
     NEXT_BUSINESS_DAY = 'next_business_day',
     PREVIOUS_BUSINESS_DAY = 'previous_business_day',
