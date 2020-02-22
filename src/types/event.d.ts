@@ -1,4 +1,4 @@
-export interface EventInfo {
+export type EventInfo = {
     id: string;
     subject: string;
     startTime: Date;
@@ -9,29 +9,29 @@ export interface EventInfo {
     attendees: Participant[];
     isAllDay: boolean;
     isStartOnly: boolean;
-}
+};
 
-export interface Participant {
+export type Participant = {
     id: string;
     name: string;
-}
+};
 
-export interface MyGroupEvent {
+export type MyGroupEvent = {
     eventInfo: EventInfo;
     participants: Participant[];
-}
+};
 
-export interface TemplateEvent {
+export type TemplateEvent = {
     selectedDayEventInfoList: EventInfo[];
     nextDayEventInfoList: EventInfo[];
     previousDayEventInfoList: EventInfo[];
-}
+};
 
-export interface EventMenuColor {
+export type EventMenuColor = {
     r: number;
     g: number;
     b: number;
-}
+};
 
 export type TemplateCharactorInText = {
     isIncludeToday: boolean;
