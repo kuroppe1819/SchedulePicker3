@@ -1,4 +1,3 @@
-import ScheduleEventsLogic from '../data/scheduleeventslogic';
 import { ContextMenuHelper } from '../contextmenu/contextmenuhelper';
 import { ContextMenu, ContextMenuParentId, ContextMenuDateId } from 'src/types/contextmenu';
 import {
@@ -13,6 +12,7 @@ import { defaultMenuItems } from '../contextmenu/defaultcontextmenu';
 import { DateHelper } from './datehelper';
 import { UserSetting } from 'src/types/storage';
 import moment from 'moment';
+import { ScheduleEventsLogic } from '../data/scheduleeventslogic';
 
 export interface NormalActionService {
     updateContextMenus(): Promise<void>;

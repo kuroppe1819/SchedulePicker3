@@ -4,15 +4,15 @@ import { DateRange } from '../../types/date';
 import { GaroonDataSource } from './garoondatasource';
 import { EventConverter } from './eventconverter';
 
-interface ScheduleEventsLogic {
+export interface ScheduleEventsLogic {
     getMyEvents(dateRange: DateRange, targetType: string, target: string): Promise<EventInfo[]>;
-    getSortedMyEvents(dateRange: DateRange, targetType: string, target: string): Promise<EventInfo[]>;
+    getSortedMyEvents(dateRange: DateRange, targetType?: string, target?: string): Promise<EventInfo[]>;
     getMyGroups(): Promise<base.MyGroupType[]>;
     getMyGroupEvents(dateRange: DateRange, groupId: string): Promise<MyGroupEvent[]>;
     getNarrowedDownPublicHolidays(specificDate: Date): Promise<string[]>;
 }
 
-export default class ScheduleEventsLogicImpl implements ScheduleEventsLogic {
+export class ScheduleEventsLogicImpl implements ScheduleEventsLogic {
     private garoonDataSource: GaroonDataSource;
 
     constructor(garoonDataSource: GaroonDataSource) {
