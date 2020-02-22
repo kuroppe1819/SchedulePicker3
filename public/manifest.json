@@ -23,7 +23,7 @@
         }
     ],
     "background": {
-        "scripts": ["js/background.js", "js/vendor.js"]
+        "scripts": ["js/initialize.js", "js/userinput.js", "js/vendor.js"]
     },
     "options_ui": {
         "page": "options.html",

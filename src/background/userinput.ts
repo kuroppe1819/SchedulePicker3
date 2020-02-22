@@ -3,11 +3,10 @@ import { EventInfo, TemplateEvent, MyGroupEvent } from 'src/types/event';
 import { NoticeEventType } from 'src/types/notice';
 import { ContextMenuHelper } from './contextmenu/contextmenuhelper';
 import { GaroonDataSourceImpl } from './data/garoondatasource';
-import { StorageKeys } from './eventtype';
-import ScheduleEventsLogicImpl from './scheduleeventslogic';
+import ScheduleEventsLogicImpl from './data/scheduleeventslogic';
 import { NormalActionServiceImpl } from './service/normalactionservice';
 import { RadioActionServiceImpl } from './service/radioactionservice';
-import { UserSetting } from 'src/types/storage';
+import { UserSetting, StorageKeys } from 'src/types/storage';
 
 let currentDomain = '';
 

@@ -1,6 +1,3 @@
-import { ContextMenuActionId, ContextMenuDateId } from './contextmenu';
-import { NoticeEventType } from './notice';
-
 export interface EventInfo {
     id: string;
     subject: string;

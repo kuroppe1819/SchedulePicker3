@@ -1,4 +1,4 @@
-import ScheduleEventsLogic from '../scheduleeventslogic';
+import ScheduleEventsLogic from '../data/scheduleeventslogic';
 import { ContextMenuHelper } from '../contextmenu/contextmenuhelper';
 import { ContextMenu, ContextMenuParentId, ContextMenuDateId } from 'src/types/contextmenu';
 import {
@@ -27,7 +27,7 @@ export class NormalActionServiceImpl implements NormalActionService {
         this.logic = logic;
     }
 
-    private async findDateRangeFromDateId(dateId: ContextMenuDateId, selectedDate: Date): DateRange {
+    private async findDateRangeFromDateId(dateId: ContextMenuDateId, selectedDate: Date): Promise<DateRange> {
         const now = new Date();
         const publicHolidays = await this.getPublicHolidays(now);
         switch (dateId) {

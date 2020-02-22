@@ -1,8 +1,8 @@
 import * as base from 'garoon-soap/dist/type/base';
-import { EventInfo, Participant, MyGroupEvent } from '../types/event';
-import { DateRange } from '../types/date';
-import { GaroonDataSource } from './data/garoondatasource';
-import { EventConverter } from './data/eventconverter';
+import { EventInfo, Participant, MyGroupEvent } from '../../types/event';
+import { DateRange } from '../../types/date';
+import { GaroonDataSource } from './garoondatasource';
+import { EventConverter } from './eventconverter';
 
 interface ScheduleEventsLogic {
     getMyEvents(dateRange: DateRange, targetType: string, target: string): Promise<EventInfo[]>;
@@ -10,7 +10,6 @@ interface ScheduleEventsLogic {
     getMyGroups(): Promise<base.MyGroupType[]>;
     getMyGroupEvents(dateRange: DateRange, groupId: string): Promise<MyGroupEvent[]>;
     getNarrowedDownPublicHolidays(specificDate: Date): Promise<string[]>;
-    getIndexesSpecialTemplateCharactor(targetText: string): SpecialTemplateCharactorIndexs;
 }
 
 export default class ScheduleEventsLogicImpl implements ScheduleEventsLogic {

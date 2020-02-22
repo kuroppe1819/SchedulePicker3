@@ -7,7 +7,8 @@ module.exports = {
         popup: path.join(__dirname, `${srcDir}popup/popup.ts`),
         options: path.join(__dirname, `${srcDir}options/options.ts`),
         calendar: path.join(__dirname, `${srcDir}calendar/calendar.ts`),
-        background: path.join(__dirname, `${srcDir}background/background.ts`),
+        initialize: path.join(__dirname, `${srcDir}background/initialize.ts`),
+        userinput: path.join(__dirname, `${srcDir}background/userinput.ts`),
         contentscript: path.join(__dirname, `${srcDir}content/contentscript.ts`),
     },
     output: {
