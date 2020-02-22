@@ -1,16 +1,15 @@
 import { ContextMenuActionId } from './contextmenu';
-import { EventInfo, MyGroupEvent } from './event';
+import { EventInfo, MyGroupEvent, TemplateEvent } from './event';
 
-export enum NoticeEventType {
+export enum NoticeStateType {
     NOW_LOADING,
     FINISHED,
-    ERROR,
 }
 
 export type RecieveEventMessage = {
     actionId: ContextMenuActionId;
-    state: NoticeEventType;
+    state?: NoticeStateType;
     selectedDate: Date;
-    events: EventInfo[] | MyGroupEvent[];
+    events: EventInfo[] | MyGroupEvent[] | TemplateEvent;
     templateText: string;
 };

@@ -22,10 +22,9 @@ export interface MyGroupEvent {
 }
 
 export interface TemplateEvent {
-    todayEventInfoList: EventInfo[];
+    selectedDayEventInfoList: EventInfo[];
     nextDayEventInfoList: EventInfo[];
     previousDayEventInfoList: EventInfo[];
-    includes: TemplateCharactorInText;
 }
 
 export interface EventMenuColor {
@@ -41,7 +40,7 @@ export type TemplateCharactorInText = {
 };
 
 export enum SpecialTemplateCharactor {
-    TODAY = '{%TODAY%}',
+    SELECTED_DAY = '{%SELECTED_DAY%}',
     NEXT_BUSINESS_DAY = '{%NEXT_BUSINESS_DAY%}',
     PREVIOUS_BUSINESS_DAY = '{%PREVIOUS_BUSINESS_DAY%}',
 }

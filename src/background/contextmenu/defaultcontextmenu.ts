@@ -39,7 +39,7 @@ export const defaultMenuItems: ContextMenu[] = [
         type: 'normal',
     },
     {
-        id: ContextMenuParentId.MYGROUP,
+        id: ContextMenuParentId.MYGROUPS,
         title: 'MYグループ',
         parentId: ContextMenuParentId.ROOT,
         type: 'normal',
@@ -47,7 +47,7 @@ export const defaultMenuItems: ContextMenu[] = [
     {
         id: ContextMenuActionId.MYGROUP_UPDATE,
         title: '【 MYグループの更新 】',
-        parentId: ContextMenuParentId.MYGROUP,
+        parentId: ContextMenuParentId.MYGROUPS,
         type: 'normal',
     },
     {

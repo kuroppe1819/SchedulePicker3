@@ -1,6 +1,6 @@
 import { ContextMenuActionId, ContextMenuDateId } from 'src/types/contextmenu';
 import { EventInfo, TemplateEvent, MyGroupEvent } from 'src/types/event';
-import { NoticeEventType } from 'src/types/notice';
+import { NoticeStateType } from 'src/types/notice';
 import { ContextMenuHelper } from './contextmenu/contextmenuhelper';
 import { GaroonDataSourceImpl } from './data/garoondatasource';
 import ScheduleEventsLogicImpl from './data/scheduleeventslogic';
@@ -30,10 +30,10 @@ const getStorageItems = (): Promise<UserSetting> =>
         )
     );
 
-const noticeStateToContent = (tabId: number, state: NoticeEventType): void =>
+const noticeStateToContent = (tabId: number, state: NoticeStateType): void =>
     chrome.tabs.sendMessage(tabId, { state: state });
 
-const noticeEventMessageToContent = (
+const noticeEventsToContent = (
     tabId: number,
     actionId: ContextMenuActionId,
     selectedDate: Date,
@@ -57,7 +57,7 @@ const executeNormalAction = async (
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
             const events = await service.getEventsByMySelf(setting);
-            noticeEventMessageToContent(tabId, menuItemId, new Date(setting.selectedDate), events);
+            noticeEventsToContent(tabId, menuItemId, new Date(setting.selectedDate), events);
             break;
         }
         case ContextMenuActionId.MYGROUP_UPDATE: {
@@ -66,12 +66,12 @@ const executeNormalAction = async (
         }
         case ContextMenuActionId.TEMPLATE: {
             const events = await service.getEventsByTemplate(setting);
-            noticeEventMessageToContent(tabId, menuItemId, new Date(setting.selectedDate), events);
+            noticeEventsToContent(tabId, menuItemId, new Date(setting.selectedDate), events);
             break;
         }
         default: {
             const myGroupEvents = await service.getEventsByMyGroup(tabId.toString(), setting);
-            noticeEventMessageToContent(tabId, menuItemId, new Date(setting.selectedDate), myGroupEvents);
+            noticeEventsToContent(tabId, ContextMenuActionId.MYGROUP, new Date(setting.selectedDate), myGroupEvents);
             break;
         }
     }
@@ -94,12 +94,11 @@ chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnCli
     }
 
     try {
-        noticeStateToContent(tabId, NoticeEventType.NOW_LOADING);
+        noticeStateToContent(tabId, NoticeStateType.NOW_LOADING);
         await executeNormalAction(tabId, items, menuItemId);
     } catch (error) {
-        noticeStateToContent(tabId, NoticeEventType.ERROR);
         throw new Error(`RuntimeErrorException: ${error.message}`);
     } finally {
-        noticeStateToContent(tabId, NoticeEventType.FINISHED);
+        noticeStateToContent(tabId, NoticeStateType.FINISHED);
     }
 });

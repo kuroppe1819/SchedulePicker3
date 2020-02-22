@@ -4,11 +4,12 @@ export enum ContextMenuRootId {
 
 export enum ContextMenuParentId {
     ROOT = 'root',
-    MYGROUP = 'mygroup',
+    MYGROUPS = 'mygroups',
 }
 
 export enum ContextMenuActionId {
     MYSELF = 'myself',
+    MYGROUP = 'mygroup',
     MYGROUP_UPDATE = 'mygroup_update',
     TEMPLATE = 'template',
 }

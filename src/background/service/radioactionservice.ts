@@ -1,10 +1,5 @@
 import { ContextMenuDateId } from 'src/types/contextmenu';
 
-export interface RadioActionService {
-    setDateIdInStorage(dateId: ContextMenuDateId): void;
-    showPopupWindow(): void;
-}
-
 export class RadioActionServiceImpl {
     public static setDateIdInStorage(dateId: ContextMenuDateId): void {
         chrome.storage.sync.set({ dateId: dateId });

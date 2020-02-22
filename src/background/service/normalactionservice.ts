@@ -12,6 +12,7 @@ import { DateRange } from 'src/types/date';
 import { defaultMenuItems } from '../contextmenu/defaultcontextmenu';
 import { DateHelper } from './datehelper';
 import { UserSetting } from 'src/types/storage';
+import moment from 'moment';
 
 export interface NormalActionService {
     updateContextMenus(): Promise<void>;
@@ -28,11 +29,11 @@ export class NormalActionServiceImpl implements NormalActionService {
     }
 
     private async findDateRangeFromDateId(dateId: ContextMenuDateId, selectedDate: Date): Promise<DateRange> {
-        const now = new Date();
-        const publicHolidays = await this.getPublicHolidays(now);
+        const now = moment();
+        const publicHolidays = await this.getPublicHolidays(now.toDate());
         switch (dateId) {
             case ContextMenuDateId.TODAY: {
-                return DateHelper.makeDateRange(now);
+                return DateHelper.makeDateRange(now.toDate());
             }
             case ContextMenuDateId.NEXT_BUSINESS_DAY: {
                 if (publicHolidays === undefined) {
@@ -61,7 +62,7 @@ export class NormalActionServiceImpl implements NormalActionService {
     private async getMyGroupMenuItems(): Promise<ContextMenu[]> {
         const myGroups = await this.logic.getMyGroups();
         return myGroups.map(g => {
-            return { id: g.key, title: g.name, parentId: ContextMenuParentId.MYGROUP, type: 'normal' };
+            return { id: g.key, title: g.name, parentId: ContextMenuParentId.MYGROUPS, type: 'normal' };
         });
     }
 
@@ -103,10 +104,9 @@ export class NormalActionServiceImpl implements NormalActionService {
         const templateCharactorInText = await this.findSpecialTemplateCharacter(setting.templateText);
 
         const templateEvent: TemplateEvent = {
-            todayEventInfoList: [],
+            selectedDayEventInfoList: [],
             nextDayEventInfoList: [],
             previousDayEventInfoList: [],
-            includes: templateCharactorInText,
         };
 
         if (templateCharactorInText.isIncludeToday) {
@@ -114,7 +114,7 @@ export class NormalActionServiceImpl implements NormalActionService {
                 ContextMenuDateId.TODAY,
                 new Date(setting.selectedDate)
             );
-            templateEvent.todayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
+            templateEvent.selectedDayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
         }
 
         if (templateCharactorInText.isIncludeNextDay) {
@@ -122,7 +122,7 @@ export class NormalActionServiceImpl implements NormalActionService {
                 ContextMenuDateId.NEXT_BUSINESS_DAY,
                 new Date(setting.selectedDate)
             );
-            templateEvent.todayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
+            templateEvent.selectedDayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
         }
 
         if (templateCharactorInText.isIncludePreviousDay) {
@@ -130,7 +130,7 @@ export class NormalActionServiceImpl implements NormalActionService {
                 ContextMenuDateId.PREVIOUS_BUSINESS_DAY,
                 new Date(setting.selectedDate)
             );
-            templateEvent.todayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
+            templateEvent.selectedDayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
         }
 
         return templateEvent;
@@ -140,8 +140,8 @@ export class NormalActionServiceImpl implements NormalActionService {
         return await this.logic.getNarrowedDownPublicHolidays(specificDate);
     }
 
-    public findSpecialTemplateCharacter(targetText: string): TemplateCharactorInText {
-        const isIncludeToday = targetText.indexOf(SpecialTemplateCharactor.TODAY) !== -1;
+    private findSpecialTemplateCharacter(targetText: string): TemplateCharactorInText {
+        const isIncludeToday = targetText.indexOf(SpecialTemplateCharactor.SELECTED_DAY) !== -1;
         const isIncludeNextDay = targetText.indexOf(SpecialTemplateCharactor.NEXT_BUSINESS_DAY) !== -1;
         const isIncludePreviousDay = targetText.indexOf(SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY) !== -1;
 
