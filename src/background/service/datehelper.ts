@@ -1,24 +1,20 @@
 import { DateRange } from 'src/types/date';
-import * as moment from 'moment';
+import moment from 'moment';
 
 export class DateHelper {
-    private static getIncrementDay(specificDate: Date, increment: number): Date {
-        return new Date(specificDate.getFullYear(), specificDate.getMonth(), specificDate.getDate() + increment);
-    }
-
     public static makeDateRange(date: Date): DateRange {
         const startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         const endDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59);
         return { startDate: startDate, endDate: endDate };
     }
 
-    public static assignBusinessDate(specificDate: Date, publicHolidays: string[], increment: number): Date {
-        const incrementDate = this.getIncrementDay(specificDate, increment);
-        const day = moment.weekdays(incrementDate.getDay());
-        const incrementDateStr = incrementDate.toLocaleDateString();
-        if (day === 'Saturday' || day === 'Sunday' || publicHolidays.indexOf(incrementDateStr) >= 0) {
-            return this.assignBusinessDate(incrementDate, publicHolidays, increment);
+    public static assignBusinessDate(specificMoment: moment.Moment, publicHolidays: string[], increment: number): Date {
+        const incremented = specificMoment.add(1, 'days');
+        const day = moment.weekdays(incremented.day());
+        const incrementedDateStr = incremented.toDate().toLocaleDateString();
+        if (day === 'Saturday' || day === 'Sunday' || publicHolidays.indexOf(incrementedDateStr) >= 0) {
+            return this.assignBusinessDate(incremented, publicHolidays, increment);
         }
-        return incrementDate;
+        return incremented.toDate();
     }
 }
