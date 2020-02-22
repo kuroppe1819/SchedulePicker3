@@ -89,7 +89,8 @@ chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnCli
     const tabId = tab.id;
     const menuItemId = info.menuItemId;
     const items = await getStorageItems();
-    if (ContextMenuHelper.isContextMenuDateId(menuItemId)) {
+    const contextMenuHelper = ContextMenuHelper.getInstance();
+    if (contextMenuHelper.isContextMenuDateId(menuItemId)) {
         executeRadioAction(menuItemId);
     }
 

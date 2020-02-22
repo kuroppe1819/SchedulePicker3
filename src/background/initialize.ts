@@ -33,5 +33,5 @@ chrome.runtime.onInstalled.addListener(async () => {
         );
     const items = await getDefaultValueFromStorage();
     await setDefaultValueToStrage(items);
-    ContextMenuHelper.addAll(defaultMenuItems);
+    ContextMenuHelper.getInstance().addAll(defaultMenuItems);
 });
