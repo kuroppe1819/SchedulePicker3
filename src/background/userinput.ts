@@ -1,14 +1,13 @@
-import { StorageItems, EventInfo, MyGroupEvent } from 'src/types/event';
-import { StorageKeys } from './eventtype';
-import { NormalActionServiceImpl } from './service/normalactionservice';
-import ScheduleEventsLogicImpl from './scheduleeventslogic';
-import { GaroonDataSourceImpl } from './data/garoondatasource';
+import { ContextMenuActionId, ContextMenuDateId } from 'src/types/contextmenu';
+import { EventInfo, TemplateEvent, MyGroupEvent } from 'src/types/event';
 import { NoticeEventType } from 'src/types/notice';
-import { DateHelper } from './service/datehelper';
-import { ContextMenuDateId, ContextMenuActionId } from 'src/types/contextmenu';
-import { DateRange } from 'src/types/date';
 import { ContextMenuHelper } from './contextmenu/contextmenuhelper';
+import { GaroonDataSourceImpl } from './data/garoondatasource';
+import { StorageKeys } from './eventtype';
+import ScheduleEventsLogicImpl from './scheduleeventslogic';
+import { NormalActionServiceImpl } from './service/normalactionservice';
 import { RadioActionServiceImpl } from './service/radioactionservice';
+import { UserSetting } from 'src/types/storage';
 
 let currentDomain = '';
 
@@ -19,7 +18,7 @@ const changeDomain = (message: { domain: string }): void => {
     currentDomain = message.domain;
 };
 
-const getStorageItems = (): Promise<StorageItems> =>
+const getStorageItems = (): Promise<UserSetting> =>
     new Promise((): void =>
         chrome.storage.sync.get(
             [
@@ -32,39 +31,6 @@ const getStorageItems = (): Promise<StorageItems> =>
         )
     );
 
-const findDateRangeFromDateId = (
-    dateId: ContextMenuDateId,
-    selectedDate?: Date,
-    publicHolidays?: string[]
-): DateRange => {
-    switch (dateId) {
-        case ContextMenuDateId.TODAY: {
-            return DateHelper.makeDateRange(new Date());
-        }
-        case ContextMenuDateId.NEXT_BUSINESS_DAY: {
-            if (publicHolidays === undefined) {
-                throw new Error('RuntimeErrorException: publicHolidays is undefined');
-            }
-            return DateHelper.makeDateRange(DateHelper.assignBusinessDate(new Date(), publicHolidays, 1));
-        }
-        case ContextMenuDateId.PREVIOUS_BUSINESS_DAY: {
-            if (publicHolidays === undefined) {
-                throw new Error('RuntimeErrorException: publicHolidays is undefined');
-            }
-            return DateHelper.makeDateRange(DateHelper.assignBusinessDate(new Date(), publicHolidays, -1));
-        }
-        case ContextMenuDateId.SELECT_DAY: {
-            if (selectedDate === undefined) {
-                throw new Error('RuntimeErrorException: selectedDate is undefined');
-            }
-            return DateHelper.makeDateRange(selectedDate);
-        }
-        default: {
-            throw new Error('RuntimeErrorException: コンテキストメニューに存在しない日付のIDが選択されています');
-        }
-    }
-};
-
 const noticeStateToContent = (tabId: number, state: NoticeEventType): void =>
     chrome.tabs.sendMessage(tabId, { state: state });
 
@@ -72,7 +38,7 @@ const noticeEventMessageToContent = (
     tabId: number,
     actionId: ContextMenuActionId,
     selectedDate: Date,
-    events: EventInfo[]
+    events: EventInfo[] | MyGroupEvent[] | TemplateEvent
 ): void => chrome.tabs.sendMessage(tabId, { actionId: actionId, selectedDate: selectedDate, events: events });
 
 const executeRadioAction = (menuItemId: ContextMenuDateId): void => {
@@ -84,16 +50,15 @@ const executeRadioAction = (menuItemId: ContextMenuDateId): void => {
 
 const executeNormalAction = async (
     tabId: number,
-    items: StorageItems,
+    setting: UserSetting,
     menuItemId: ContextMenuActionId
 ): Promise<void> => {
     const service = new NormalActionServiceImpl(new ScheduleEventsLogicImpl(new GaroonDataSourceImpl(currentDomain)));
 
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
-            const dateRange = findDateRangeFromDateId(items.dateId);
-            const events = await service.getEventsByMySelf(items, dateRange);
-            noticeEventMessageToContent(tabId, menuItemId, new Date(items.selectedDate), events);
+            const events = await service.getEventsByMySelf(setting);
+            noticeEventMessageToContent(tabId, menuItemId, new Date(setting.selectedDate), events);
             break;
         }
         case ContextMenuActionId.MYGROUP_UPDATE: {
@@ -101,10 +66,13 @@ const executeNormalAction = async (
             break;
         }
         case ContextMenuActionId.TEMPLATE: {
+            const events = await service.getEventsByTemplate(setting);
+            noticeEventMessageToContent(tabId, menuItemId, new Date(setting.selectedDate), events);
             break;
         }
         default: {
-            // マイグループがくる
+            const myGroupEvents = await service.getEventsByMyGroup(tabId.toString(), setting);
+            noticeEventMessageToContent(tabId, menuItemId, new Date(setting.selectedDate), myGroupEvents);
             break;
         }
     }

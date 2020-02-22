@@ -28,7 +28,7 @@ export interface TemplateEvent {
     todayEventInfoList: EventInfo[];
     nextDayEventInfoList: EventInfo[];
     previousDayEventInfoList: EventInfo[];
-    indexes: SpecialTemplateCharactorIndexs;
+    includes: TemplateCharactorInText;
 }
 
 export interface EventMenuColor {
@@ -37,16 +37,14 @@ export interface EventMenuColor {
     b: number;
 }
 
-export interface SpecialTemplateCharactorIndexs {
-    todayIndexes: number[];
-    nextDayIndexes: number[];
-    previousDayIndexes: number[];
-}
-
-export type StorageItems = {
-    dateId: ContextMenuDateId;
-    selectedDate: string;
-    isIncludePrivateEvent: boolean;
-    isIncludeAllDayEvent: boolean;
-    templateText: string;
+export type TemplateCharactorInText = {
+    isIncludeToday: boolean;
+    isIncludeNextDay: boolean;
+    isIncludePreviousDay: boolean;
 };
+
+export enum SpecialTemplateCharactor {
+    TODAY = '{%TODAY%}',
+    NEXT_BUSINESS_DAY = '{%NEXT_BUSINESS_DAY%}',
+    PREVIOUS_BUSINESS_DAY = '{%PREVIOUS_BUSINESS_DAY%}',
+}

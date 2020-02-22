@@ -1,7 +1,6 @@
 import * as base from 'garoon-soap/dist/type/base';
-import { EventInfo, Participant, MyGroupEvent, SpecialTemplateCharactorIndexs, TemplateEvent } from '../types/event';
+import { EventInfo, Participant, MyGroupEvent } from '../types/event';
 import { DateRange } from '../types/date';
-import { SpecialTemplateCharactor } from './eventtype';
 import { GaroonDataSource } from './data/garoondatasource';
 import { EventConverter } from './data/eventconverter';
 
@@ -126,39 +125,5 @@ export default class ScheduleEventsLogicImpl implements ScheduleEventsLogic {
                 );
             })
             .map(event => new Date(event.date).toLocaleDateString());
-    }
-
-    getIndexesSpecialTemplateCharactor(targetText: string): SpecialTemplateCharactorIndexs {
-        const todayIndexes: number[] = this.getIndexesCharactor(targetText, SpecialTemplateCharactor.TODAY);
-        const nextDayIndexes: number[] = this.getIndexesCharactor(
-            targetText,
-            SpecialTemplateCharactor.NEXT_BUSINESS_DAY
-        );
-        const previousDayIndexes: number[] = this.getIndexesCharactor(
-            targetText,
-            SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY
-        );
-
-        return {
-            todayIndexes: todayIndexes,
-            nextDayIndexes: nextDayIndexes,
-            previousDayIndexes: previousDayIndexes,
-        };
-    }
-
-    private escapeRegExp(text): string {
-        // eslint-disable-next-line no-useless-escape
-        return text.replace(/[.*+?^=!:${}()|[\]\/\\]/g, '\\$&'); // $&はマッチした部分文字列全体を意味する
-    }
-
-    private getIndexesCharactor(targetText: string, searchText: string): number[] {
-        const regex = new RegExp(this.escapeRegExp(searchText), 'g');
-        const indexes: number[] = [];
-
-        let result;
-        while ((result = regex.exec(targetText)) !== null) {
-            indexes.push(result.index);
-        }
-        return indexes;
     }
 }

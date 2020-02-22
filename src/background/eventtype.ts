@@ -5,9 +5,3 @@ export enum StorageKeys {
     TEMPLATE_TEXT = 'templateText',
     DATE_TYPE = 'dateType', // 日付のタイプ
 }
-
-export enum SpecialTemplateCharactor {
-    TODAY = '{%TODAY%}',
-    NEXT_BUSINESS_DAY = '{%NEXT_BUSINESS_DAY%}',
-    PREVIOUS_BUSINESS_DAY = '{%PREVIOUS_BUSINESS_DAY%}',
-}
