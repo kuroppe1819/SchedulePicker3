@@ -37,5 +37,6 @@ module.exports = {
     plugins: [
         new CopyPlugin([{ from: '.', to: '../' }], { context: 'public' }),
         new webpack.IgnorePlugin(/\/iconv-loader$/),
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     ],
 };
