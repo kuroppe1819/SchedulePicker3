@@ -1,12 +1,12 @@
 import { ContextMenuActionId, ContextMenuDayId } from 'src/types/contextmenu';
 import { EventInfo, TemplateEvent, MyGroupEvent } from 'src/types/event';
 import { NoticeStateType } from 'src/types/notice';
-import { ContextMenuHelper } from './helper/contextmenuhelper';
 import { GaroonDataSourceImpl } from './data/garoondatasource';
 import { ScheduleEventsLogicImpl } from './data/scheduleeventslogic';
 import { NormalActionServiceImpl } from './service/normalactionservice';
 import { RadioActionServiceImpl } from './service/radioactionservice';
 import { UserSetting, StorageKeys } from 'src/types/storage';
+import { ContextMenuHelper } from './helper/contextmenuhelper';
 
 let currentDomain = '';
 
@@ -89,8 +89,7 @@ chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnCli
     const tabId = tab.id;
     const menuItemId = info.menuItemId;
     const items = await getStorageItems();
-    const contextMenuHelper = ContextMenuHelper.getInstance();
-    if (contextMenuHelper.isContextMenuDayId(menuItemId)) {
+    if (ContextMenuHelper.isContextMenuDayId(menuItemId)) {
         executeRadioAction(menuItemId);
     }
 
