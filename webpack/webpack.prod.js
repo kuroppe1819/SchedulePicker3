@@ -3,4 +3,8 @@ const common = require('./webpack.common.js'); // eslint-disable-line
 
 module.exports = merge(common, {
     mode: 'production',
+    performance: {
+        maxAssetSize: 10000000,
+        maxEntrypointSize: 1000000,
+    },
 });
