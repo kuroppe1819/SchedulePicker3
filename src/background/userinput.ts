@@ -24,9 +24,15 @@ const noticeStateToContent = (tabId: number, state: NoticeStateType): void =>
 const noticeEventsToContent = (
     tabId: number,
     actionId: ContextMenuActionId,
-    selectedDate: Date,
-    events: EventInfo[] | MyGroupEvent[] | TemplateEvent
-): void => chrome.tabs.sendMessage(tabId, { actionId: actionId, selectedDate: selectedDate, events: events });
+    events: EventInfo[] | MyGroupEvent[] | TemplateEvent,
+    templateText?: string
+): void => {
+    if (templateText) {
+        chrome.tabs.sendMessage(tabId, { actionId: actionId, events: events, templateText: templateText });
+    } else {
+        chrome.tabs.sendMessage(tabId, { actionId: actionId, events: events });
+    }
+};
 
 const executeRadioAction = async (menuItemId: ContextMenuDayId): Promise<void> => {
     await StorageAccess.setDayId(menuItemId);
@@ -45,7 +51,7 @@ const executeNormalAction = async (
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
             const events = await service.getEventsByMySelf(setting);
-            noticeEventsToContent(tabId, menuItemId, new Date(setting.selectedDate), events);
+            noticeEventsToContent(tabId, ContextMenuActionId.MYSELF, events);
             break;
         }
         case ContextMenuActionId.MYGROUP_UPDATE: {
@@ -54,12 +60,12 @@ const executeNormalAction = async (
         }
         case ContextMenuActionId.TEMPLATE: {
             const events = await service.getEventsByTemplate(setting);
-            noticeEventsToContent(tabId, menuItemId, new Date(setting.selectedDate), events);
+            noticeEventsToContent(tabId, ContextMenuActionId.TEMPLATE, events, setting.templateText);
             break;
         }
         default: {
             const myGroupEvents = await service.getEventsByMyGroup(tabId.toString(), setting);
-            noticeEventsToContent(tabId, ContextMenuActionId.MYGROUP, new Date(setting.selectedDate), myGroupEvents);
+            noticeEventsToContent(tabId, ContextMenuActionId.MYGROUP, myGroupEvents);
             break;
         }
     }

@@ -6,10 +6,9 @@ import { defaultMenuItems } from './helper/defaultcontextmenu';
 
 chrome.runtime.onInstalled.addListener(async () => {
     const setDefaultValueToStrage = async (setting: UserSetting): Promise<void> => {
-        console.log(setting);
         await StorageAccess.setUserSetting({
             dayId: setting.dayId || ContextMenuDayId.TODAY,
-            selectedDate: setting.selectedDate || '',
+            selectedDate: setting.selectedDate,
             isIncludePrivateEvent: setting.isIncludePrivateEvent || true,
             isIncludeAllDayEvent: setting.isIncludeAllDayEvent || true,
             templateText:
