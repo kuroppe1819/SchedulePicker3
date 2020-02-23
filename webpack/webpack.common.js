@@ -1,5 +1,6 @@
 const path = require('path'); // eslint-disable-line
 const CopyPlugin = require('copy-webpack-plugin'); // eslint-disable-line
+const webpack = require('webpack') // eslint-disable-line
 const srcDir = '../src/';
 
 module.exports = {
@@ -33,5 +34,8 @@ module.exports = {
     resolve: {
         extensions: ['.ts', '.tsx', '.js'],
     },
-    plugins: [new CopyPlugin([{ from: '.', to: '../' }], { context: 'public' })],
+    plugins: [
+        new CopyPlugin([{ from: '.', to: '../' }], { context: 'public' }),
+        new webpack.IgnorePlugin(/\/iconv-loader$/),
+    ],
 };
