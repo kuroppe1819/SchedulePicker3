@@ -9,7 +9,7 @@ export class DateHelper {
     }
 
     public static assignBusinessDate(specificMoment: moment.Moment, publicHolidays: string[], increment: number): Date {
-        const incremented = specificMoment.add(1, 'days');
+        const incremented = specificMoment.add(increment, 'days');
         const day = moment.weekdays(incremented.day());
         const incrementedDateStr = incremented.toDate().toLocaleDateString();
         if (day === 'Saturday' || day === 'Sunday' || publicHolidays.indexOf(incrementedDateStr) >= 0) {
