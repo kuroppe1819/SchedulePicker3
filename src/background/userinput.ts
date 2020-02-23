@@ -31,7 +31,7 @@ const executeRadioAction = async (menuItemId: ContextMenuDayId): Promise<void> =
 const executeNormalAction = async (
     tabId: number,
     setting: UserSetting,
-    menuItemId: ContextMenuActionId
+    menuItemId: ContextMenuActionId | string
 ): Promise<void> => {
     const normalActionService = new NormalActionServiceImpl(
         new ScheduleEventsLogicImpl(new GaroonDataSourceImpl(currentDomain))
@@ -64,7 +64,7 @@ const executeNormalAction = async (
             break;
         }
         default: {
-            const myGroupEvents = await normalActionService.getEventsByMyGroup(tabId.toString(), setting, dateRange);
+            const myGroupEvents = await normalActionService.getEventsByMyGroup(menuItemId, setting, dateRange);
             chrome.tabs.sendMessage(tabId, {
                 actionId: ContextMenuActionId.MYGROUP,
                 events: myGroupEvents,
