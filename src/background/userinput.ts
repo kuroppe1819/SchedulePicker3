@@ -25,21 +25,20 @@ const noticeEventsToContent = (
     tabId: number,
     actionId: ContextMenuActionId,
     events: EventInfo[] | MyGroupEvent[] | TemplateEvent,
-    selectedDate?: Date,
+    specificDateStr?: string,
     templatetext?: string
 ): void => {
     if (templatetext) {
         chrome.tabs.sendMessage(tabId, {
             actionId: actionId,
             events: events,
-            selectedDate: selectedDate,
             templatetext: templatetext,
         });
     } else {
         chrome.tabs.sendMessage(tabId, {
             actionId: actionId,
             events: events,
-            selectedDate: selectedDate,
+            specificDateStr: specificDateStr,
         });
     }
 };
@@ -70,7 +69,7 @@ const executeNormalAction = async (
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
             const events = await normalActionService.getEventsByMySelf(setting, dateRange);
-            noticeEventsToContent(tabId, ContextMenuActionId.MYSELF, events);
+            noticeEventsToContent(tabId, ContextMenuActionId.MYSELF, events, dateRange.startDate.toJSON());
             break;
         }
         case ContextMenuActionId.TEMPLATE: {
@@ -80,7 +79,7 @@ const executeNormalAction = async (
         }
         default: {
             const myGroupEvents = await normalActionService.getEventsByMyGroup(tabId.toString(), setting, dateRange);
-            noticeEventsToContent(tabId, ContextMenuActionId.MYGROUP, myGroupEvents);
+            noticeEventsToContent(tabId, ContextMenuActionId.MYGROUP, myGroupEvents, dateRange.startDate.toJSON());
             break;
         }
     }

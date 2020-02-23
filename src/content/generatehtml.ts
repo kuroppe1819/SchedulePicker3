@@ -1,16 +1,16 @@
 import { EventInfo, MyGroupEvent, Participant } from 'src/types/event';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import { eventMenuColor } from './eventmenucolor';
 
 export interface GenerateHtml {
-    constructHtmlScheduleTitle(date: Date | undefined): string;
+    constructHtmlScheduleTitle(specificDateStr: string | undefined): string;
     constructHtmlForEvents(events: EventInfo[]): string;
-    constructHtmlForMyGroupEvents(events: MyGroupEvent[], date: Date): string;
+    constructHtmlForMyGroupEvents(events: MyGroupEvent[], specificDateStr?: string): string;
 }
 
 export class GenerateHtmlImpl implements GenerateHtml {
-    private createHtmlScheduleTitle(date: Date): string {
-        return `<div>【 ${moment(date).format('yyyy-MM-dd')} の予定 】</div>`;
+    private createHtmlScheduleTitle(moment: moment.Moment): string {
+        return `<div>【 ${moment.format('YYYY-MM-DD')} の予定 】</div>`;
     }
 
     private createEventMenu(planName: string): string {
@@ -41,8 +41,8 @@ export class GenerateHtmlImpl implements GenerateHtml {
         return `<a href="https://bozuman.cybozu.com/g/schedule/view.csp?event=${eventInfo.id}">${eventInfo.subject}</a>`;
     }
 
-    private createHtmlForEventParticipant(date: Date, participants: Participant[]): string {
-        const formattedDate = moment(date).format('yyyy-MM-dd');
+    private createHtmlForEventParticipant(moment: moment.Moment, participants: Participant[]): string {
+        const formattedDate = moment.format('YYYY-MM-DD');
 
         return `
         ${participants
@@ -81,7 +81,7 @@ export class GenerateHtmlImpl implements GenerateHtml {
 
     private constructHtmlForRegularEventIncludeParticipant(
         eventInfo: EventInfo,
-        date?: Date,
+        dateStr?: string,
         participants: Participant[] = []
     ): string {
         let body = '';
@@ -92,8 +92,8 @@ export class GenerateHtmlImpl implements GenerateHtml {
         }
         body += ` ${this.createHtmlForEventName(eventInfo)}`; // スペース1つ分の余白を付けてデザインの微調整
 
-        if (participants.length !== 0 && date !== undefined) {
-            body += this.createHtmlForEventParticipant(date, participants);
+        if (participants.length !== 0 && dateStr !== undefined) {
+            body += this.createHtmlForEventParticipant(moment(dateStr), participants);
         }
         return `<div>${body}</div>`;
     }
@@ -116,7 +116,7 @@ export class GenerateHtmlImpl implements GenerateHtml {
         return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
     }
 
-    public constructHtmlForMyGroupEvents(myGroupEventList: MyGroupEvent[], selectedDate?: Date): string {
+    public constructHtmlForMyGroupEvents(myGroupEventList: MyGroupEvent[], specificDateStr?: string): string {
         const regularAndRepeatingEvents: MyGroupEvent[] = myGroupEventList.filter(
             groupEvent => groupEvent.eventInfo.eventType === 'REGULAR' || groupEvent.eventInfo.eventType === 'REPEATING'
         );
@@ -129,7 +129,7 @@ export class GenerateHtmlImpl implements GenerateHtml {
                 } else {
                     return this.constructHtmlForRegularEventIncludeParticipant(
                         groupEvent.eventInfo,
-                        selectedDate,
+                        specificDateStr,
                         groupEvent.participants
                     );
                 }
@@ -138,10 +138,10 @@ export class GenerateHtmlImpl implements GenerateHtml {
         return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
     }
 
-    public constructHtmlScheduleTitle(date: Date | undefined): string {
-        if (date) {
-            this.createHtmlScheduleTitle(date);
+    public constructHtmlScheduleTitle(specificDateStr: string | undefined): string {
+        if (specificDateStr) {
+            return this.createHtmlScheduleTitle(moment(specificDateStr));
         }
-        return '';
+        return '日付の取得に失敗しました';
     }
 }

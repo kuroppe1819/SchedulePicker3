@@ -41,14 +41,17 @@ const replacedText = (source: string, target: string, specialTemplateCharactor: 
 const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> => {
     const generateHtml = new GenerateHtmlImpl();
     if (message.actionId === ContextMenuActionId.MYSELF) {
-        const title = generateHtml.constructHtmlScheduleTitle(message.selectedDate);
+        const title = generateHtml.constructHtmlScheduleTitle(message.specificDateStr);
         const body = generateHtml.constructHtmlForEvents(message.events as EventInfo[]);
         document.execCommand('insertHtml', false, title + body);
     }
 
     if (message.actionId === ContextMenuActionId.MYGROUP) {
-        const title = generateHtml.constructHtmlScheduleTitle(message.selectedDate);
-        const body = generateHtml.constructHtmlForMyGroupEvents(message.events as MyGroupEvent[], message.selectedDate);
+        const title = generateHtml.constructHtmlScheduleTitle(message.specificDateStr);
+        const body = generateHtml.constructHtmlForMyGroupEvents(
+            message.events as MyGroupEvent[],
+            message.specificDateStr
+        );
         document.execCommand('insertHtml', false, title + body);
     }
 
