@@ -1,6 +1,7 @@
 import { UserSetting } from 'src/types/storage';
 import { ContextMenuDayId } from 'src/types/contextmenu';
-import { UserSettingLogic } from './usersettinglogic';
+import { UserSettingLogic, UserSettingLogicImpl } from './usersettinglogic';
+import { UserSettingRepositoryImpl } from './usersettingrepository';
 
 export interface UserSettingService {
     setUserSetting(setting: UserSetting): Promise<void>;
@@ -13,10 +14,26 @@ export interface UserSettingService {
 }
 
 export class UserSettingServiceImpl implements UserSettingService {
+    private static instance: UserSettingService;
     private userSettingLogic: UserSettingLogic;
 
-    constructor(userSettingLogic: UserSettingLogic) {
-        this.userSettingLogic = userSettingLogic;
+    constructor(callFunc: Function, userSettingLogic: UserSettingLogic) {
+        if (callFunc === UserSettingServiceImpl.getInstance) {
+            this.userSettingLogic = userSettingLogic;
+            return;
+        } else {
+            throw new Error('instance already exists');
+        }
+    }
+
+    public static getInstance(): UserSettingService {
+        if (!this.instance) {
+            this.instance = new UserSettingServiceImpl(
+                UserSettingServiceImpl.getInstance,
+                new UserSettingLogicImpl(new UserSettingRepositoryImpl())
+            );
+        }
+        return this.instance;
     }
 
     public async initialDefaultValue(): Promise<void> {
