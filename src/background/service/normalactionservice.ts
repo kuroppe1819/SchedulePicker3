@@ -1,23 +1,24 @@
-import { ContextMenuHelper } from '../helper/contextmenuhelper';
-import { ContextMenu, ContextMenuParentId, ContextMenuDayId } from 'src/types/contextmenu';
+import moment from 'moment';
+import { ContextMenu, ContextMenuDayId, ContextMenuParentId } from 'src/types/contextmenu';
+import { DateRange } from 'src/types/date';
 import {
     EventInfo,
+    MyGroupEvent,
     SpecialTemplateCharactor,
     TemplateCharactorInText,
     TemplateEvent,
-    MyGroupEvent,
 } from 'src/types/event';
-import { DateRange } from 'src/types/date';
-import { defaultMenuItems } from '../helper/defaultcontextmenu';
-import { DateHelper } from '../helper/datehelper';
 import { UserSetting } from 'src/types/storage';
-import moment from 'moment';
 import { ScheduleEventsLogic } from '../data/scheduleeventslogic';
+import { ContextMenuHelper } from '../helper/contextmenuhelper';
+import { DateHelper } from '../helper/datehelper';
+import { defaultMenuItems } from '../helper/defaultcontextmenu';
 
 export interface NormalActionService {
+    findDateRangeByDateId(dayId: ContextMenuDayId, selectedDate?: Date): Promise<DateRange>;
     updateContextMenus(): Promise<void>;
-    getEventsByMySelf(setting: UserSetting): Promise<EventInfo[]>;
-    getEventsByMyGroup(groupId: string, setting: UserSetting): Promise<MyGroupEvent[]>;
+    getEventsByMySelf(setting: UserSetting, dateRange: DateRange): Promise<EventInfo[]>;
+    getEventsByMyGroup(groupId: string, setting: UserSetting, dateRange: DateRange): Promise<MyGroupEvent[]>;
     getEventsByTemplate(setting: UserSetting): Promise<TemplateEvent>;
 }
 
@@ -28,23 +29,18 @@ export class NormalActionServiceImpl implements NormalActionService {
         this.logic = logic;
     }
 
-    private async findDateRangeFromDayId(dayId: ContextMenuDayId, selectedDate?: Date): Promise<DateRange> {
+    public async findDateRangeByDateId(dayId: ContextMenuDayId, selectedDate?: Date): Promise<DateRange> {
         const now = moment();
-        const publicHolidays = await this.getPublicHolidays(now.toDate());
         switch (dayId) {
             case ContextMenuDayId.TODAY: {
                 return DateHelper.makeDateRange(now.toDate());
             }
             case ContextMenuDayId.NEXT_BUSINESS_DAY: {
-                if (publicHolidays === undefined) {
-                    throw new Error('RuntimeErrorException: publicHolidays is undefined');
-                }
+                const publicHolidays = await this.getPublicHolidays(now.toDate());
                 return DateHelper.makeDateRange(DateHelper.assignBusinessDate(now, publicHolidays, 1));
             }
             case ContextMenuDayId.PREVIOUS_BUSINESS_DAY: {
-                if (publicHolidays === undefined) {
-                    throw new Error('RuntimeErrorException: publicHolidays is undefined');
-                }
+                const publicHolidays = await this.getPublicHolidays(now.toDate());
                 return DateHelper.makeDateRange(DateHelper.assignBusinessDate(now, publicHolidays, -1));
             }
             case ContextMenuDayId.SELECT_DAY: {
@@ -73,7 +69,7 @@ export class NormalActionServiceImpl implements NormalActionService {
         ContextMenuHelper.addAll(newContextMenuItems);
     }
 
-    private async getFilterdEventsByFilterSetting(dateRange: DateRange, setting: UserSetting): Promise<EventInfo[]> {
+    public async getEventsByMySelf(setting: UserSetting, dateRange: DateRange): Promise<EventInfo[]> {
         const events = await this.logic.getSortedMyEvents(dateRange);
         return events.filter(event => {
             let isIncludeEvent = true;
@@ -90,44 +86,58 @@ export class NormalActionServiceImpl implements NormalActionService {
         });
     }
 
-    public async getEventsByMySelf(setting: UserSetting): Promise<EventInfo[]> {
-        const dateRange = await this.findDateRangeFromDayId(setting.dayId, setting.selectedDate);
-        return this.getFilterdEventsByFilterSetting(dateRange, setting);
-    }
+    public async getEventsByMyGroup(
+        groupId: string,
+        setting: UserSetting,
+        dateRange: DateRange
+    ): Promise<MyGroupEvent[]> {
+        const myGroupEvents = await this.logic.getMyGroupEvents(dateRange, groupId);
+        return myGroupEvents.filter(myGroupevent => {
+            let isIncludeEvent = true;
 
-    public async getEventsByMyGroup(groupId: string, setting: UserSetting): Promise<MyGroupEvent[]> {
-        const dateRange = await this.findDateRangeFromDayId(setting.dayId, setting.selectedDate);
-        return await this.logic.getMyGroupEvents(dateRange, groupId);
+            if (!setting.isIncludePrivateEvent) {
+                isIncludeEvent = myGroupevent.eventInfo.visibilityType !== 'PRIVATE';
+            }
+
+            if (!setting.isIncludeAllDayEvent) {
+                isIncludeEvent = !myGroupevent.eventInfo.isAllDay;
+            }
+
+            return isIncludeEvent;
+        });
     }
 
     public async getEventsByTemplate(setting: UserSetting): Promise<TemplateEvent> {
-        const templateCharactorInText = await this.findSpecialTemplateCharacter(setting.templateText);
-
         const templateEvent: TemplateEvent = {
             selectedDayEventInfoList: [],
             nextDayEventInfoList: [],
             previousDayEventInfoList: [],
         };
 
+        if (!setting.templateText) {
+            return templateEvent;
+        }
+
+        const templateCharactorInText = await this.findSpecialTemplateCharacter(setting.templateText);
         if (templateCharactorInText.isIncludeToday) {
-            const dateRange = await this.findDateRangeFromDayId(ContextMenuDayId.TODAY, setting.selectedDate);
-            templateEvent.selectedDayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
+            const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.TODAY, setting.selectedDate);
+            templateEvent.selectedDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
         }
 
         if (templateCharactorInText.isIncludeNextDay) {
-            const dateRange = await this.findDateRangeFromDayId(
+            const dateRange = await this.findDateRangeByDateId(
                 ContextMenuDayId.NEXT_BUSINESS_DAY,
                 setting.selectedDate
             );
-            templateEvent.selectedDayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
+            templateEvent.selectedDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
         }
 
         if (templateCharactorInText.isIncludePreviousDay) {
-            const dateRange = await this.findDateRangeFromDayId(
+            const dateRange = await this.findDateRangeByDateId(
                 ContextMenuDayId.PREVIOUS_BUSINESS_DAY,
                 setting.selectedDate
             );
-            templateEvent.selectedDayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
+            templateEvent.selectedDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
         }
 
         return templateEvent;
