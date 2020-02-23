@@ -1,19 +1,19 @@
 import { StorageItem, UserSetting } from 'src/types/storage';
 
 export class UserSettingConverter {
-    static convertToSelectedDate(selectedDateStr: string | undefined): Date | undefined {
-        return selectedDateStr ? new Date(selectedDateStr) : undefined;
+    static convertToSpecifiedDate(specifiedDateStr: string | undefined): Date | undefined {
+        return specifiedDateStr ? new Date(specifiedDateStr) : undefined;
     }
 
-    static convertToSelectedDateStr(selectedDate: Date | undefined): string | undefined {
-        return selectedDate ? selectedDate.toJSON() : undefined;
+    static convertToSpecifiedDateStr(specifiedDate: Date | undefined): string | undefined {
+        return specifiedDate ? specifiedDate.toJSON() : undefined;
     }
 
     static convertToUserSetting(item: StorageItem): UserSetting {
-        const selectedDate = this.convertToSelectedDate(item.selectedDateStr);
+        const specifiedDate = this.convertToSpecifiedDate(item.specifiedDateStr);
         return {
             dayId: item.dayId,
-            selectedDate: selectedDate,
+            specifiedDate: specifiedDate,
             isIncludePrivateEvent: item.isIncludePrivateEvent,
             isIncludeAllDayEvent: item.isIncludeAllDayEvent,
             templateText: item.templateText,
@@ -21,10 +21,10 @@ export class UserSettingConverter {
     }
 
     static convertToStorageItem(setting: UserSetting): StorageItem {
-        const selectedDateStr = this.convertToSelectedDateStr(setting.selectedDate);
+        const specifiedDateStr = this.convertToSpecifiedDateStr(setting.specifiedDate);
         return {
             dayId: setting.dayId,
-            selectedDateStr: selectedDateStr,
+            specifiedDateStr: specifiedDateStr,
             isIncludePrivateEvent: setting.isIncludePrivateEvent,
             isIncludeAllDayEvent: setting.isIncludeAllDayEvent,
             templateText: setting.templateText,

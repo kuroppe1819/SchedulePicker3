@@ -58,9 +58,9 @@ const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> =>
     if (message.actionId === ContextMenuActionId.TEMPLATE) {
         const templateEvent = message.events as TemplateEvent;
         let templateText = message.templateText;
-        if (templateEvent.selectedDayEventInfoList.length !== 0) {
-            const body = generateHtml.constructHtmlForEvents(templateEvent.selectedDayEventInfoList);
-            templateText = replacedText(templateText, body, SpecialTemplateCharactor.SELECTED_DAY);
+        if (templateEvent.specifiedDayEventInfoList.length !== 0) {
+            const body = generateHtml.constructHtmlForEvents(templateEvent.specifiedDayEventInfoList);
+            templateText = replacedText(templateText, body, SpecialTemplateCharactor.SPECIFIED_DAY);
         }
 
         if (templateEvent.nextDayEventInfoList.length !== 0) {
@@ -69,7 +69,7 @@ const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> =>
         }
 
         if (templateEvent.previousDayEventInfoList.length !== 0) {
-            const body = generateHtml.constructHtmlForEvents(templateEvent.selectedDayEventInfoList);
+            const body = generateHtml.constructHtmlForEvents(templateEvent.previousDayEventInfoList);
             templateText = replacedText(templateText, body, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY);
         }
         document.execCommand('insertHTML', false, templateText);

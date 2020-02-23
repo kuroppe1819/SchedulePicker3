@@ -14,7 +14,7 @@ export const enum ContextMenuDayId {
     TODAY = 'today',
     NEXT_BUSINESS_DAY = 'next_business_day',
     PREVIOUS_BUSINESS_DAY = 'previous_business_day',
-    SELECT_DAY = 'select_date',
+    SPECIFIED_DAY = 'specified_day',
 }
 
 export type ContextMenu = {

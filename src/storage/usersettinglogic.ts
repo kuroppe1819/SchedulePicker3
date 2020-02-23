@@ -7,8 +7,8 @@ export interface UserSettingLogic {
     setUserSetting(setting: UserSetting): Promise<void>;
     getUserSetting(): Promise<UserSetting>;
     setDayId(dayId: ContextMenuDayId): Promise<void>;
-    setSelectedDate(selectedDate?: Date): Promise<void>;
-    getSelectedDate(): Promise<Date | undefined>;
+    setSpecifiedDate(specifiedDate?: Date): Promise<void>;
+    getSpecifiedDate(): Promise<Date | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
     getTemplateText(): Promise<string | undefined>;
 }
@@ -34,14 +34,14 @@ export class UserSettingLogicImpl implements UserSettingLogic {
         await this.userSettingRepository.setDayId(dayId);
     }
 
-    public async setSelectedDate(selectedDate?: Date | undefined): Promise<void> {
-        const selectedDateStr = UserSettingConverter.convertToSelectedDateStr(selectedDate);
-        await this.userSettingRepository.setSelectedDateStr(selectedDateStr);
+    public async setSpecifiedDate(specifiedDate?: Date | undefined): Promise<void> {
+        const specifiedDateStr = UserSettingConverter.convertToSpecifiedDateStr(specifiedDate);
+        await this.userSettingRepository.setSpecifiedDateStr(specifiedDateStr);
     }
 
-    public async getSelectedDate(): Promise<Date | undefined> {
-        const selectedDateStr = await this.userSettingRepository.getSelectedDateStr();
-        return UserSettingConverter.convertToSelectedDate(selectedDateStr);
+    public async getSpecifiedDate(): Promise<Date | undefined> {
+        const specifiedDateStr = await this.userSettingRepository.getSpecifiedDateStr();
+        return UserSettingConverter.convertToSpecifiedDate(specifiedDateStr);
     }
 
     public async setTemplateText(templateText?: string | undefined): Promise<void> {

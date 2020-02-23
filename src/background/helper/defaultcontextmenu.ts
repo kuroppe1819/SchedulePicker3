@@ -25,7 +25,7 @@ export const defaultMenuItems: ContextMenu[] = [
         type: 'radio',
     },
     {
-        id: ContextMenuDayId.SELECT_DAY,
+        id: ContextMenuDayId.SPECIFIED_DAY,
         title: '指定日',
         parentId: ContextMenuParentId.ROOT,
         type: 'radio',

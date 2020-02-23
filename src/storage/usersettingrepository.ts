@@ -5,8 +5,8 @@ export interface UserSettingRepository {
     getStorageItem(): Promise<StorageItem>;
     setStorageItem(item: StorageItem): Promise<void>;
     setDayId(dayId: ContextMenuDayId): Promise<void>;
-    setSelectedDateStr(selectedDateStr?: string): Promise<void>;
-    getSelectedDateStr(): Promise<string | undefined>;
+    setSpecifiedDateStr(specifiedDateStr?: string): Promise<void>;
+    getSpecifiedDateStr(): Promise<string | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
     getTemplateText(): Promise<string | undefined>;
 }
@@ -17,7 +17,7 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
             chrome.storage.sync.get(
                 [
                     StorageKeys.DAY_ID,
-                    StorageKeys.SELECTED_DATE_STR,
+                    StorageKeys.SPECIFIED_DATE_STR,
                     StorageKeys.IS_INCLUDE_ALL_DAY_EVENT,
                     StorageKeys.IS_INCLUDE_PRIVATE_EVENT,
                     StorageKeys.TEMPLATE_TEXT,
@@ -25,7 +25,7 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
                 items => {
                     return resolve({
                         dayId: items[StorageKeys.DAY_ID],
-                        selectedDateStr: items[StorageKeys.SELECTED_DATE_STR],
+                        specifiedDateStr: items[StorageKeys.SPECIFIED_DATE_STR],
                         isIncludePrivateEvent: items[StorageKeys.IS_INCLUDE_PRIVATE_EVENT],
                         isIncludeAllDayEvent: items[StorageKeys.IS_INCLUDE_ALL_DAY_EVENT],
                         templateText: items[StorageKeys.TEMPLATE_TEXT],
@@ -40,7 +40,7 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
             chrome.storage.sync.set(
                 {
                     dayId: item.dayId,
-                    selectedDateStr: item.selectedDateStr,
+                    specifiedDateStr: item.specifiedDateStr,
                     isIncludePrivateEvent: item.isIncludePrivateEvent,
                     isIncludeAllDayEvent: item.isIncludeAllDayEvent,
                     templateText: item.templateText,
@@ -54,14 +54,14 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
         return new Promise(resolve => chrome.storage.sync.set({ dayId: dayId }, () => resolve()));
     }
 
-    public setSelectedDateStr(selectedDateStr?: string): Promise<void> {
-        return new Promise(resolve => chrome.storage.sync.set({ selectedDateStr: selectedDateStr }, () => resolve()));
+    public setSpecifiedDateStr(specifiedDateStr?: string): Promise<void> {
+        return new Promise(resolve => chrome.storage.sync.set({ specifiedDateStr: specifiedDateStr }, () => resolve()));
     }
 
-    public getSelectedDateStr(): Promise<string | undefined> {
+    public getSpecifiedDateStr(): Promise<string | undefined> {
         return new Promise(resolve =>
-            chrome.storage.sync.get([StorageKeys.SELECTED_DATE_STR], items =>
-                resolve(items[StorageKeys.SELECTED_DATE_STR])
+            chrome.storage.sync.get([StorageKeys.SPECIFIED_DATE_STR], items =>
+                resolve(items[StorageKeys.SPECIFIED_DATE_STR])
             )
         );
     }

@@ -2,14 +2,15 @@ import { UserSetting } from 'src/types/storage';
 import { ContextMenuDayId } from 'src/types/contextmenu';
 import { UserSettingLogic, UserSettingLogicImpl } from './usersettinglogic';
 import { UserSettingRepositoryImpl } from './usersettingrepository';
+import { SpecialTemplateCharactor } from 'src/types/event';
 
 export interface UserSettingService {
     initialDefaultValue(): Promise<void>;
     setUserSetting(setting: UserSetting): Promise<void>;
     getUserSetting(): Promise<UserSetting>;
     setDayId(dayId: ContextMenuDayId): Promise<void>;
-    setSelectedDate(selectedDate?: Date): Promise<void>;
-    getSelectedDate(): Promise<Date | undefined>;
+    setSpecifiedDate(specifiedDate?: Date): Promise<void>;
+    getSpecifiedDate(): Promise<Date | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
     getTemplateText(): Promise<string | undefined>;
 }
@@ -41,12 +42,12 @@ export class UserSettingServiceImpl implements UserSettingService {
         const setting = await this.userSettingLogic.getUserSetting();
         await this.userSettingLogic.setUserSetting({
             dayId: setting.dayId || ContextMenuDayId.TODAY,
-            selectedDate: setting.selectedDate,
+            specifiedDate: setting.specifiedDate,
             isIncludePrivateEvent: setting.isIncludePrivateEvent || true,
             isIncludeAllDayEvent: setting.isIncludeAllDayEvent || true,
             templateText:
                 setting.templateText ||
-                `今日の予定を取得できるよ<br>{%TODAY%}<div><br><div>翌営業日の予定を取得できるよ<br>{%NEXT_BUSINESS_DAY%}</div><div><br></div><div>前営業日の予定を取得できるよ<br>{%PREVIOUS_BUSINESS_DAY%}</div></div>`,
+                `今日の予定を取得できるよ<br>${SpecialTemplateCharactor.SPECIFIED_DAY}<div><br><div>翌営業日の予定を取得できるよ<br>${SpecialTemplateCharactor.NEXT_BUSINESS_DAY}</div><div><br></div><div>前営業日の予定を取得できるよ<br>${SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY}</div></div>`,
         });
     }
 
@@ -62,12 +63,12 @@ export class UserSettingServiceImpl implements UserSettingService {
         await this.userSettingLogic.setDayId(dayId);
     }
 
-    public async setSelectedDate(selectedDate?: Date | undefined): Promise<void> {
-        await this.userSettingLogic.setSelectedDate(selectedDate);
+    public async setSpecifiedDate(specifiedDate?: Date | undefined): Promise<void> {
+        await this.userSettingLogic.setSpecifiedDate(specifiedDate);
     }
 
-    public async getSelectedDate(): Promise<Date | undefined> {
-        return await this.userSettingLogic.getSelectedDate();
+    public async getSpecifiedDate(): Promise<Date | undefined> {
+        return await this.userSettingLogic.getSpecifiedDate();
     }
 
     public async setTemplateText(templateText?: string | undefined): Promise<void> {

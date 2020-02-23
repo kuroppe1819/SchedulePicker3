@@ -21,31 +21,9 @@ const changeDomain = (message: { domain: string }): void => {
 const noticeStateToContent = (tabId: number, state: NoticeStateType): void =>
     chrome.tabs.sendMessage(tabId, { state: state });
 
-const noticeEventsToContent = (
-    tabId: number,
-    actionId: ContextMenuActionId,
-    events: EventInfo[] | MyGroupEvent[] | TemplateEvent,
-    specificDateStr?: string,
-    templatetext?: string
-): void => {
-    if (templatetext) {
-        chrome.tabs.sendMessage(tabId, {
-            actionId: actionId,
-            events: events,
-            templatetext: templatetext,
-        });
-    } else {
-        chrome.tabs.sendMessage(tabId, {
-            actionId: actionId,
-            events: events,
-            specificDateStr: specificDateStr,
-        });
-    }
-};
-
 const executeRadioAction = async (menuItemId: ContextMenuDayId): Promise<void> => {
     await UserSettingServiceImpl.getInstance().setDayId(menuItemId);
-    if (menuItemId === ContextMenuDayId.SELECT_DAY) {
+    if (menuItemId === ContextMenuDayId.SPECIFIED_DAY) {
         RadioActionServiceImpl.showPopupWindow();
     }
 };
@@ -64,22 +42,34 @@ const executeNormalAction = async (
         return;
     }
 
-    const dateRange = await normalActionService.findDateRangeByDateId(setting.dayId, setting.selectedDate);
-    await UserSettingServiceImpl.getInstance().setSelectedDate(dateRange.startDate);
+    const dateRange = await normalActionService.findDateRangeByDateId(setting.dayId, setting.specifiedDate);
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
             const events = await normalActionService.getEventsByMySelf(setting, dateRange);
-            noticeEventsToContent(tabId, ContextMenuActionId.MYSELF, events, dateRange.startDate.toJSON());
+            chrome.tabs.sendMessage(tabId, {
+                actionId: ContextMenuActionId.MYSELF,
+                events: events,
+                specificDateStr: dateRange.startDate.toJSON(),
+            });
             break;
         }
         case ContextMenuActionId.TEMPLATE: {
             const events = await normalActionService.getEventsByTemplate(setting);
-            noticeEventsToContent(tabId, ContextMenuActionId.TEMPLATE, events);
+            const templateText = await UserSettingServiceImpl.getInstance().getTemplateText();
+            chrome.tabs.sendMessage(tabId, {
+                actionId: ContextMenuActionId.TEMPLATE,
+                events: events,
+                templateText: templateText,
+            });
             break;
         }
         default: {
             const myGroupEvents = await normalActionService.getEventsByMyGroup(tabId.toString(), setting, dateRange);
-            noticeEventsToContent(tabId, ContextMenuActionId.MYGROUP, myGroupEvents, dateRange.startDate.toJSON());
+            chrome.tabs.sendMessage(tabId, {
+                actionId: ContextMenuActionId.MYGROUP,
+                events: myGroupEvents,
+                specificDateStr: dateRange.startDate.toJSON(),
+            });
             break;
         }
     }

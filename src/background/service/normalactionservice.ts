@@ -15,7 +15,7 @@ import { DateHelper } from '../helper/datehelper';
 import { defaultMenuItems } from '../helper/defaultcontextmenu';
 
 export interface NormalActionService {
-    findDateRangeByDateId(dayId: ContextMenuDayId, selectedDate?: Date): Promise<DateRange>;
+    findDateRangeByDateId(dayId: ContextMenuDayId, specifiedDate?: Date): Promise<DateRange>;
     updateContextMenus(): Promise<void>;
     getEventsByMySelf(setting: UserSetting, dateRange: DateRange): Promise<EventInfo[]>;
     getEventsByMyGroup(groupId: string, setting: UserSetting, dateRange: DateRange): Promise<MyGroupEvent[]>;
@@ -29,7 +29,7 @@ export class NormalActionServiceImpl implements NormalActionService {
         this.logic = logic;
     }
 
-    public async findDateRangeByDateId(dayId: ContextMenuDayId, selectedDate?: Date): Promise<DateRange> {
+    public async findDateRangeByDateId(dayId: ContextMenuDayId, specifiedDate?: Date): Promise<DateRange> {
         const now = moment();
         switch (dayId) {
             case ContextMenuDayId.TODAY: {
@@ -43,11 +43,11 @@ export class NormalActionServiceImpl implements NormalActionService {
                 const publicHolidays = await this.getPublicHolidays(now.toDate());
                 return DateHelper.makeDateRange(DateHelper.assignBusinessDate(now, publicHolidays, -1));
             }
-            case ContextMenuDayId.SELECT_DAY: {
-                if (selectedDate === undefined) {
+            case ContextMenuDayId.SPECIFIED_DAY: {
+                if (specifiedDate === undefined) {
                     throw new Error('RuntimeErrorException: 取得したい予定の日付を選択してください');
                 }
-                return DateHelper.makeDateRange(selectedDate);
+                return DateHelper.makeDateRange(specifiedDate);
             }
             default: {
                 throw new Error('RuntimeErrorException: コンテキストメニューに存在しない日付のIDが選択されています');
@@ -109,7 +109,7 @@ export class NormalActionServiceImpl implements NormalActionService {
 
     public async getEventsByTemplate(setting: UserSetting): Promise<TemplateEvent> {
         const templateEvent: TemplateEvent = {
-            selectedDayEventInfoList: [],
+            specifiedDayEventInfoList: [],
             nextDayEventInfoList: [],
             previousDayEventInfoList: [],
         };
@@ -120,24 +120,24 @@ export class NormalActionServiceImpl implements NormalActionService {
 
         const templateCharactorInText = await this.findSpecialTemplateCharacter(setting.templateText);
         if (templateCharactorInText.isIncludeToday) {
-            const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.TODAY, setting.selectedDate);
-            templateEvent.selectedDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
+            const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.TODAY, setting.specifiedDate);
+            templateEvent.specifiedDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
         }
 
         if (templateCharactorInText.isIncludeNextDay) {
             const dateRange = await this.findDateRangeByDateId(
                 ContextMenuDayId.NEXT_BUSINESS_DAY,
-                setting.selectedDate
+                setting.specifiedDate
             );
-            templateEvent.selectedDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
+            templateEvent.nextDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
         }
 
         if (templateCharactorInText.isIncludePreviousDay) {
             const dateRange = await this.findDateRangeByDateId(
                 ContextMenuDayId.PREVIOUS_BUSINESS_DAY,
-                setting.selectedDate
+                setting.specifiedDate
             );
-            templateEvent.selectedDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
+            templateEvent.previousDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
         }
 
         return templateEvent;
@@ -148,7 +148,7 @@ export class NormalActionServiceImpl implements NormalActionService {
     }
 
     private findSpecialTemplateCharacter(targetText: string): TemplateCharactorInText {
-        const isIncludeToday = targetText.indexOf(SpecialTemplateCharactor.SELECTED_DAY) !== -1;
+        const isIncludeToday = targetText.indexOf(SpecialTemplateCharactor.SPECIFIED_DAY) !== -1;
         const isIncludeNextDay = targetText.indexOf(SpecialTemplateCharactor.NEXT_BUSINESS_DAY) !== -1;
         const isIncludePreviousDay = targetText.indexOf(SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY) !== -1;
 

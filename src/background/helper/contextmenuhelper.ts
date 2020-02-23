@@ -31,7 +31,7 @@ export class ContextMenuHelper {
             menuId === ContextMenuDayId.TODAY ||
             menuId === ContextMenuDayId.NEXT_BUSINESS_DAY ||
             menuId === ContextMenuDayId.PREVIOUS_BUSINESS_DAY ||
-            menuId === ContextMenuDayId.SELECT_DAY
+            menuId === ContextMenuDayId.SPECIFIED_DAY
         );
     }
 }
