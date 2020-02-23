@@ -55,6 +55,7 @@ export class UserSettingServiceImpl implements UserSettingService {
     public async setTemplateText(templateText?: string | undefined): Promise<void> {
         await this.userSettingLogic.setTemplateText(templateText);
     }
+
     public async getTemplateText(): Promise<string | undefined> {
         return await this.userSettingLogic.getTemplateText();
     }
