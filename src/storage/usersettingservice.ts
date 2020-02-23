@@ -4,6 +4,7 @@ import { UserSettingLogic, UserSettingLogicImpl } from './usersettinglogic';
 import { UserSettingRepositoryImpl } from './usersettingrepository';
 
 export interface UserSettingService {
+    initialDefaultValue(): Promise<void>;
     setUserSetting(setting: UserSetting): Promise<void>;
     getUserSetting(): Promise<UserSetting>;
     setDayId(dayId: ContextMenuDayId): Promise<void>;

@@ -1,4 +1,4 @@
-import { UserSettingServiceImpl } from 'src/storage/usersettingservice';
+import { UserSettingServiceImpl } from '../storage/usersettingservice';
 import { ContextMenuHelper } from './helper/contextmenuhelper';
 import { defaultMenuItems } from './helper/defaultcontextmenu';
 

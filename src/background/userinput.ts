@@ -7,7 +7,7 @@ import { NormalActionServiceImpl } from './service/normalactionservice';
 import { RadioActionServiceImpl } from './service/radioactionservice';
 import { UserSetting } from 'src/types/storage';
 import { ContextMenuHelper } from './helper/contextmenuhelper';
-import { UserSettingServiceImpl } from 'src/storage/usersettingservice';
+import { UserSettingServiceImpl } from '../storage/usersettingservice';
 
 let currentDomain = '';
 
