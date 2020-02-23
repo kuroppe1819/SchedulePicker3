@@ -3,13 +3,13 @@ import moment from 'moment';
 import { eventMenuColor } from './eventmenucolor';
 
 export interface GenerateHtml {
-    createHtmlScheduleTitle(date: Date): string;
+    constructHtmlScheduleTitle(date: Date | undefined): string;
     constructHtmlForEvents(events: EventInfo[]): string;
     constructHtmlForMyGroupEvents(events: MyGroupEvent[], date: Date): string;
 }
 
 export class GenerateHtmlImpl implements GenerateHtml {
-    public createHtmlScheduleTitle(date: Date): string {
+    private createHtmlScheduleTitle(date: Date): string {
         return `<div>【 ${moment(date).format('yyyy-MM-dd')} の予定 】</div>`;
     }
 
@@ -136,5 +136,12 @@ export class GenerateHtmlImpl implements GenerateHtml {
             })
             .join('');
         return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
+    }
+
+    public constructHtmlScheduleTitle(date: Date | undefined): string {
+        if (date) {
+            this.createHtmlScheduleTitle(date);
+        }
+        return '';
     }
 }

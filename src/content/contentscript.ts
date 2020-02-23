@@ -1,6 +1,6 @@
-import { TemplateEvent, EventInfo, MyGroupEvent, SpecialTemplateCharactor } from '../types/event';
-import { RecieveEventMessage, NoticeStateType } from 'src/types/notice';
 import { ContextMenuActionId } from 'src/types/contextmenu';
+import { NoticeStateType, RecieveEventMessage } from 'src/types/notice';
+import { EventInfo, MyGroupEvent, SpecialTemplateCharactor, TemplateEvent } from '../types/event';
 import { GenerateHtmlImpl } from './generatehtml';
 
 const assertActiveElementIsNotNull = (): void => {
@@ -38,16 +38,16 @@ const replacedText = (source: string, target: string, specialTemplateCharactor: 
     return source.replace(regex, target);
 };
 
-const pasteEventsByHtml = (message: RecieveEventMessage): void => {
+const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> => {
     const generateHtml = new GenerateHtmlImpl();
     if (message.actionId === ContextMenuActionId.MYSELF) {
-        const title = generateHtml.createHtmlScheduleTitle(message.selectedDate);
+        const title = generateHtml.constructHtmlScheduleTitle(message.selectedDate);
         const body = generateHtml.constructHtmlForEvents(message.events as EventInfo[]);
         document.execCommand('insertHtml', false, title + body);
     }
 
     if (message.actionId === ContextMenuActionId.MYGROUP) {
-        const title = generateHtml.createHtmlScheduleTitle(message.selectedDate);
+        const title = generateHtml.constructHtmlScheduleTitle(message.selectedDate);
         const body = generateHtml.constructHtmlForMyGroupEvents(message.events as MyGroupEvent[], message.selectedDate);
         document.execCommand('insertHtml', false, title + body);
     }
@@ -55,7 +55,6 @@ const pasteEventsByHtml = (message: RecieveEventMessage): void => {
     if (message.actionId === ContextMenuActionId.TEMPLATE) {
         const templateEvent = message.events as TemplateEvent;
         let templateText = message.templateText;
-
         if (templateEvent.selectedDayEventInfoList.length !== 0) {
             const body = generateHtml.constructHtmlForEvents(templateEvent.selectedDayEventInfoList);
             templateText = replacedText(templateText, body, SpecialTemplateCharactor.SELECTED_DAY);

@@ -9,6 +9,7 @@ export const enum NoticeStateType {
 export type RecieveEventMessage = {
     actionId: ContextMenuActionId;
     events: EventInfo[] | MyGroupEvent[] | TemplateEvent;
+    selectedDate?: Date;
+    templateText: string;
     state?: NoticeStateType;
-    templateText?: string;
 };
