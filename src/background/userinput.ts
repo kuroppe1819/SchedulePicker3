@@ -7,7 +7,7 @@ import { NormalActionServiceImpl } from './service/normalactionservice';
 import { RadioActionServiceImpl } from './service/radioactionservice';
 import { UserSetting } from 'src/types/storage';
 import { ContextMenuHelper } from './helper/contextmenuhelper';
-import { StorageAccess } from '../storage/storageaccess';
+import { UserSettingServiceImpl } from 'src/storage/usersettingservice';
 
 let currentDomain = '';
 
@@ -25,17 +25,27 @@ const noticeEventsToContent = (
     tabId: number,
     actionId: ContextMenuActionId,
     events: EventInfo[] | MyGroupEvent[] | TemplateEvent,
-    templateText?: string
+    selectedDate?: Date,
+    templatetext?: string
 ): void => {
-    if (templateText) {
-        chrome.tabs.sendMessage(tabId, { actionId: actionId, events: events, templateText: templateText });
+    if (templatetext) {
+        chrome.tabs.sendMessage(tabId, {
+            actionId: actionId,
+            events: events,
+            selectedDate: selectedDate,
+            templatetext: templatetext,
+        });
     } else {
-        chrome.tabs.sendMessage(tabId, { actionId: actionId, events: events });
+        chrome.tabs.sendMessage(tabId, {
+            actionId: actionId,
+            events: events,
+            selectedDate: selectedDate,
+        });
     }
 };
 
 const executeRadioAction = async (menuItemId: ContextMenuDayId): Promise<void> => {
-    await StorageAccess.setDayId(menuItemId);
+    await UserSettingServiceImpl.getInstance().setDayId(menuItemId);
     if (menuItemId === ContextMenuDayId.SELECT_DAY) {
         RadioActionServiceImpl.showPopupWindow();
     }
@@ -46,25 +56,30 @@ const executeNormalAction = async (
     setting: UserSetting,
     menuItemId: ContextMenuActionId
 ): Promise<void> => {
-    const service = new NormalActionServiceImpl(new ScheduleEventsLogicImpl(new GaroonDataSourceImpl(currentDomain)));
+    const normalActionService = new NormalActionServiceImpl(
+        new ScheduleEventsLogicImpl(new GaroonDataSourceImpl(currentDomain))
+    );
 
+    if (menuItemId === ContextMenuActionId.MYGROUP_UPDATE) {
+        normalActionService.updateContextMenus();
+        return;
+    }
+
+    const dateRange = await normalActionService.findDateRangeByDateId(setting.dayId, setting.selectedDate);
+    await UserSettingServiceImpl.getInstance().setSelectedDate(dateRange.startDate);
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
-            const events = await service.getEventsByMySelf(setting);
+            const events = await normalActionService.getEventsByMySelf(setting, dateRange);
             noticeEventsToContent(tabId, ContextMenuActionId.MYSELF, events);
             break;
         }
-        case ContextMenuActionId.MYGROUP_UPDATE: {
-            service.updateContextMenus();
-            break;
-        }
         case ContextMenuActionId.TEMPLATE: {
-            const events = await service.getEventsByTemplate(setting);
-            noticeEventsToContent(tabId, ContextMenuActionId.TEMPLATE, events, setting.templateText);
+            const events = await normalActionService.getEventsByTemplate(setting);
+            noticeEventsToContent(tabId, ContextMenuActionId.TEMPLATE, events);
             break;
         }
         default: {
-            const myGroupEvents = await service.getEventsByMyGroup(tabId.toString(), setting);
+            const myGroupEvents = await normalActionService.getEventsByMyGroup(tabId.toString(), setting, dateRange);
             noticeEventsToContent(tabId, ContextMenuActionId.MYGROUP, myGroupEvents);
             break;
         }
@@ -82,7 +97,7 @@ chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnCli
 
     const tabId = tab.id;
     const menuItemId = info.menuItemId;
-    const userSetting = await StorageAccess.getUserSetting();
+    const userSetting = await UserSettingServiceImpl.getInstance().getUserSetting();
     if (ContextMenuHelper.isContextMenuDayId(menuItemId)) {
         await executeRadioAction(menuItemId);
         return;
