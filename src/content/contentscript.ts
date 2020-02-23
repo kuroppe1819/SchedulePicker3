@@ -92,3 +92,5 @@ chrome.runtime.onMessage.addListener((message: RecieveEventMessage) => {
     }
     pasteEventsByHtml(message);
 });
+
+changeProgress(NoticeStateType.FINISHED);
