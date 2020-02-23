@@ -79,6 +79,7 @@ chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnCli
     const userSetting = await StorageAccess.getUserSetting();
     if (ContextMenuHelper.isContextMenuDayId(menuItemId)) {
         await executeRadioAction(menuItemId);
+        return;
     }
 
     try {

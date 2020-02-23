@@ -1,6 +1,7 @@
 import { UserSetting, StorageKeys } from 'src/types/storage';
 import { ContextMenuDayId } from 'src/types/contextmenu';
 
+// setメソッドの引数に渡すオブジェクトのキーは、StorageKeysに定義したキー名と同じにする
 export class StorageAccess {
     public static getUserSetting(): Promise<UserSetting> {
         return new Promise(resolve =>

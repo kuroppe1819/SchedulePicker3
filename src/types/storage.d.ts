@@ -9,8 +9,8 @@ export type UserSetting = {
 };
 
 export const enum StorageKeys {
-    DAY_ID = 'day_id',
-    SELECTED_DATE = 'selected_date',
+    DAY_ID = 'dayId',
+    SELECTED_DATE = 'selectedDate',
     IS_INCLUDE_PRIVATE_EVENT = 'isIncludePrivateEvent',
     IS_INCLUDE_ALL_DAY_EVENT = 'isIncludeAllDayEvent',
     TEMPLATE_TEXT = 'templateText',
