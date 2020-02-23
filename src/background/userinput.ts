@@ -5,8 +5,9 @@ import { GaroonDataSourceImpl } from './data/garoondatasource';
 import { ScheduleEventsLogicImpl } from './data/scheduleeventslogic';
 import { NormalActionServiceImpl } from './service/normalactionservice';
 import { RadioActionServiceImpl } from './service/radioactionservice';
-import { UserSetting, StorageKeys } from 'src/types/storage';
+import { UserSetting } from 'src/types/storage';
 import { ContextMenuHelper } from './helper/contextmenuhelper';
+import { StorageAccess } from '../storage/storageaccess';
 
 let currentDomain = '';
 
@@ -16,19 +17,6 @@ const changeDomain = (message: { domain: string }): void => {
     }
     currentDomain = message.domain;
 };
-
-const getStorageItems = (): Promise<UserSetting> =>
-    new Promise((): void =>
-        chrome.storage.sync.get(
-            [
-                StorageKeys.DAY_ID,
-                StorageKeys.IS_INCLUDE_ALL_DAY_EVENT,
-                StorageKeys.IS_INCLUDE_PRIVATE_EVENT,
-                StorageKeys.TEMPLATE_TEXT,
-            ],
-            items => Promise.resolve(items)
-        )
-    );
 
 const noticeStateToContent = (tabId: number, state: NoticeStateType): void =>
     chrome.tabs.sendMessage(tabId, { state: state });
@@ -40,8 +28,8 @@ const noticeEventsToContent = (
     events: EventInfo[] | MyGroupEvent[] | TemplateEvent
 ): void => chrome.tabs.sendMessage(tabId, { actionId: actionId, selectedDate: selectedDate, events: events });
 
-const executeRadioAction = (menuItemId: ContextMenuDayId): void => {
-    RadioActionServiceImpl.setDayIdInStorage(menuItemId);
+const executeRadioAction = async (menuItemId: ContextMenuDayId): Promise<void> => {
+    await StorageAccess.setDayId(menuItemId);
     if (menuItemId === ContextMenuDayId.SELECT_DAY) {
         RadioActionServiceImpl.showPopupWindow();
     }
@@ -88,14 +76,14 @@ chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnCli
 
     const tabId = tab.id;
     const menuItemId = info.menuItemId;
-    const items = await getStorageItems();
+    const userSetting = await StorageAccess.getUserSetting();
     if (ContextMenuHelper.isContextMenuDayId(menuItemId)) {
-        executeRadioAction(menuItemId);
+        await executeRadioAction(menuItemId);
     }
 
     try {
         noticeStateToContent(tabId, NoticeStateType.NOW_LOADING);
-        await executeNormalAction(tabId, items, menuItemId);
+        await executeNormalAction(tabId, userSetting, menuItemId);
     } catch (error) {
         throw new Error(`RuntimeErrorException: ${error.message}`);
     } finally {
