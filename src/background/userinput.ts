@@ -1,7 +1,7 @@
 import { ContextMenuActionId, ContextMenuDayId } from 'src/types/contextmenu';
 import { EventInfo, TemplateEvent, MyGroupEvent } from 'src/types/event';
 import { NoticeStateType } from 'src/types/notice';
-import { ContextMenuHelper } from './contextmenu/contextmenuhelper';
+import { ContextMenuHelper } from './helper/contextmenuhelper';
 import { GaroonDataSourceImpl } from './data/garoondatasource';
 import { ScheduleEventsLogicImpl } from './data/scheduleeventslogic';
 import { NormalActionServiceImpl } from './service/normalactionservice';

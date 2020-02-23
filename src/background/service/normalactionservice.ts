@@ -1,4 +1,4 @@
-import { ContextMenuHelper } from '../contextmenu/contextmenuhelper';
+import { ContextMenuHelper } from '../helper/contextmenuhelper';
 import { ContextMenu, ContextMenuParentId, ContextMenuDayId } from 'src/types/contextmenu';
 import {
     EventInfo,
@@ -8,8 +8,8 @@ import {
     MyGroupEvent,
 } from 'src/types/event';
 import { DateRange } from 'src/types/date';
-import { defaultMenuItems } from '../contextmenu/defaultcontextmenu';
-import { DateHelper } from './datehelper';
+import { defaultMenuItems } from '../helper/defaultcontextmenu';
+import { DateHelper } from '../helper/datehelper';
 import { UserSetting } from 'src/types/storage';
 import moment from 'moment';
 import { ScheduleEventsLogic } from '../data/scheduleeventslogic';
