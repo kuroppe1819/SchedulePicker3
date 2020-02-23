@@ -1,4 +1,4 @@
-import { ContextMenu, ContextMenuActionId, ContextMenuDateId } from 'src/types/contextmenu';
+import { ContextMenu, ContextMenuActionId, ContextMenuDayId } from 'src/types/contextmenu';
 
 export class ContextMenuHelper {
     private static instance: ContextMenuHelper;
@@ -19,34 +19,36 @@ export class ContextMenuHelper {
     }
 
     public add(menu: ContextMenu): Promise<void> {
-        return new Promise((): void =>
+        return new Promise(resolve =>
             chrome.contextMenus.create(
                 {
                     id: menu.id,
                     title: menu.title,
-                    parentId: menu.parentId,
+                    parentId: 'parentId' in menu ? menu.parentId : null,
                     type: menu.type,
                     contexts: ['editable'],
                 },
-                () => Promise.resolve()
+                () => resolve()
             )
         );
     }
 
-    public addAll(menus: ContextMenu[]): void {
-        menus.forEach(menu => this.add(menu));
+    public async addAll(menus: ContextMenu[]): Promise<void> {
+        for (const menu of menus) {
+            await this.add(menu);
+        }
     }
 
     public removeAll(): Promise<void> {
-        return new Promise(() => chrome.contextMenus.removeAll(() => Promise.resolve()));
+        return new Promise(resolve => chrome.contextMenus.removeAll(() => resolve()));
     }
 
-    public isContextMenuDateId = (menuId: ContextMenuActionId | ContextMenuDateId): boolean => {
+    public isContextMenuDayId = (menuId: ContextMenuActionId | ContextMenuDayId): boolean => {
         return (
-            menuId === ContextMenuDateId.TODAY ||
-            menuId === ContextMenuDateId.NEXT_BUSINESS_DAY ||
-            menuId === ContextMenuDateId.PREVIOUS_BUSINESS_DAY ||
-            menuId === ContextMenuDateId.SELECT_DAY
+            menuId === ContextMenuDayId.TODAY ||
+            menuId === ContextMenuDayId.NEXT_BUSINESS_DAY ||
+            menuId === ContextMenuDayId.PREVIOUS_BUSINESS_DAY ||
+            menuId === ContextMenuDayId.SELECT_DAY
         );
     };
 }

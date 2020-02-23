@@ -14,7 +14,7 @@ export class CalendarView extends LitElement {
     }
 
     private initProperties = (): void => {
-        chrome.storage.sync.get([StorageKeys.DATE], item => {
+        chrome.storage.sync.get([StorageKeys.DAY_ID], item => {
             if (item.date != null) {
                 this.date = item.date;
             }

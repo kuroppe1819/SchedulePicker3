@@ -1,7 +1,7 @@
-import { ContextMenuDateId } from './contextmenu';
+import { ContextMenuDayId } from './contextmenu';
 
 export type UserSetting = {
-    dateId: ContextMenuDateId;
+    dayId: ContextMenuDayId;
     selectedDate: string;
     isIncludePrivateEvent: boolean;
     isIncludeAllDayEvent: boolean;
@@ -9,9 +9,9 @@ export type UserSetting = {
 };
 
 export const enum StorageKeys {
+    DAY_ID = 'day_id',
+    SELECTED_DATE = 'selected_date',
     IS_INCLUDE_PRIVATE_EVENT = 'isIncludePrivateEvent',
     IS_INCLUDE_ALL_DAY_EVENT = 'isIncludeAllDayEvent',
-    DATE = 'date',
     TEMPLATE_TEXT = 'templateText',
-    DATE_TYPE = 'dateType', // 日付のタイプ
 }

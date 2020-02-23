@@ -1,8 +1,8 @@
-import { ContextMenuDateId } from 'src/types/contextmenu';
+import { ContextMenuDayId } from 'src/types/contextmenu';
 
 export class RadioActionServiceImpl {
-    public static setDateIdInStorage(dateId: ContextMenuDateId): void {
-        chrome.storage.sync.set({ dateId: dateId });
+    public static setDayIdInStorage(dayId: ContextMenuDayId): void {
+        chrome.storage.sync.set({ dayId: dayId });
     }
 
     public static showPopupWindow(): void {

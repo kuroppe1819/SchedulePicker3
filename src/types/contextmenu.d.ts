@@ -1,7 +1,3 @@
-export const enum ContextMenuRootId {
-    DEFAULT = '',
-}
-
 export const enum ContextMenuParentId {
     ROOT = 'root',
     MYGROUPS = 'mygroups',
@@ -14,7 +10,7 @@ export const enum ContextMenuActionId {
     TEMPLATE = 'template',
 }
 
-export const enum ContextMenuDateId {
+export const enum ContextMenuDayId {
     TODAY = 'today',
     NEXT_BUSINESS_DAY = 'next_business_day',
     PREVIOUS_BUSINESS_DAY = 'previous_business_day',
@@ -24,6 +20,6 @@ export const enum ContextMenuDateId {
 export type ContextMenu = {
     id: string;
     title: string;
-    parentId: ContextMenuRootId | ContextMenuParentId | ContextMenuActionId | ContextMenuDateId;
+    parentId?: ContextMenuParentId | ContextMenuActionId | ContextMenuDayId;
     type: string;
 };

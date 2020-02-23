@@ -1,5 +1,5 @@
 import { ContextMenuHelper } from '../contextmenu/contextmenuhelper';
-import { ContextMenu, ContextMenuParentId, ContextMenuDateId } from 'src/types/contextmenu';
+import { ContextMenu, ContextMenuParentId, ContextMenuDayId } from 'src/types/contextmenu';
 import {
     EventInfo,
     SpecialTemplateCharactor,
@@ -28,26 +28,26 @@ export class NormalActionServiceImpl implements NormalActionService {
         this.logic = logic;
     }
 
-    private async findDateRangeFromDateId(dateId: ContextMenuDateId, selectedDate: Date): Promise<DateRange> {
+    private async findDateRangeFromDayId(dayId: ContextMenuDayId, selectedDate: Date): Promise<DateRange> {
         const now = moment();
         const publicHolidays = await this.getPublicHolidays(now.toDate());
-        switch (dateId) {
-            case ContextMenuDateId.TODAY: {
+        switch (dayId) {
+            case ContextMenuDayId.TODAY: {
                 return DateHelper.makeDateRange(now.toDate());
             }
-            case ContextMenuDateId.NEXT_BUSINESS_DAY: {
+            case ContextMenuDayId.NEXT_BUSINESS_DAY: {
                 if (publicHolidays === undefined) {
                     throw new Error('RuntimeErrorException: publicHolidays is undefined');
                 }
                 return DateHelper.makeDateRange(DateHelper.assignBusinessDate(now, publicHolidays, 1));
             }
-            case ContextMenuDateId.PREVIOUS_BUSINESS_DAY: {
+            case ContextMenuDayId.PREVIOUS_BUSINESS_DAY: {
                 if (publicHolidays === undefined) {
                     throw new Error('RuntimeErrorException: publicHolidays is undefined');
                 }
                 return DateHelper.makeDateRange(DateHelper.assignBusinessDate(now, publicHolidays, -1));
             }
-            case ContextMenuDateId.SELECT_DAY: {
+            case ContextMenuDayId.SELECT_DAY: {
                 if (selectedDate === undefined) {
                     throw new Error('RuntimeErrorException: selectedDate is undefined');
                 }
@@ -92,12 +92,12 @@ export class NormalActionServiceImpl implements NormalActionService {
     }
 
     public async getEventsByMySelf(setting: UserSetting): Promise<EventInfo[]> {
-        const dateRange = await this.findDateRangeFromDateId(setting.dateId, new Date(setting.selectedDate));
+        const dateRange = await this.findDateRangeFromDayId(setting.dayId, new Date(setting.selectedDate));
         return this.getFilterdEventsByFilterSetting(dateRange, setting);
     }
 
     public async getEventsByMyGroup(groupId: string, setting: UserSetting): Promise<MyGroupEvent[]> {
-        const dateRange = await this.findDateRangeFromDateId(setting.dateId, new Date(setting.selectedDate));
+        const dateRange = await this.findDateRangeFromDayId(setting.dayId, new Date(setting.selectedDate));
         return await this.logic.getMyGroupEvents(dateRange, groupId);
     }
 
@@ -111,24 +111,21 @@ export class NormalActionServiceImpl implements NormalActionService {
         };
 
         if (templateCharactorInText.isIncludeToday) {
-            const dateRange = await this.findDateRangeFromDateId(
-                ContextMenuDateId.TODAY,
-                new Date(setting.selectedDate)
-            );
+            const dateRange = await this.findDateRangeFromDayId(ContextMenuDayId.TODAY, new Date(setting.selectedDate));
             templateEvent.selectedDayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
         }
 
         if (templateCharactorInText.isIncludeNextDay) {
-            const dateRange = await this.findDateRangeFromDateId(
-                ContextMenuDateId.NEXT_BUSINESS_DAY,
+            const dateRange = await this.findDateRangeFromDayId(
+                ContextMenuDayId.NEXT_BUSINESS_DAY,
                 new Date(setting.selectedDate)
             );
             templateEvent.selectedDayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);
         }
 
         if (templateCharactorInText.isIncludePreviousDay) {
-            const dateRange = await this.findDateRangeFromDateId(
-                ContextMenuDateId.PREVIOUS_BUSINESS_DAY,
+            const dateRange = await this.findDateRangeFromDayId(
+                ContextMenuDayId.PREVIOUS_BUSINESS_DAY,
                 new Date(setting.selectedDate)
             );
             templateEvent.selectedDayEventInfoList = await this.getFilterdEventsByFilterSetting(dateRange, setting);

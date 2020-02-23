@@ -1,4 +1,4 @@
-import { ContextMenuActionId, ContextMenuDateId } from 'src/types/contextmenu';
+import { ContextMenuActionId, ContextMenuDayId } from 'src/types/contextmenu';
 import { EventInfo, TemplateEvent, MyGroupEvent } from 'src/types/event';
 import { NoticeStateType } from 'src/types/notice';
 import { ContextMenuHelper } from './contextmenu/contextmenuhelper';
@@ -21,7 +21,7 @@ const getStorageItems = (): Promise<UserSetting> =>
     new Promise((): void =>
         chrome.storage.sync.get(
             [
-                StorageKeys.DATE_TYPE,
+                StorageKeys.DAY_ID,
                 StorageKeys.IS_INCLUDE_ALL_DAY_EVENT,
                 StorageKeys.IS_INCLUDE_PRIVATE_EVENT,
                 StorageKeys.TEMPLATE_TEXT,
@@ -40,9 +40,9 @@ const noticeEventsToContent = (
     events: EventInfo[] | MyGroupEvent[] | TemplateEvent
 ): void => chrome.tabs.sendMessage(tabId, { actionId: actionId, selectedDate: selectedDate, events: events });
 
-const executeRadioAction = (menuItemId: ContextMenuDateId): void => {
-    RadioActionServiceImpl.setDateIdInStorage(menuItemId);
-    if (menuItemId === ContextMenuDateId.SELECT_DAY) {
+const executeRadioAction = (menuItemId: ContextMenuDayId): void => {
+    RadioActionServiceImpl.setDayIdInStorage(menuItemId);
+    if (menuItemId === ContextMenuDayId.SELECT_DAY) {
         RadioActionServiceImpl.showPopupWindow();
     }
 };
@@ -90,7 +90,7 @@ chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnCli
     const menuItemId = info.menuItemId;
     const items = await getStorageItems();
     const contextMenuHelper = ContextMenuHelper.getInstance();
-    if (contextMenuHelper.isContextMenuDateId(menuItemId)) {
+    if (contextMenuHelper.isContextMenuDayId(menuItemId)) {
         executeRadioAction(menuItemId);
     }
 
