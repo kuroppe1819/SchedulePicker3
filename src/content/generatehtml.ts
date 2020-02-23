@@ -81,7 +81,7 @@ export class GenerateHtmlImpl implements GenerateHtml {
 
     private constructHtmlForRegularEventIncludeParticipant(
         eventInfo: EventInfo,
-        date: Date,
+        date?: Date,
         participants: Participant[] = []
     ): string {
         let body = '';
@@ -92,7 +92,7 @@ export class GenerateHtmlImpl implements GenerateHtml {
         }
         body += ` ${this.createHtmlForEventName(eventInfo)}`; // スペース1つ分の余白を付けてデザインの微調整
 
-        if (participants.length !== 0) {
+        if (participants.length !== 0 && date !== undefined) {
             body += this.createHtmlForEventParticipant(date, participants);
         }
         return `<div>${body}</div>`;
@@ -116,7 +116,7 @@ export class GenerateHtmlImpl implements GenerateHtml {
         return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
     }
 
-    public constructHtmlForMyGroupEvents(myGroupEventList: MyGroupEvent[], date: Date): string {
+    public constructHtmlForMyGroupEvents(myGroupEventList: MyGroupEvent[], selectedDate?: Date): string {
         const regularAndRepeatingEvents: MyGroupEvent[] = myGroupEventList.filter(
             groupEvent => groupEvent.eventInfo.eventType === 'REGULAR' || groupEvent.eventInfo.eventType === 'REPEATING'
         );
@@ -129,7 +129,7 @@ export class GenerateHtmlImpl implements GenerateHtml {
                 } else {
                     return this.constructHtmlForRegularEventIncludeParticipant(
                         groupEvent.eventInfo,
-                        date,
+                        selectedDate,
                         groupEvent.participants
                     );
                 }
