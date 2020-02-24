@@ -1,8 +1,9 @@
-import { Box, Tab, Tabs, TextField, Typography, FormControlLabel, Switch } from '@material-ui/core';
+import { Box, Tab, Tabs, TextField, Typography, FormControlLabel, Switch, Button, Snackbar } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import CalendarIcon from '@material-ui/icons/Today';
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import Alert from '@material-ui/lab/Alert';
 
 interface TabPanelProps {
     children: React.ReactNode;
@@ -30,9 +31,23 @@ export const IndexMain: React.FC = () => {
         isIncludePrivateEvent: true,
         isIncludeAllDayEvent: true,
     });
+    const [openAlert, setOpenAlert] = useState(false);
+
     const handleChangeTab = (event, tabIndex): void => setSelectedTabIndex(tabIndex);
+
     const handleChangeSwitch = (name: string) => (event: React.ChangeEvent<HTMLInputElement>): void => {
         setFilterState({ ...filterState, [name]: event.target.checked });
+    };
+
+    const handleSaveBtnClick = (): void => {
+        setOpenAlert(true);
+    };
+
+    const handleCloseAlert = (event?: React.SyntheticEvent, reason?: string): void => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setOpenAlert(false);
     };
 
     return (
@@ -86,7 +101,15 @@ export const IndexMain: React.FC = () => {
                     defaultValue="Template Text"
                     variant="outlined"
                 />
+                <Button onClick={handleSaveBtnClick} variant="contained" color="primary" disableElevation>
+                    設定を保存する
+                </Button>
             </TabPanel>
+            <Snackbar open={openAlert} autoHideDuration={1500} onClose={handleCloseAlert}>
+                <Alert onClose={handleCloseAlert} variant="filled" severity="success">
+                    設定を保存しました
+                </Alert>
+            </Snackbar>
         </PopupBox>
     );
 };
