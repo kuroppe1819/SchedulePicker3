@@ -4,6 +4,8 @@ import CalendarIcon from '@material-ui/icons/Today';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Alert from '@material-ui/lab/Alert';
+import DayPicker from 'react-day-picker';
+import 'react-day-picker/lib/style.css';
 
 interface TabPanelProps {
     children: React.ReactNode;
@@ -65,7 +67,7 @@ export const IndexMain: React.FC = () => {
             </Tabs>
 
             <TabPanel selectedTabIndex={selectedTabIndex} index={0}>
-                <div>カレンダー実装予定</div>
+                <DayPicker />
             </TabPanel>
 
             <TabPanel selectedTabIndex={selectedTabIndex} index={1}>
