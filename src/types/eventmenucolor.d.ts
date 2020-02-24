@@ -7,6 +7,7 @@ export const enum EventMenuColor {
     PURPULE,
     BROWN,
     GRAY,
+    GREEN,
     YELLOWGREEN,
     TEAL,
 }

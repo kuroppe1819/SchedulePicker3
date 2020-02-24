@@ -26,11 +26,18 @@ const getEventMenuColor = (color: EventMenuColor): EventMenuRgbValue => {
         case EventMenuColor.GRAY: {
             return { R: 153, G: 153, B: 153 };
         }
+        case EventMenuColor.GREEN: {
+            return { R: 44, G: 190, B: 78 };
+        }
         case EventMenuColor.YELLOWGREEN: {
-            return { R: 50, G: 205, B: 50 };
+            return { R: 154, G: 205, B: 50 };
+        }
+        case EventMenuColor.TEAL: {
+            return { R: 38, G: 166, B: 154 };
         }
         default: {
-            return { R: 38, G: 166, B: 154 };
+            // EventMenuColor.GREEN;
+            return { R: 44, G: 190, B: 78 };
         }
     }
 };
@@ -74,6 +81,6 @@ export const pickEventMenuColor = (planName: string): EventMenuRgbValue => {
         case '終日':
             return getEventMenuColor(EventMenuColor.YELLOWGREEN);
         default:
-            return getEventMenuColor(EventMenuColor.TEAL);
+            return getEventMenuColor(EventMenuColor.GREEN);
     }
 };
