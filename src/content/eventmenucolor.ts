@@ -1,78 +1,79 @@
-import { EventMenuColor } from '../types/event';
+import { EventMenuRgbValue, EventMenuColor } from 'src/types/eventmenucolor';
 
-// イベントメニューのカラー設定
-export const eventMenuColor = (planName: string): EventMenuColor => {
-    const eventMenuColor = {
-        r: 49,
-        g: 130,
-        b: 220,
-    };
+const getEventMenuColor = (color: EventMenuColor): EventMenuRgbValue => {
+    switch (color) {
+        case EventMenuColor.BLUE: {
+            return { R: 49, G: 130, B: 220 };
+        }
+        case EventMenuColor.SKYBLUE: {
+            return { R: 87, G: 179, B: 237 };
+        }
+        case EventMenuColor.ORANGE: {
+            return { R: 239, G: 146, B: 1 };
+        }
+        case EventMenuColor.RED: {
+            return { R: 244, G: 72, B: 72 };
+        }
+        case EventMenuColor.PINK: {
+            return { R: 241, G: 148, B: 167 };
+        }
+        case EventMenuColor.PURPULE: {
+            return { R: 181, G: 146, B: 216 };
+        }
+        case EventMenuColor.BROWN: {
+            return { R: 185, G: 153, B: 118 };
+        }
+        case EventMenuColor.GRAY: {
+            return { R: 153, G: 153, B: 153 };
+        }
+        case EventMenuColor.YELLOWGREEN: {
+            return { R: 50, G: 205, B: 50 };
+        }
+        default: {
+            return { R: 38, G: 166, B: 154 };
+        }
+    }
+};
+
+export const eventMenuColor = (planName: string): EventMenuRgbValue => {
     switch (planName) {
-        // 青
         case '打合':
         case '会議':
-            eventMenuColor.r = 49;
-            eventMenuColor.g = 130;
-            eventMenuColor.b = 220;
-            break;
-        // 水色
+            return getEventMenuColor(EventMenuColor.BLUE);
         case '来訪':
         case '取材/講演':
         case '【履歴】来訪':
-            eventMenuColor.r = 87;
-            eventMenuColor.g = 179;
-            eventMenuColor.b = 237;
-            break;
-        // オレンジ
+            return getEventMenuColor(EventMenuColor.SKYBLUE);
         case '出張':
         case 'ウルトラワーク':
-            eventMenuColor.r = 239;
-            eventMenuColor.g = 146;
-            eventMenuColor.b = 1;
-            break;
-        // 赤
+        case 'リモートワーク':
+        case '出社':
+            return getEventMenuColor(EventMenuColor.ORANGE);
         case '副業':
         case '複業':
         case '休み':
-            eventMenuColor.r = 244;
-            eventMenuColor.g = 72;
-            eventMenuColor.b = 72;
-            break;
-        // ピンク
+            return getEventMenuColor(EventMenuColor.RED);
         case '往訪':
         case '【履歴】往訪':
-            eventMenuColor.r = 241;
-            eventMenuColor.g = 148;
-            eventMenuColor.b = 167;
-            break;
-        // 紫
+            return getEventMenuColor(EventMenuColor.PINK);
         case '面接':
         case 'フェア':
-            eventMenuColor.r = 181;
-            eventMenuColor.g = 146;
-            eventMenuColor.b = 216;
-            break;
-        // 茶色
+        case 'イベン10':
+        case '仕事bar':
+        case '部活動':
+        case '懇親会':
+        case '社内イベント':
+            return getEventMenuColor(EventMenuColor.PURPULE);
         case '勉強会':
         case 'タスク':
-            eventMenuColor.r = 185;
-            eventMenuColor.g = 153;
-            eventMenuColor.b = 118;
-            break;
-        // グレー
+            return getEventMenuColor(EventMenuColor.BROWN);
         case '説明会':
         case 'セミナー':
         case 'その他':
-            eventMenuColor.r = 153;
-            eventMenuColor.g = 153;
-            eventMenuColor.b = 153;
-            break;
-        // 黄緑
+            return getEventMenuColor(EventMenuColor.GRAY);
         case '終日':
-            eventMenuColor.r = 50;
-            eventMenuColor.g = 205;
-            eventMenuColor.b = 50;
-            break;
+            return getEventMenuColor(EventMenuColor.YELLOWGREEN);
+        default:
+            return getEventMenuColor(EventMenuColor.TEAL);
     }
-    return eventMenuColor;
 };

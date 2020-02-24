@@ -27,12 +27,6 @@ export type TemplateEvent = {
     previousDayEventInfoList: EventInfo[];
 };
 
-export type EventMenuColor = {
-    r: number;
-    g: number;
-    b: number;
-};
-
 export type TemplateCharactorInText = {
     isIncludeToday: boolean;
     isIncludeNextDay: boolean;
