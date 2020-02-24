@@ -35,7 +35,7 @@ const getEventMenuColor = (color: EventMenuColor): EventMenuRgbValue => {
     }
 };
 
-export const eventMenuColor = (planName: string): EventMenuRgbValue => {
+export const pickEventMenuColor = (planName: string): EventMenuRgbValue => {
     switch (planName) {
         case '打合':
         case '会議':

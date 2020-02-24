@@ -1,6 +1,6 @@
 import { EventInfo, MyGroupEvent, Participant } from 'src/types/event';
 import moment, { Moment } from 'moment';
-import { eventMenuColor } from './eventmenucolor';
+import { pickEventMenuColor } from './eventmenucolor';
 
 export interface GenerateHtml {
     constructHtmlScheduleTitle(specificDateStr: string | undefined): string;
@@ -14,9 +14,9 @@ export class GenerateHtmlImpl implements GenerateHtml {
     }
 
     private createEventMenu(planName: string): string {
-        const rgb = eventMenuColor(planName);
+        const rgb = pickEventMenuColor(planName);
         return `<span 
-                style="background-color: rgb(${rgb.r}, ${rgb.g}, ${rgb.b}); 
+                style="background-color: rgb(${rgb.R}, ${rgb.G}, ${rgb.B}); 
                 display: inline-block; 
                 margin-right: 3px; 
                 padding: 2px 2px 1px; 
