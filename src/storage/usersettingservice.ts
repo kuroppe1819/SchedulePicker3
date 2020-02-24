@@ -23,8 +23,10 @@ export class UserSettingServiceImpl implements UserSettingService {
         if (callFunc === UserSettingServiceImpl.getInstance) {
             this.userSettingLogic = userSettingLogic;
             return;
-        } else {
+        } else if (UserSettingServiceImpl.instance) {
             throw new Error('instance already exists');
+        } else {
+            throw new Error('IllegalArgumentException: コンストラクタの引数が不正です');
         }
     }
 
