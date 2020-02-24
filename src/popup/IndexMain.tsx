@@ -1,4 +1,4 @@
-import { Box, Tab, Tabs, TextField, Typography } from '@material-ui/core';
+import { Box, Tab, Tabs, TextField, Typography, FormControlLabel, Switch } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import CalendarIcon from '@material-ui/icons/Today';
 import React, { useState } from 'react';
@@ -26,7 +26,14 @@ const TabPanel: React.FC<TabPanelProps> = props => {
 
 export const IndexMain: React.FC = () => {
     const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+    const [filterState, setFilterState] = useState({
+        isIncludePrivateEvent: true,
+        isIncludeAllDayEvent: true,
+    });
     const handleChangeTab = (event, tabIndex): void => setSelectedTabIndex(tabIndex);
+    const handleChangeSwitch = (name: string) => (event: React.ChangeEvent<HTMLInputElement>): void => {
+        setFilterState({ ...filterState, [name]: event.target.checked });
+    };
 
     return (
         <PopupBox maxWidth="false" padding={0}>
@@ -47,6 +54,30 @@ export const IndexMain: React.FC = () => {
             </TabPanel>
 
             <TabPanel selectedTabIndex={selectedTabIndex} index={1}>
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={filterState.isIncludePrivateEvent}
+                            onChange={handleChangeSwitch('isIncludePrivateEvent')}
+                            value="PrivateEventFilter"
+                            color="primary"
+                        />
+                    }
+                    labelPlacement="end"
+                    label="非公開予定を含む"
+                />
+                <FormControlLabel
+                    control={
+                        <Switch
+                            checked={filterState.isIncludeAllDayEvent}
+                            onChange={handleChangeSwitch('isIncludeAllDayEvent')}
+                            value="AllDayEventFilter"
+                            color="primary"
+                        />
+                    }
+                    labelPlacement="end"
+                    label="終日予定を含む"
+                />
                 <TextField
                     className="template-multiline-text"
                     label="テンプレート"
