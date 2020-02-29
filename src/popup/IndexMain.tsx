@@ -63,17 +63,19 @@ export const IndexMain: React.FC = () => {
                         label="終日予定を含む"
                     />
                 </FilterSettingFrame>
-                <TextField
+                <TemplateTextField
                     className="template-multiline-text"
                     label="テンプレート"
                     multiline
-                    rows="10"
+                    rows="12"
                     defaultValue="Template Text"
                     variant="outlined"
                 />
-                <Button onClick={handleSaveBtnClick} variant="contained" color="primary" disableElevation>
-                    設定を保存する
-                </Button>
+                <Box mt={2} mr={6.5} mb={2} ml={6.5}>
+                    <SuccessButton onClick={handleSaveBtnClick} variant="contained" color="primary" disableElevation>
+                        設定を保存する
+                    </SuccessButton>
+                </Box>
                 <Snackbar open={openAlert} autoHideDuration={1500} onClose={handleCloseAlert}>
                     <Alert onClose={handleCloseAlert} variant="filled" severity="success">
                         設定を保存しました
@@ -92,20 +94,20 @@ const PopupHeader = styled(Box)`
     justify-content: flex-start;
     align-items: center;
     color: ${grey[50]};
+    box-shadow: 0px 2px 4px ${grey[500]};
 `;
 
 const PopupContainer = styled(Container)`
     min-width: 360px;
-    height: 800px;
     background-color: ${grey[50]};
 `;
 
 const FilterSettingFrame = styled(Box)`
-    margin: 24px 0;
     border: 1px solid ${grey[400]};
     border-radius: 5px;
     padding: 16px;
     position: relative;
+    margin: 24px 0;
 
     &::before {
         color: ${grey[700]};
@@ -117,4 +119,12 @@ const FilterSettingFrame = styled(Box)`
         top: -14px;
         left: 8px;
     }
+`;
+
+const TemplateTextField = styled(TextField)`
+    width: 100%;
+`;
+
+const SuccessButton = styled(Button)`
+    width: 100%;
 `;
