@@ -58,10 +58,10 @@ const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> =>
     if (message.actionId === ContextMenuActionId.TEMPLATE) {
         const templateEvent = message.events as TemplateEvent;
         let templateHtml = message.templateText.replace(/\r?\n/g, '<br>');
-        if (templateEvent.specifiedDayEventInfoList.length !== 0) {
-            const body = generateHtml.constructHtmlForEvents(templateEvent.specifiedDayEventInfoList);
-            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.SPECIFIED_DAY}<br>`, body);
-            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.SPECIFIED_DAY, body);
+        if (templateEvent.todayEventInfoList.length !== 0) {
+            const body = generateHtml.constructHtmlForEvents(templateEvent.todayEventInfoList);
+            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.TODAY}<br>`, body);
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.TODAY, body);
         }
 
         if (templateEvent.nextDayEventInfoList.length !== 0) {

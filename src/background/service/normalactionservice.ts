@@ -19,7 +19,7 @@ export interface NormalActionService {
     updateContextMenus(): Promise<void>;
     getEventsByMySelf(setting: FilterSetting, dateRange: DateRange): Promise<EventInfo[]>;
     getEventsByMyGroup(groupId: string, setting: FilterSetting, dateRange: DateRange): Promise<MyGroupEvent[]>;
-    getEventsByTemplate(setting: UserSetting): Promise<TemplateEvent>;
+    getEventsByTemplate(setting: FilterSetting, templateText: string): Promise<TemplateEvent>;
 }
 
 export class NormalActionServiceImpl implements NormalActionService {
@@ -107,37 +107,31 @@ export class NormalActionServiceImpl implements NormalActionService {
         });
     }
 
-    public async getEventsByTemplate(setting: UserSetting): Promise<TemplateEvent> {
+    public async getEventsByTemplate(setting: FilterSetting, templateText: string): Promise<TemplateEvent> {
         const templateEvent: TemplateEvent = {
-            specifiedDayEventInfoList: [],
+            todayEventInfoList: [],
             nextDayEventInfoList: [],
             previousDayEventInfoList: [],
         };
 
-        if (!setting.templateText) {
+        if (!templateText) {
             return templateEvent;
         }
 
-        const templateCharactorInText = await this.findSpecialTemplateCharacter(setting.templateText);
+        const templateCharactorInText = await this.findSpecialTemplateCharacter(templateText);
         if (templateCharactorInText.isIncludeToday) {
-            const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.TODAY, setting.specifiedDate);
-            templateEvent.specifiedDayEventInfoList = await this.getEventsByMySelf(setting.filterSetting, dateRange);
+            const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.TODAY);
+            templateEvent.todayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
         }
 
         if (templateCharactorInText.isIncludeNextDay) {
-            const dateRange = await this.findDateRangeByDateId(
-                ContextMenuDayId.NEXT_BUSINESS_DAY,
-                setting.specifiedDate
-            );
-            templateEvent.nextDayEventInfoList = await this.getEventsByMySelf(setting.filterSetting, dateRange);
+            const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.NEXT_BUSINESS_DAY);
+            templateEvent.nextDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
         }
 
         if (templateCharactorInText.isIncludePreviousDay) {
-            const dateRange = await this.findDateRangeByDateId(
-                ContextMenuDayId.PREVIOUS_BUSINESS_DAY,
-                setting.specifiedDate
-            );
-            templateEvent.previousDayEventInfoList = await this.getEventsByMySelf(setting.filterSetting, dateRange);
+            const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.PREVIOUS_BUSINESS_DAY);
+            templateEvent.previousDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
         }
 
         return templateEvent;
@@ -148,7 +142,7 @@ export class NormalActionServiceImpl implements NormalActionService {
     }
 
     private findSpecialTemplateCharacter(targetText: string): TemplateCharactorInText {
-        const isIncludeToday = targetText.indexOf(SpecialTemplateCharactor.SPECIFIED_DAY) !== -1;
+        const isIncludeToday = targetText.indexOf(SpecialTemplateCharactor.TODAY) !== -1;
         const isIncludeNextDay = targetText.indexOf(SpecialTemplateCharactor.NEXT_BUSINESS_DAY) !== -1;
         const isIncludePreviousDay = targetText.indexOf(SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY) !== -1;
 

@@ -22,7 +22,7 @@ export type MyGroupEvent = {
 };
 
 export type TemplateEvent = {
-    specifiedDayEventInfoList: EventInfo[];
+    todayEventInfoList: EventInfo[];
     nextDayEventInfoList: EventInfo[];
     previousDayEventInfoList: EventInfo[];
 };
@@ -34,7 +34,7 @@ export type TemplateCharactorInText = {
 };
 
 export const enum SpecialTemplateCharactor {
-    SPECIFIED_DAY = '{%指定日%}',
+    TODAY = '{%今日%}',
     NEXT_BUSINESS_DAY = '{%翌営業日%}',
     PREVIOUS_BUSINESS_DAY = '{%前営業日%}',
 }

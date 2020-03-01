@@ -18,7 +18,7 @@ export class UserSettingConverter {
                 isIncludePrivateEvent: item.isIncludePrivateEvent,
                 isIncludeAllDayEvent: item.isIncludeAllDayEvent,
             },
-            templateText: item.templateText,
+            templateText: item.templateText || '',
         };
     }
 

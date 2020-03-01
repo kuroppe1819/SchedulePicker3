@@ -4,7 +4,7 @@ export type UserSetting = {
     dayId: ContextMenuDayId;
     specifiedDate: Date | undefined;
     filterSetting: FilterSetting;
-    templateText: string | undefined;
+    templateText: string;
 };
 
 export type StorageItem = {

@@ -54,7 +54,7 @@ const executeNormalAction = async (
             break;
         }
         case ContextMenuActionId.TEMPLATE: {
-            const events = await normalActionService.getEventsByTemplate(setting);
+            const events = await normalActionService.getEventsByTemplate(setting.filterSetting, setting.templateText);
             const templateText = await UserSettingServiceImpl.getInstance().getTemplateText();
             chrome.tabs.sendMessage(tabId, {
                 actionId: ContextMenuActionId.TEMPLATE,

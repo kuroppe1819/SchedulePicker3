@@ -21,8 +21,8 @@ export class UserSettingServiceImpl implements UserSettingService {
     private static instance: UserSettingService;
     private userSettingLogic: UserSettingLogic;
     private static DEFAULT_TEMPLATE_TEXT =
-        '↓指定日の予定↓\n' +
-        SpecialTemplateCharactor.SPECIFIED_DAY +
+        '↓今日の予定↓\n' +
+        SpecialTemplateCharactor.TODAY +
         '\n\n' +
         '↓翌営業日の予定↓\n' +
         SpecialTemplateCharactor.NEXT_BUSINESS_DAY +
