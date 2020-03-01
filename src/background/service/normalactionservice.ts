@@ -72,17 +72,15 @@ export class NormalActionServiceImpl implements NormalActionService {
     public async getEventsByMySelf(setting: FilterSetting, dateRange: DateRange): Promise<EventInfo[]> {
         const events = await this.logic.getSortedMyEvents(dateRange);
         return events.filter(event => {
-            let isIncludeEvent = true;
-
-            if (!setting.isIncludePrivateEvent) {
-                isIncludeEvent = event.visibilityType !== 'PRIVATE';
+            if (!setting.isIncludePrivateEvent && event.visibilityType === 'PRIVATE') {
+                return false;
             }
 
-            if (!setting.isIncludeAllDayEvent) {
-                isIncludeEvent = !event.isAllDay;
+            if (!setting.isIncludeAllDayEvent && event.isAllDay) {
+                return false;
             }
 
-            return isIncludeEvent;
+            return true;
         });
     }
 
@@ -93,17 +91,15 @@ export class NormalActionServiceImpl implements NormalActionService {
     ): Promise<MyGroupEvent[]> {
         const myGroupEvents = await this.logic.getMyGroupEvents(dateRange, groupId);
         return myGroupEvents.filter(myGroupevent => {
-            let isIncludeEvent = true;
-
-            if (!setting.isIncludePrivateEvent) {
-                isIncludeEvent = myGroupevent.eventInfo.visibilityType !== 'PRIVATE';
+            if (!setting.isIncludePrivateEvent && myGroupevent.eventInfo.visibilityType === 'PRIVATE') {
+                return false;
             }
 
-            if (!setting.isIncludeAllDayEvent) {
-                isIncludeEvent = !myGroupevent.eventInfo.isAllDay;
+            if (!setting.isIncludeAllDayEvent && myGroupevent.eventInfo.isAllDay) {
+                return false;
             }
 
-            return isIncludeEvent;
+            return true;
         });
     }
 
