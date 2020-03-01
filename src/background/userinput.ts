@@ -45,7 +45,7 @@ const executeNormalAction = async (
     const dateRange = await normalActionService.findDateRangeByDateId(setting.dayId, setting.specifiedDate);
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
-            const events = await normalActionService.getEventsByMySelf(setting, dateRange);
+            const events = await normalActionService.getEventsByMySelf(setting.filterSetting, dateRange);
             chrome.tabs.sendMessage(tabId, {
                 actionId: ContextMenuActionId.MYSELF,
                 events: events,
@@ -64,7 +64,11 @@ const executeNormalAction = async (
             break;
         }
         default: {
-            const myGroupEvents = await normalActionService.getEventsByMyGroup(menuItemId, setting, dateRange);
+            const myGroupEvents = await normalActionService.getEventsByMyGroup(
+                menuItemId,
+                setting.filterSetting,
+                dateRange
+            );
             chrome.tabs.sendMessage(tabId, {
                 actionId: ContextMenuActionId.MYGROUP,
                 events: myGroupEvents,

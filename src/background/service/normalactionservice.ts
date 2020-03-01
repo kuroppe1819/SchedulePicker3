@@ -8,7 +8,7 @@ import {
     TemplateCharactorInText,
     TemplateEvent,
 } from 'src/types/event';
-import { UserSetting } from 'src/types/storage';
+import { UserSetting, FilterSetting } from 'src/types/storage';
 import { ScheduleEventsLogic } from '../data/scheduleeventslogic';
 import { ContextMenuHelper } from '../helper/contextmenuhelper';
 import { DateHelper } from '../helper/datehelper';
@@ -17,8 +17,8 @@ import { defaultMenuItems } from '../helper/defaultcontextmenu';
 export interface NormalActionService {
     findDateRangeByDateId(dayId: ContextMenuDayId, specifiedDate?: Date): Promise<DateRange>;
     updateContextMenus(): Promise<void>;
-    getEventsByMySelf(setting: UserSetting, dateRange: DateRange): Promise<EventInfo[]>;
-    getEventsByMyGroup(groupId: string, setting: UserSetting, dateRange: DateRange): Promise<MyGroupEvent[]>;
+    getEventsByMySelf(setting: FilterSetting, dateRange: DateRange): Promise<EventInfo[]>;
+    getEventsByMyGroup(groupId: string, setting: FilterSetting, dateRange: DateRange): Promise<MyGroupEvent[]>;
     getEventsByTemplate(setting: UserSetting): Promise<TemplateEvent>;
 }
 
@@ -69,7 +69,7 @@ export class NormalActionServiceImpl implements NormalActionService {
         ContextMenuHelper.addAll(newContextMenuItems);
     }
 
-    public async getEventsByMySelf(setting: UserSetting, dateRange: DateRange): Promise<EventInfo[]> {
+    public async getEventsByMySelf(setting: FilterSetting, dateRange: DateRange): Promise<EventInfo[]> {
         const events = await this.logic.getSortedMyEvents(dateRange);
         return events.filter(event => {
             let isIncludeEvent = true;
@@ -88,7 +88,7 @@ export class NormalActionServiceImpl implements NormalActionService {
 
     public async getEventsByMyGroup(
         groupId: string,
-        setting: UserSetting,
+        setting: FilterSetting,
         dateRange: DateRange
     ): Promise<MyGroupEvent[]> {
         const myGroupEvents = await this.logic.getMyGroupEvents(dateRange, groupId);
@@ -121,7 +121,7 @@ export class NormalActionServiceImpl implements NormalActionService {
         const templateCharactorInText = await this.findSpecialTemplateCharacter(setting.templateText);
         if (templateCharactorInText.isIncludeToday) {
             const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.TODAY, setting.specifiedDate);
-            templateEvent.specifiedDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
+            templateEvent.specifiedDayEventInfoList = await this.getEventsByMySelf(setting.filterSetting, dateRange);
         }
 
         if (templateCharactorInText.isIncludeNextDay) {
@@ -129,7 +129,7 @@ export class NormalActionServiceImpl implements NormalActionService {
                 ContextMenuDayId.NEXT_BUSINESS_DAY,
                 setting.specifiedDate
             );
-            templateEvent.nextDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
+            templateEvent.nextDayEventInfoList = await this.getEventsByMySelf(setting.filterSetting, dateRange);
         }
 
         if (templateCharactorInText.isIncludePreviousDay) {
@@ -137,7 +137,7 @@ export class NormalActionServiceImpl implements NormalActionService {
                 ContextMenuDayId.PREVIOUS_BUSINESS_DAY,
                 setting.specifiedDate
             );
-            templateEvent.previousDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
+            templateEvent.previousDayEventInfoList = await this.getEventsByMySelf(setting.filterSetting, dateRange);
         }
 
         return templateEvent;

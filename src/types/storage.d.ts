@@ -3,8 +3,7 @@ import { ContextMenuDayId } from './contextmenu';
 export type UserSetting = {
     dayId: ContextMenuDayId;
     specifiedDate: Date | undefined;
-    isIncludePrivateEvent: boolean;
-    isIncludeAllDayEvent: boolean;
+    filterSetting: FilterSetting;
     templateText: string | undefined;
 };
 
@@ -14,6 +13,11 @@ export type StorageItem = {
     isIncludePrivateEvent: boolean;
     isIncludeAllDayEvent: boolean;
     templateText: string | undefined;
+};
+
+export type FilterSetting = {
+    isIncludePrivateEvent: boolean;
+    isIncludeAllDayEvent: boolean;
 };
 
 export const enum StorageKeys {

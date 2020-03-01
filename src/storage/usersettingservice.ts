@@ -1,4 +1,4 @@
-import { UserSetting } from 'src/types/storage';
+import { UserSetting, FilterSetting } from 'src/types/storage';
 import { ContextMenuDayId } from 'src/types/contextmenu';
 import { UserSettingLogic, UserSettingLogicImpl } from './usersettinglogic';
 import { UserSettingRepositoryImpl } from './usersettingrepository';
@@ -13,6 +13,8 @@ export interface UserSettingService {
     getSpecifiedDate(): Promise<Date | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
     getTemplateText(): Promise<string | undefined>;
+    setFilterSetting(filterSetting: FilterSetting): Promise<void>;
+    getFilterSetting(): Promise<FilterSetting>;
 }
 
 export class UserSettingServiceImpl implements UserSettingService {
@@ -45,8 +47,10 @@ export class UserSettingServiceImpl implements UserSettingService {
         await this.userSettingLogic.setUserSetting({
             dayId: setting.dayId || ContextMenuDayId.TODAY,
             specifiedDate: setting.specifiedDate,
-            isIncludePrivateEvent: setting.isIncludePrivateEvent || true,
-            isIncludeAllDayEvent: setting.isIncludeAllDayEvent || true,
+            filterSetting: {
+                isIncludePrivateEvent: setting.filterSetting.isIncludePrivateEvent || true,
+                isIncludeAllDayEvent: setting.filterSetting.isIncludeAllDayEvent || true,
+            },
             templateText:
                 setting.templateText ||
                 `今日の予定を取得できるよ<br>${SpecialTemplateCharactor.SPECIFIED_DAY}<div><br><div>翌営業日の予定を取得できるよ<br>${SpecialTemplateCharactor.NEXT_BUSINESS_DAY}</div><div><br></div><div>前営業日の予定を取得できるよ<br>${SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY}</div></div>`,
@@ -79,5 +83,13 @@ export class UserSettingServiceImpl implements UserSettingService {
 
     public async getTemplateText(): Promise<string | undefined> {
         return await this.userSettingLogic.getTemplateText();
+    }
+
+    public async setFilterSetting(filterSetting: FilterSetting): Promise<void> {
+        await this.userSettingLogic.setFilterSetting(filterSetting);
+    }
+
+    public async getFilterSetting(): Promise<FilterSetting> {
+        return await this.userSettingLogic.getFilterSetting();
     }
 }

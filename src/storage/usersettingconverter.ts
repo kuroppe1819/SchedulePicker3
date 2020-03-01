@@ -14,8 +14,10 @@ export class UserSettingConverter {
         return {
             dayId: item.dayId,
             specifiedDate: specifiedDate,
-            isIncludePrivateEvent: item.isIncludePrivateEvent,
-            isIncludeAllDayEvent: item.isIncludeAllDayEvent,
+            filterSetting: {
+                isIncludePrivateEvent: item.isIncludePrivateEvent,
+                isIncludeAllDayEvent: item.isIncludeAllDayEvent,
+            },
             templateText: item.templateText,
         };
     }
@@ -25,8 +27,8 @@ export class UserSettingConverter {
         return {
             dayId: setting.dayId,
             specifiedDateStr: specifiedDateStr,
-            isIncludePrivateEvent: setting.isIncludePrivateEvent,
-            isIncludeAllDayEvent: setting.isIncludeAllDayEvent,
+            isIncludePrivateEvent: setting.filterSetting.isIncludePrivateEvent,
+            isIncludeAllDayEvent: setting.filterSetting.isIncludeAllDayEvent,
             templateText: setting.templateText,
         };
     }

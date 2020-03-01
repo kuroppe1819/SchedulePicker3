@@ -1,4 +1,4 @@
-import { StorageItem, StorageKeys } from 'src/types/storage';
+import { StorageItem, StorageKeys, FilterSetting } from 'src/types/storage';
 import { ContextMenuDayId } from 'src/types/contextmenu';
 
 export interface UserSettingRepository {
@@ -9,6 +9,8 @@ export interface UserSettingRepository {
     getSpecifiedDateStr(): Promise<string | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
     getTemplateText(): Promise<string | undefined>;
+    setFilterSetting(filterSetting: FilterSetting): Promise<void>;
+    getFilterSetting(): Promise<FilterSetting>;
 }
 
 export class UserSettingRepositoryImpl implements UserSettingRepository {
@@ -73,6 +75,31 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
     public getTemplateText(): Promise<string | undefined> {
         return new Promise(resolve =>
             chrome.storage.sync.get([StorageKeys.TEMPLATE_TEXT], items => resolve(items[StorageKeys.TEMPLATE_TEXT]))
+        );
+    }
+
+    public setFilterSetting(filterSetting: FilterSetting): Promise<void> {
+        return new Promise(resolve =>
+            chrome.storage.sync.set(
+                {
+                    isIncludePrivateEvent: filterSetting.isIncludePrivateEvent,
+                    isIncludeAllDayEvent: filterSetting.isIncludeAllDayEvent,
+                },
+                () => resolve()
+            )
+        );
+    }
+
+    public getFilterSetting(): Promise<FilterSetting> {
+        return new Promise(resolve =>
+            chrome.storage.sync.get(
+                [StorageKeys.IS_INCLUDE_PRIVATE_EVENT, StorageKeys.IS_INCLUDE_ALL_DAY_EVENT],
+                items =>
+                    resolve({
+                        isIncludePrivateEvent: items[StorageKeys.IS_INCLUDE_PRIVATE_EVENT],
+                        isIncludeAllDayEvent: items[StorageKeys.IS_INCLUDE_ALL_DAY_EVENT],
+                    })
+            )
         );
     }
 }
