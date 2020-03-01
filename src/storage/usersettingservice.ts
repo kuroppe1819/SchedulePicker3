@@ -1,8 +1,8 @@
-import { UserSetting, FilterSetting } from 'src/types/storage';
 import { ContextMenuDayId } from 'src/types/contextmenu';
+import { SpecialTemplateCharactor } from 'src/types/event';
+import { FilterSetting, UserSetting } from 'src/types/storage';
 import { UserSettingLogic, UserSettingLogicImpl } from './usersettinglogic';
 import { UserSettingRepositoryImpl } from './usersettingrepository';
-import { SpecialTemplateCharactor } from 'src/types/event';
 
 export interface UserSettingService {
     initialDefaultValue(): Promise<void>;
@@ -12,7 +12,7 @@ export interface UserSettingService {
     setSpecifiedDate(specifiedDate?: Date): Promise<void>;
     getSpecifiedDate(): Promise<Date | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
-    getTemplateText(): Promise<string | undefined>;
+    getTemplateText(): Promise<string>;
     setFilterSetting(filterSetting: FilterSetting): Promise<void>;
     getFilterSetting(): Promise<FilterSetting>;
 }
@@ -81,7 +81,7 @@ export class UserSettingServiceImpl implements UserSettingService {
         await this.userSettingLogic.setTemplateText(templateText);
     }
 
-    public async getTemplateText(): Promise<string | undefined> {
+    public async getTemplateText(): Promise<string> {
         return await this.userSettingLogic.getTemplateText();
     }
 

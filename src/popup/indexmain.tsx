@@ -9,8 +9,10 @@ import styled from 'styled-components';
 export type Props = {
     isIncludePrivateEvent: boolean;
     isIncludeAllDayEvent: boolean;
+    templateText: string;
     openAlert: boolean;
     handleChangeSwitch: (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleChangeText: (event: React.ChangeEvent<HTMLInputElement>) => void;
     handleSaveBtnClicked: () => void;
     handleCloseAlert: (event?: React.SyntheticEvent, reason?: string) => void;
 };
@@ -19,8 +21,10 @@ export const IndexMain: React.FC<Props> = (props: Props) => {
     const {
         isIncludePrivateEvent,
         isIncludeAllDayEvent,
+        templateText,
         openAlert,
         handleChangeSwitch,
+        handleChangeText,
         handleSaveBtnClicked,
         handleCloseAlert,
     } = props;
@@ -65,8 +69,9 @@ export const IndexMain: React.FC<Props> = (props: Props) => {
                     label="テンプレート"
                     multiline
                     rows="12"
-                    defaultValue="Template Text"
+                    defaultValue={templateText}
                     variant="outlined"
+                    onChange={handleChangeText}
                 />
                 <Box mt={3} mr={6.5} mb={2} ml={6.5}>
                     <SuccessButton onClick={handleSaveBtnClicked} variant="contained" color="primary" disableElevation>

@@ -10,7 +10,7 @@ export interface UserSettingLogic {
     setSpecifiedDate(specifiedDate?: Date): Promise<void>;
     getSpecifiedDate(): Promise<Date | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
-    getTemplateText(): Promise<string | undefined>;
+    getTemplateText(): Promise<string>;
     setFilterSetting(filterSetting: FilterSetting): Promise<void>;
     getFilterSetting(): Promise<FilterSetting>;
 }
@@ -50,8 +50,8 @@ export class UserSettingLogicImpl implements UserSettingLogic {
         await this.userSettingRepository.setTemplateText(templateText);
     }
 
-    public async getTemplateText(): Promise<string | undefined> {
-        return await this.userSettingRepository.getTemplateText();
+    public async getTemplateText(): Promise<string> {
+        return (await this.userSettingRepository.getTemplateText()) || '';
     }
 
     public async setFilterSetting(filterSetting: FilterSetting): Promise<void> {

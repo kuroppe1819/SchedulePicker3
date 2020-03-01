@@ -1,5 +1,15 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { IndexContainer } from './indexcontainer';
+import { IndexContainer, IndexContainerProps } from './indexcontainer';
+import { UserSettingServiceImpl } from '../storage/usersettingservice';
 
-ReactDOM.render(<IndexContainer />, document.getElementById('popup-main'));
+(async (): Promise<void> => {
+    const userSetting = UserSettingServiceImpl.getInstance();
+    const filterSetting = await userSetting.getFilterSetting();
+    const templateText = await userSetting.getTemplateText();
+    const indexContainerProps: IndexContainerProps = {
+        initFilterSetting: filterSetting,
+        initTemplateText: templateText,
+    };
+    ReactDOM.render(<IndexContainer {...indexContainerProps} />, document.getElementById('popup-main'));
+})();
