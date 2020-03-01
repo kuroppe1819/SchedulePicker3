@@ -2,6 +2,7 @@ import React from 'react';
 import DayPicker from 'react-day-picker';
 
 import 'react-day-picker/lib/style.css';
+import { Box } from '@material-ui/core';
 
 export type Props = {
     selectedDate: Date;
@@ -10,5 +11,9 @@ export type Props = {
 
 export const IndexMain: React.FC<Props> = (props: Props) => {
     const { selectedDate, handleDayClicked } = props;
-    return <DayPicker selectedDays={selectedDate} onDayClick={handleDayClicked} />;
+    return (
+        <Box p={2}>
+            <DayPicker selectedDays={selectedDate} onDayClick={handleDayClicked} />
+        </Box>
+    );
 };

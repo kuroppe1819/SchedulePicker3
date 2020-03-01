@@ -4,7 +4,7 @@ export class RadioActionServiceImpl {
         window.open(
             '../calendar.html',
             'calendar',
-            'width=283, height=285, chrome, centerscreen, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, copyhistory=no'
+            'width=315, height=362, chrome, centerscreen, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, copyhistory=no'
         );
     }
 }
