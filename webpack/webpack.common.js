@@ -1,6 +1,7 @@
 const path = require('path'); // eslint-disable-line
 const CopyPlugin = require('copy-webpack-plugin'); // eslint-disable-line
 const webpack = require('webpack') // eslint-disable-line
+const EncodingPlugin = require('webpack-encoding-plugin');
 const srcDir = '../src/';
 
 module.exports = {
@@ -40,5 +41,8 @@ module.exports = {
     plugins: [
         new CopyPlugin([{ from: '.', to: '../' }], { context: 'public' }),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        new EncodingPlugin({
+            encoding: 'UTF-8',
+        }),
     ],
 };
