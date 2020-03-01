@@ -1,32 +1,29 @@
-import { Button, FormControlLabel, Snackbar, Switch, TextField, Container, Box } from '@material-ui/core';
+import { Box, Button, Container, FormControlLabel, Snackbar, Switch, TextField } from '@material-ui/core';
+import { grey } from '@material-ui/core/colors';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Alert from '@material-ui/lab/Alert';
-import React, { useState } from 'react';
+import React from 'react';
 import 'react-day-picker/lib/style.css';
 import styled from 'styled-components';
-import { grey } from '@material-ui/core/colors';
 
-export const IndexMain: React.FC = () => {
-    const [filterState, setFilterState] = useState({
-        isIncludePrivateEvent: true,
-        isIncludeAllDayEvent: true,
-    });
-    const [openAlert, setOpenAlert] = useState(false);
+export type Props = {
+    isIncludePrivateEvent: boolean;
+    isIncludeAllDayEvent: boolean;
+    openAlert: boolean;
+    handleChangeSwitch: (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleSaveBtnClicked: () => void;
+    handleCloseAlert: (event?: React.SyntheticEvent, reason?: string) => void;
+};
 
-    const handleChangeSwitch = (name: string) => (event: React.ChangeEvent<HTMLInputElement>): void => {
-        setFilterState({ ...filterState, [name]: event.target.checked });
-    };
-
-    const handleSaveBtnClick = (): void => {
-        setOpenAlert(true);
-    };
-
-    const handleCloseAlert = (event?: React.SyntheticEvent, reason?: string): void => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpenAlert(false);
-    };
+export const IndexMain: React.FC<Props> = (props: Props) => {
+    const {
+        isIncludePrivateEvent,
+        isIncludeAllDayEvent,
+        openAlert,
+        handleChangeSwitch,
+        handleSaveBtnClicked,
+        handleCloseAlert,
+    } = props;
 
     return (
         <>
@@ -41,7 +38,7 @@ export const IndexMain: React.FC = () => {
                     <FormControlLabel
                         control={
                             <Switch
-                                checked={filterState.isIncludePrivateEvent}
+                                checked={isIncludePrivateEvent}
                                 onChange={handleChangeSwitch('isIncludePrivateEvent')}
                                 value="PrivateEventFilter"
                                 color="primary"
@@ -53,7 +50,7 @@ export const IndexMain: React.FC = () => {
                     <FormControlLabel
                         control={
                             <Switch
-                                checked={filterState.isIncludeAllDayEvent}
+                                checked={isIncludeAllDayEvent}
                                 onChange={handleChangeSwitch('isIncludeAllDayEvent')}
                                 value="AllDayEventFilter"
                                 color="primary"
@@ -71,8 +68,8 @@ export const IndexMain: React.FC = () => {
                     defaultValue="Template Text"
                     variant="outlined"
                 />
-                <Box mt={2} mr={6.5} mb={2} ml={6.5}>
-                    <SuccessButton onClick={handleSaveBtnClick} variant="contained" color="primary" disableElevation>
+                <Box mt={3} mr={6.5} mb={2} ml={6.5}>
+                    <SuccessButton onClick={handleSaveBtnClicked} variant="contained" color="primary" disableElevation>
                         設定を保存する
                     </SuccessButton>
                 </Box>
