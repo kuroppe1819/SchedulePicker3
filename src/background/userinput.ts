@@ -23,7 +23,7 @@ const noticeStateToContent = (tabId: number, state: NoticeStateType): void =>
 const executeRadioAction = async (menuItemId: ContextMenuDayId): Promise<void> => {
     await UserSettingServiceImpl.getInstance().setDayId(menuItemId);
     if (menuItemId === ContextMenuDayId.SPECIFIED_DAY) {
-        RadioActionServiceImpl.showPopupWindow();
+        RadioActionServiceImpl.showCalendarWindow();
     }
 };
 
