@@ -1,13 +1,12 @@
 import { ContextMenuActionId, ContextMenuDayId } from 'src/types/contextmenu';
-import { EventInfo, TemplateEvent, MyGroupEvent } from 'src/types/event';
 import { NoticeStateType } from 'src/types/notice';
+import { UserSetting } from 'src/types/storage';
+import { UserSettingServiceImpl } from '../storage/usersettingservice';
 import { GaroonDataSourceImpl } from './data/garoondatasource';
 import { ScheduleEventsLogicImpl } from './data/scheduleeventslogic';
+import { ContextMenuHelper } from './helper/contextmenuhelper';
 import { NormalActionServiceImpl } from './service/normalactionservice';
 import { RadioActionServiceImpl } from './service/radioactionservice';
-import { UserSetting } from 'src/types/storage';
-import { ContextMenuHelper } from './helper/contextmenuhelper';
-import { UserSettingServiceImpl } from '../storage/usersettingservice';
 
 let currentDomain = '';
 
@@ -100,7 +99,7 @@ chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnCli
         noticeStateToContent(tabId, NoticeStateType.NOW_LOADING);
         await executeNormalAction(tabId, userSetting, menuItemId);
     } catch (error) {
-        throw new Error(`RuntimeErrorException: ${error.message}`);
+        throw new Error(`UserInput: ${error.message}`);
     } finally {
         noticeStateToContent(tabId, NoticeStateType.FINISHED);
     }

@@ -24,7 +24,7 @@ const changeProgress = (state: NoticeStateType): void => {
             break;
         }
         default: {
-            throw new Error('RuntimeErrorException: 不正な通知イベントが発生しました');
+            throw new Error('ContentScript: 不正な通知イベントが発生しました');
         }
     }
 };

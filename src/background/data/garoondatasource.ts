@@ -65,7 +65,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
         try {
             return this.soap.base.getMyGroupVersions(myGroupItems);
         } catch (error) {
-            throw new Error(`RuntimeErrorException: ${error.message}`);
+            throw new Error(`GaroonDataSource: ${error.message}`);
         }
     }
 
@@ -73,7 +73,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
         try {
             return this.soap.base.getMyGroupsById(groupIds);
         } catch (error) {
-            throw new Error(`RuntimeErrorException: ${error.message}`);
+            throw new Error(`GaroonDataSource: ${error.message}`);
         }
     }
 
@@ -81,7 +81,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
         try {
             return this.soap.base.getCalendarEvents();
         } catch (error) {
-            throw new Error(`RuntimeErrorException: ${error.message}`);
+            throw new Error(`GaroonDataSource: ${error.message}`);
         }
     }
 }

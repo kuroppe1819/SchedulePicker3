@@ -54,7 +54,7 @@ export class ScheduleEventsLogicImpl implements ScheduleEventsLogic {
         const targetMyGroups = myGroups.filter(g => g.key === groupId);
 
         if (targetMyGroups.length === 0) {
-            throw new Error('RuntimeErrorException: 選択したMyグループが存在しません');
+            throw new Error('ScheduleEventLogic: 選択したMyグループが存在しません');
         }
         const groupMemberList = targetMyGroups[0].belong_member;
 

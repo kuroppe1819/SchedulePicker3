@@ -8,7 +8,7 @@ import {
     TemplateCharactorInText,
     TemplateEvent,
 } from 'src/types/event';
-import { UserSetting, FilterSetting } from 'src/types/storage';
+import { FilterSetting } from 'src/types/storage';
 import { ScheduleEventsLogic } from '../data/scheduleeventslogic';
 import { ContextMenuHelper } from '../helper/contextmenuhelper';
 import { DateHelper } from '../helper/datehelper';
@@ -45,12 +45,12 @@ export class NormalActionServiceImpl implements NormalActionService {
             }
             case ContextMenuDayId.SPECIFIED_DAY: {
                 if (specifiedDate === undefined) {
-                    throw new Error('RuntimeErrorException: 取得したい予定の日付を選択してください');
+                    throw new Error('NormalActionService: 取得したい予定の日付を選択してください');
                 }
                 return DateHelper.makeDateRange(specifiedDate);
             }
             default: {
-                throw new Error('RuntimeErrorException: コンテキストメニューに存在しない日付のIDが選択されています');
+                throw new Error('NormalActionService: コンテキストメニューに存在しない日付のIDが選択されています');
             }
         }
     }
