@@ -14,6 +14,16 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
     private baseUrl: string;
     private PATH = 'api/v1/';
     private soap: GaroonSoap;
+    private TIMEOUT = 5000;
+
+    private timeout = (ms, promise): Promise<any> => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                reject(new Error(`Timeout: ${ms}ms`));
+            }, ms);
+            promise.then(resolve, reject);
+        });
+    };
 
     constructor(domain: string) {
         this.baseUrl = `https://${domain}/g/`;
@@ -45,16 +55,21 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
             url.searchParams.append('target', target);
         }
 
-        const respStream = await fetch(url.toString(), {
-            method: 'GET',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        const respStream = await this.timeout(
+            this.TIMEOUT,
+            fetch(url.toString(), {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            })
+        ).catch(error => {
+            throw error;
         });
 
-        let respJson = { events: [] };
-        try {
-            respJson = await respStream.json();
-        } catch (error) {
-            throw new Error(`RuntimeErrorException: ${error.message}`);
+        const respJson = await respStream.json();
+        if (respStream.status !== 200) {
+            throw new Error(
+                `GaroonDataSource: errorCode: ${respJson.error.errorCode}, message: ${respJson.error.message}, cause: ${respJson.error.cause}`
+            );
         }
         return respJson.events.map(event => {
             return EventConverter.convertToEventInfo(event);
