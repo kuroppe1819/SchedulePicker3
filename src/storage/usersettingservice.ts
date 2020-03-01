@@ -20,6 +20,15 @@ export interface UserSettingService {
 export class UserSettingServiceImpl implements UserSettingService {
     private static instance: UserSettingService;
     private userSettingLogic: UserSettingLogic;
+    private static DEFAULT_TEMPLATE_TEXT =
+        '↓指定日の予定↓\n' +
+        SpecialTemplateCharactor.SPECIFIED_DAY +
+        '\n\n' +
+        '↓翌営業日の予定↓\n' +
+        SpecialTemplateCharactor.NEXT_BUSINESS_DAY +
+        '\n\n' +
+        '↓前営業日の予定↓\n' +
+        SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY;
 
     constructor(callFunc: Function, userSettingLogic: UserSettingLogic) {
         if (callFunc === UserSettingServiceImpl.getInstance) {
@@ -51,9 +60,7 @@ export class UserSettingServiceImpl implements UserSettingService {
                 isIncludePrivateEvent: setting.filterSetting.isIncludePrivateEvent || true,
                 isIncludeAllDayEvent: setting.filterSetting.isIncludeAllDayEvent || true,
             },
-            templateText:
-                setting.templateText ||
-                `今日の予定を取得できるよ<br>${SpecialTemplateCharactor.SPECIFIED_DAY}<div><br><div>翌営業日の予定を取得できるよ<br>${SpecialTemplateCharactor.NEXT_BUSINESS_DAY}</div><div><br></div><div>前営業日の予定を取得できるよ<br>${SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY}</div></div>`,
+            templateText: setting.templateText || UserSettingServiceImpl.DEFAULT_TEMPLATE_TEXT,
         });
     }
 

@@ -29,13 +29,13 @@ const changeProgress = (state: NoticeStateType): void => {
     }
 };
 
-const replacedText = (source: string, target: string, specialTemplateCharactor: SpecialTemplateCharactor): string => {
+const replaceText = (source: string, from: string, to: string): string => {
     const escapeRegExp = (text): string => {
         // eslint-disable-next-line no-useless-escape
         return text.replace(/[.*+?^=!:${}()|[\]\/\\]/g, '\\$&'); // $&はマッチした部分文字列全体を意味する
     };
-    const regex = new RegExp(escapeRegExp(specialTemplateCharactor), 'g');
-    return source.replace(regex, target);
+    const regex = new RegExp(escapeRegExp(from), 'g');
+    return source.replace(regex, to);
 };
 
 const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> => {
@@ -57,22 +57,25 @@ const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> =>
 
     if (message.actionId === ContextMenuActionId.TEMPLATE) {
         const templateEvent = message.events as TemplateEvent;
-        let templateText = message.templateText;
+        let templateHtml = message.templateText.replace(/\r?\n/g, '<br>');
         if (templateEvent.specifiedDayEventInfoList.length !== 0) {
             const body = generateHtml.constructHtmlForEvents(templateEvent.specifiedDayEventInfoList);
-            templateText = replacedText(templateText, body, SpecialTemplateCharactor.SPECIFIED_DAY);
+            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.SPECIFIED_DAY}<br>`, body);
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.SPECIFIED_DAY, body);
         }
 
         if (templateEvent.nextDayEventInfoList.length !== 0) {
             const body = generateHtml.constructHtmlForEvents(templateEvent.nextDayEventInfoList);
-            templateText = replacedText(templateText, body, SpecialTemplateCharactor.NEXT_BUSINESS_DAY);
+            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.NEXT_BUSINESS_DAY}<br>`, body);
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.NEXT_BUSINESS_DAY, body);
         }
 
         if (templateEvent.previousDayEventInfoList.length !== 0) {
             const body = generateHtml.constructHtmlForEvents(templateEvent.previousDayEventInfoList);
-            templateText = replacedText(templateText, body, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY);
+            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY}<br>`, body);
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, body);
         }
-        document.execCommand('insertHTML', false, templateText);
+        document.execCommand('insertHTML', false, templateHtml);
     }
 };
 
