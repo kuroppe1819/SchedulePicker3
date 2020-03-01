@@ -37,7 +37,7 @@ export const IndexMain: React.FC<Props> = (props: Props) => {
                     設定
                 </Box>
             </PopupHeader>
-            <PopupContainer maxWidth="false" padding={0}>
+            <PopupContainer padding={0}>
                 <FilterSettingFrame>
                     <FormControlLabel
                         control={
@@ -110,6 +110,10 @@ const FilterSettingFrame = styled(Box)`
     padding: 16px;
     position: relative;
     margin: 24px 0;
+
+    &:hover {
+        border-color: ${grey[900]};
+    }
 
     &::before {
         color: ${grey[700]};
