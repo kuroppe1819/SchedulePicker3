@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { UserSettingServiceImpl } from '../storage/usersettingservice';
-import { IndexMain, Props as IndexProps } from './indexmain';
+import React, { useState } from 'react';
 import { FilterSetting } from 'src/types/storage';
+import { UserSettingServiceImpl } from '../storage/usersettingservice';
+import { IndexMain, Props as IndexProps } from './components/indexmain';
 
 export type IndexContainerProps = {
     initFilterSetting: FilterSetting;

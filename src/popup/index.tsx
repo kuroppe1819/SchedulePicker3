@@ -1,7 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { IndexContainer, IndexContainerProps } from './indexcontainer';
 import { UserSettingServiceImpl } from '../storage/usersettingservice';
+import { LoadingBox } from './components/loadingbox';
+import { IndexContainer, IndexContainerProps } from './indexcontainer';
 
 (async (): Promise<void> => {
     const userSetting = UserSettingServiceImpl.getInstance();
@@ -13,3 +14,5 @@ import { UserSettingServiceImpl } from '../storage/usersettingservice';
     };
     ReactDOM.render(<IndexContainer {...indexContainerProps} />, document.getElementById('popup-main'));
 })();
+
+ReactDOM.render(<LoadingBox />, document.getElementById('popup-main'));
