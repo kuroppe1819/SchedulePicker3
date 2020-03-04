@@ -15,6 +15,8 @@ export interface UserSettingService {
     getTemplateText(): Promise<string>;
     setFilterSetting(filterSetting: FilterSetting): Promise<void>;
     getFilterSetting(): Promise<FilterSetting>;
+    setPostMarkdownFlag(isPostMarkdown: boolean): Promise<void>;
+    getPostMarkdownFlag(): Promise<boolean>;
 }
 
 export class UserSettingServiceImpl implements UserSettingService {
@@ -60,6 +62,7 @@ export class UserSettingServiceImpl implements UserSettingService {
                 isIncludePrivateEvent: setting.filterSetting.isIncludePrivateEvent || true,
                 isIncludeAllDayEvent: setting.filterSetting.isIncludeAllDayEvent || true,
             },
+            isPostMarkdown: setting.isPostMarkdown || false,
             templateText: setting.templateText || UserSettingServiceImpl.DEFAULT_TEMPLATE_TEXT,
         });
     }
@@ -98,5 +101,13 @@ export class UserSettingServiceImpl implements UserSettingService {
 
     public async getFilterSetting(): Promise<FilterSetting> {
         return await this.userSettingLogic.getFilterSetting();
+    }
+
+    public async setPostMarkdownFlag(isPostMarkdown: boolean): Promise<void> {
+        await this.userSettingLogic.setPostMarkdownFlag(isPostMarkdown);
+    }
+
+    public async getPostMarkdownFlag(): Promise<boolean> {
+        return this.userSettingLogic.getPostMarkdownFlag();
     }
 }

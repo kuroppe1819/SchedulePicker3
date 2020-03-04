@@ -11,6 +11,8 @@ export interface UserSettingRepository {
     getTemplateText(): Promise<string | undefined>;
     setFilterSetting(filterSetting: FilterSetting): Promise<void>;
     getFilterSetting(): Promise<FilterSetting>;
+    setPostMarkdownFlag(isPostMarkdown: boolean): Promise<void>;
+    getPostMarkdownFlag(): Promise<boolean>;
 }
 
 export class UserSettingRepositoryImpl implements UserSettingRepository {
@@ -22,6 +24,7 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
                     StorageKeys.SPECIFIED_DATE_STR,
                     StorageKeys.IS_INCLUDE_ALL_DAY_EVENT,
                     StorageKeys.IS_INCLUDE_PRIVATE_EVENT,
+                    StorageKeys.IS_POST_MARKDOWN,
                     StorageKeys.TEMPLATE_TEXT,
                 ],
                 items => {
@@ -30,6 +33,7 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
                         specifiedDateStr: items[StorageKeys.SPECIFIED_DATE_STR],
                         isIncludePrivateEvent: items[StorageKeys.IS_INCLUDE_PRIVATE_EVENT],
                         isIncludeAllDayEvent: items[StorageKeys.IS_INCLUDE_ALL_DAY_EVENT],
+                        isPostMarkdown: items[StorageKeys.IS_POST_MARKDOWN],
                         templateText: items[StorageKeys.TEMPLATE_TEXT],
                     });
                 }
@@ -45,6 +49,7 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
                     specifiedDateStr: item.specifiedDateStr,
                     isIncludePrivateEvent: item.isIncludePrivateEvent,
                     isIncludeAllDayEvent: item.isIncludeAllDayEvent,
+                    isPostMarkdown: item.isPostMarkdown,
                     templateText: item.templateText,
                 },
                 () => resolve()
@@ -99,6 +104,25 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
                         isIncludePrivateEvent: items[StorageKeys.IS_INCLUDE_PRIVATE_EVENT],
                         isIncludeAllDayEvent: items[StorageKeys.IS_INCLUDE_ALL_DAY_EVENT],
                     })
+            )
+        );
+    }
+
+    public setPostMarkdownFlag(isPostMarkdown: boolean): Promise<void> {
+        return new Promise(resolve =>
+            chrome.storage.sync.set(
+                {
+                    isPostMarkdown: isPostMarkdown,
+                },
+                () => resolve()
+            )
+        );
+    }
+
+    public getPostMarkdownFlag(): Promise<boolean> {
+        return new Promise(resolve =>
+            chrome.storage.sync.get([StorageKeys.IS_POST_MARKDOWN], items =>
+                resolve(items[StorageKeys.IS_POST_MARKDOWN])
             )
         );
     }

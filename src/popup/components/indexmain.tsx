@@ -19,9 +19,11 @@ import { theme } from '../../theme/theme';
 export type Props = {
     isIncludePrivateEvent: boolean;
     isIncludeAllDayEvent: boolean;
+    isPostMarkdown: boolean;
     templateText: string;
     openAlert: boolean;
-    handleChangeSwitch: (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleChangeFilterSettingSwitch: (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+    handleChangePostMarkdownSwitch: (event: React.ChangeEvent<HTMLInputElement>) => void;
     handleChangeText: (event: React.ChangeEvent<HTMLInputElement>) => void;
     handleSaveBtnClicked: () => void;
     handleCloseAlert: (event?: React.SyntheticEvent, reason?: string) => void;
@@ -31,9 +33,11 @@ export const IndexMain: React.FC<Props> = (props: Props) => {
     const {
         isIncludePrivateEvent,
         isIncludeAllDayEvent,
+        isPostMarkdown,
         templateText,
         openAlert,
-        handleChangeSwitch,
+        handleChangeFilterSettingSwitch,
+        handleChangePostMarkdownSwitch,
         handleChangeText,
         handleSaveBtnClicked,
         handleCloseAlert,
@@ -53,7 +57,7 @@ export const IndexMain: React.FC<Props> = (props: Props) => {
                         control={
                             <Switch
                                 checked={isIncludePrivateEvent}
-                                onChange={handleChangeSwitch('isIncludePrivateEvent')}
+                                onChange={handleChangeFilterSettingSwitch('isIncludePrivateEvent')}
                                 value="PrivateEventFilter"
                                 color="primary"
                             />
@@ -65,13 +69,25 @@ export const IndexMain: React.FC<Props> = (props: Props) => {
                         control={
                             <Switch
                                 checked={isIncludeAllDayEvent}
-                                onChange={handleChangeSwitch('isIncludeAllDayEvent')}
+                                onChange={handleChangeFilterSettingSwitch('isIncludeAllDayEvent')}
                                 value="AllDayEventFilter"
                                 color="primary"
                             />
                         }
                         labelPlacement="end"
                         label="終日予定を含む"
+                    />
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={isPostMarkdown}
+                                onChange={handleChangePostMarkdownSwitch}
+                                value="PostMarkdown"
+                                color="secondary"
+                            />
+                        }
+                        labelPlacement="end"
+                        label="Markdownで投稿する"
                     />
                 </FilterSettingFrame>
                 <TemplateTextField
@@ -128,7 +144,7 @@ const FilterSettingFrame = styled(Box)`
     &::before {
         color: ${grey[700]};
         background-color: ${grey[50]};
-        content: 'フィルター設定';
+        content: 'オプション設定';
         font-size: 12px;
         position: absolute;
         padding: 4px 4px;
