@@ -37,7 +37,7 @@ const executeNormalAction = async (
     );
 
     if (menuItemId === ContextMenuActionId.MYGROUP_UPDATE) {
-        normalActionService.updateContextMenus();
+        await normalActionService.updateContextMenus();
         return;
     }
 
