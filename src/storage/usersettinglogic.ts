@@ -13,6 +13,8 @@ export interface UserSettingLogic {
     getTemplateText(): Promise<string>;
     setFilterSetting(filterSetting: FilterSetting): Promise<void>;
     getFilterSetting(): Promise<FilterSetting>;
+    setPostMarkdownFlag(isPostMarkdown: boolean): Promise<void>;
+    getPostMarkdownFlag(): Promise<boolean>;
 }
 
 export class UserSettingLogicImpl implements UserSettingLogic {
@@ -60,5 +62,13 @@ export class UserSettingLogicImpl implements UserSettingLogic {
 
     public async getFilterSetting(): Promise<FilterSetting> {
         return await this.userSettingRepository.getFilterSetting();
+    }
+
+    public async setPostMarkdownFlag(isPostMarkdown: boolean): Promise<void> {
+        await this.userSettingRepository.setPostMarkdownFlag(isPostMarkdown);
+    }
+
+    public async getPostMarkdownFlag(): Promise<boolean> {
+        return this.userSettingRepository.getPostMarkdownFlag();
     }
 }

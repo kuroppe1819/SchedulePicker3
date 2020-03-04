@@ -18,6 +18,7 @@ export class UserSettingConverter {
                 isIncludePrivateEvent: item.isIncludePrivateEvent,
                 isIncludeAllDayEvent: item.isIncludeAllDayEvent,
             },
+            isPostMarkdown: item.isPostMarkdown,
             templateText: item.templateText || '',
         };
     }
@@ -29,6 +30,7 @@ export class UserSettingConverter {
             specifiedDateStr: specifiedDateStr,
             isIncludePrivateEvent: setting.filterSetting.isIncludePrivateEvent,
             isIncludeAllDayEvent: setting.filterSetting.isIncludeAllDayEvent,
+            isPostMarkdown: setting.isPostMarkdown,
             templateText: setting.templateText,
         };
     }
