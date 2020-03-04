@@ -14,7 +14,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
     private baseUrl: string;
     private PATH = 'api/v1/';
     private soap: GaroonSoap;
-    private TIMEOUT = 5000;
+    private TIMEOUT = 15000;
 
     private timeout = (ms, promise): Promise<any> => {
         return new Promise((resolve, reject) => {
