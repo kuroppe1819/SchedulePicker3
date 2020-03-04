@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { FilterSetting } from 'src/types/storage';
 import { UserSettingServiceImpl } from '../storage/usersettingservice';
 import { IndexMain, Props as IndexProps } from './components/indexmain';
@@ -13,28 +13,31 @@ export const IndexContainer: React.FC<IndexContainerProps> = (props: IndexContai
     const [filterSetting, setFilterSetting] = useState(initFilterSetting);
     const [templateText, setTemplateText] = useState(initTemplateText);
     const [openAlert, setOpenAlert] = useState(false);
+    const userSetting = useMemo(() => UserSettingServiceImpl.getInstance(), []);
 
-    const handleChangeSwitch = (name: string) => (event: React.ChangeEvent<HTMLInputElement>): void => {
-        setFilterSetting({ ...filterSetting, [name]: event.target.checked });
-    };
+    const handleChangeSwitch = useCallback(
+        (name: string) => (event: React.ChangeEvent<HTMLInputElement>): void => {
+            setFilterSetting({ ...filterSetting, [name]: event.target.checked });
+        },
+        [filterSetting]
+    );
 
-    const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const handleChangeText = useCallback((event: React.ChangeEvent<HTMLInputElement>): void => {
         setTemplateText(event.target.value);
-    };
+    }, []);
 
-    const handleSaveBtnClick = async (): Promise<void> => {
+    const handleSaveBtnClick = useCallback(async (): Promise<void> => {
         setOpenAlert(true);
-        const userSetting = UserSettingServiceImpl.getInstance();
         await userSetting.setFilterSetting(filterSetting);
         await userSetting.setTemplateText(templateText);
-    };
+    }, [filterSetting, templateText]);
 
-    const handleCloseAlert = (event?: React.SyntheticEvent, reason?: string): void => {
+    const handleCloseAlert = useCallback((event?: React.SyntheticEvent, reason?: string): void => {
         if (reason === 'clickaway') {
             return;
         }
         setOpenAlert(false);
-    };
+    }, []);
 
     const indexProps: IndexProps = {
         isIncludePrivateEvent: filterSetting.isIncludePrivateEvent,
