@@ -1,10 +1,20 @@
-import { Box, Button, Container, FormControlLabel, Snackbar, Switch, TextField } from '@material-ui/core';
+import {
+    Box,
+    Button,
+    Container,
+    FormControlLabel,
+    Snackbar,
+    Switch,
+    TextField,
+    ThemeProvider,
+} from '@material-ui/core';
 import { grey } from '@material-ui/core/colors';
 import SettingsIcon from '@material-ui/icons/Settings';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import 'react-day-picker/lib/style.css';
 import styled from 'styled-components';
+import { theme } from '../../theme/theme';
 
 export type Props = {
     isIncludePrivateEvent: boolean;
@@ -30,10 +40,10 @@ export const IndexMain: React.FC<Props> = (props: Props) => {
     } = props;
 
     return (
-        <>
+        <ThemeProvider theme={theme}>
             <PopupHeader bgcolor="primary.main">
                 <SettingsIcon fontSize="default" />
-                <Box pl={0.5} bgcolor="primary.main">
+                <Box pl={0.5} bgcolor="primary">
                     設定
                 </Box>
             </PopupHeader>
@@ -84,7 +94,7 @@ export const IndexMain: React.FC<Props> = (props: Props) => {
                     </Alert>
                 </Snackbar>
             </PopupContainer>
-        </>
+        </ThemeProvider>
     );
 };
 
