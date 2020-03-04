@@ -66,7 +66,7 @@ export const pickEventMenuColor = (planName: string): EventMenuRgbValue => {
         case '面接':
         case 'フェア':
         case 'イベン10':
-        case '仕事bar':
+        case '仕事Bar':
         case '部活動':
         case '懇親会':
         case '社内イベント':
