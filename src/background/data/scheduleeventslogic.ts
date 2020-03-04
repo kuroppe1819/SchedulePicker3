@@ -25,7 +25,7 @@ export class ScheduleEventsLogicImpl implements ScheduleEventsLogic {
         } else if (nextEventInfo.isAllDay) {
             return -1;
         } else {
-            return eventInfo.startTime.getTime() > nextEventInfo.startTime.getTime() ? 1 : -1;
+            return eventInfo.startTime.getHours() > nextEventInfo.startTime.getHours() ? 1 : -1;
         }
     }
 
