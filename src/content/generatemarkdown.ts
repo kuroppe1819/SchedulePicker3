@@ -1,6 +1,9 @@
 import moment from 'moment';
-import { EventInfo, Participant, MyGroupEvent } from 'src/types/event';
-export class GenerateMarkdown {
+import { EventInfo, Participant, MyGroupEvent, TemplateEvent, SpecialTemplateCharactor } from 'src/types/event';
+import { GenerateEvents } from './generateevents';
+import { replaceText } from './replacetext';
+
+export class GenerateMarkdownImpl implements GenerateEvents {
     private createScheduleTitle(moment: moment.Moment): string {
         return `【 ${moment.format('YYYY-MM-DD')} の予定 】`;
     }
@@ -107,6 +110,24 @@ export class GenerateMarkdown {
                 }
             })
             .join('');
+    }
+
+    public constructTemplateEvents(templateText: string, templateEvent: TemplateEvent): string {
+        if (templateEvent.todayEventInfoList.length !== 0) {
+            const body = this.constructEvents(templateEvent.todayEventInfoList);
+            templateText = replaceText(templateText, SpecialTemplateCharactor.TODAY, body);
+        }
+
+        if (templateEvent.nextDayEventInfoList.length !== 0) {
+            const body = this.constructEvents(templateEvent.nextDayEventInfoList);
+            templateText = replaceText(templateText, SpecialTemplateCharactor.NEXT_BUSINESS_DAY, body);
+        }
+
+        if (templateEvent.previousDayEventInfoList.length !== 0) {
+            const body = this.constructEvents(templateEvent.previousDayEventInfoList);
+            templateText = replaceText(templateText, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, body);
+        }
+        return templateText;
     }
 
     public constructScheduleTitle(specificDateStr: string | undefined): string {

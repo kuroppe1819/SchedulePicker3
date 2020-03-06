@@ -1,7 +1,9 @@
 import { ContextMenuActionId } from 'src/types/contextmenu';
 import { NoticeStateType, RecieveEventMessage } from 'src/types/notice';
-import { EventInfo, MyGroupEvent, SpecialTemplateCharactor, TemplateEvent } from '../types/event';
+import { EventInfo, MyGroupEvent, TemplateEvent } from '../types/event';
+import { GenerateEvents } from './generateevents';
 import { GenerateHtmlImpl } from './generatehtml';
+import { GenerateMarkdownImpl } from './generatemarkdown';
 
 const assertActiveElementIsNotNull = (): void => {
     // 現在フォーカスが与えられている要素を取得する
@@ -29,54 +31,26 @@ const changeProgress = (state: NoticeStateType): void => {
     }
 };
 
-const replaceText = (source: string, from: string, to: string): string => {
-    const escapeRegExp = (text): string => {
-        // eslint-disable-next-line no-useless-escape
-        return text.replace(/[.*+?^=!:${}()|[\]\/\\]/g, '\\$&'); // $&はマッチした部分文字列全体を意味する
-    };
-    const regex = new RegExp(escapeRegExp(from), 'g');
-    return source.replace(regex, to);
-};
+const pasteEvents = async (message: RecieveEventMessage, generateEvents: GenerateEvents): Promise<void> => {
+    const command = message.isPostMarkdown ? 'insertText' : 'insertHtml';
 
-const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> => {
-    const generateHtml = new GenerateHtmlImpl();
     if (message.actionId === ContextMenuActionId.MYSELF) {
-        const title = generateHtml.constructScheduleTitle(message.specificDateStr);
-        const body = generateHtml.constructEvents(message.events as EventInfo[]);
-        document.execCommand('insertHtml', false, title + body);
+        const title = generateEvents.constructScheduleTitle(message.specificDateStr);
+        const body = generateEvents.constructEvents(message.events as EventInfo[]);
+        document.execCommand(command, false, title + body);
     }
 
     if (message.actionId === ContextMenuActionId.MYGROUP) {
-        const title = generateHtml.constructScheduleTitle(message.specificDateStr);
-        const body = generateHtml.constructMyGroupEvents(message.events as MyGroupEvent[], message.specificDateStr);
-        document.execCommand('insertHtml', false, title + body);
+        const title = generateEvents.constructScheduleTitle(message.specificDateStr);
+        const body = generateEvents.constructMyGroupEvents(message.events as MyGroupEvent[], message.specificDateStr);
+        document.execCommand(command, false, title + body);
     }
 
     if (message.actionId === ContextMenuActionId.TEMPLATE && message.templateText) {
-        const templateEvent = message.events as TemplateEvent;
-        let templateHtml = message.templateText.replace(/\r?\n/g, '<br>');
-        if (templateEvent.todayEventInfoList.length !== 0) {
-            const body = generateHtml.constructEvents(templateEvent.todayEventInfoList);
-            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.TODAY}<br>`, body);
-            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.TODAY, body);
-        }
-
-        if (templateEvent.nextDayEventInfoList.length !== 0) {
-            const body = generateHtml.constructEvents(templateEvent.nextDayEventInfoList);
-            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.NEXT_BUSINESS_DAY}<br>`, body);
-            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.NEXT_BUSINESS_DAY, body);
-        }
-
-        if (templateEvent.previousDayEventInfoList.length !== 0) {
-            const body = generateHtml.constructEvents(templateEvent.previousDayEventInfoList);
-            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY}<br>`, body);
-            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, body);
-        }
-        document.execCommand('insertHTML', false, templateHtml);
+        const body = generateEvents.constructTemplateEvents(message.templateText, message.events as TemplateEvent);
+        document.execCommand(command, false, body);
     }
 };
-
-const pasteEventsByMarkdown = async (message: RecieveEventMessage): Promise<void> => {};
 
 chrome.runtime.sendMessage({ domain: document.domain });
 
@@ -93,11 +67,8 @@ chrome.runtime.onMessage.addListener((message: RecieveEventMessage) => {
         return;
     }
 
-    if (message.isPostMarkdown) {
-        pasteEventsByMarkdown(message);
-    } else {
-        pasteEventsByHtml(message);
-    }
+    const generateEvents = message.isPostMarkdown ? new GenerateMarkdownImpl() : new GenerateHtmlImpl();
+    pasteEvents(message, generateEvents);
 });
 
 changeProgress(NoticeStateType.FINISHED);

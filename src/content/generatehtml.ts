@@ -1,14 +1,10 @@
 import moment from 'moment';
-import { EventInfo, MyGroupEvent, Participant } from 'src/types/event';
+import { EventInfo, MyGroupEvent, Participant, SpecialTemplateCharactor, TemplateEvent } from 'src/types/event';
 import { pickEventMenuColor } from './eventmenucolor';
+import { GenerateEvents } from './generateevents';
+import { replaceText } from './replacetext';
 
-export interface GenerateHtml {
-    constructScheduleTitle(specificDateStr: string | undefined): string;
-    constructEvents(events: EventInfo[]): string;
-    constructMyGroupEvents(events: MyGroupEvent[], specificDateStr?: string): string;
-}
-
-export class GenerateHtmlImpl implements GenerateHtml {
+export class GenerateHtmlImpl implements GenerateEvents {
     private createScheduleTitle(moment: moment.Moment): string {
         return `<div>【 ${moment.format('YYYY-MM-DD')} の予定 】</div>`;
     }
@@ -127,6 +123,28 @@ export class GenerateHtmlImpl implements GenerateHtml {
             })
             .join('');
         return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
+    }
+
+    public constructTemplateEvents(templateText: string, templateEvent: TemplateEvent): string {
+        let templateHtml = templateText.replace(/\r?\n/g, '<br>');
+        if (templateEvent.todayEventInfoList.length !== 0) {
+            const body = this.constructEvents(templateEvent.todayEventInfoList);
+            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.TODAY}<br>`, body);
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.TODAY, body);
+        }
+
+        if (templateEvent.nextDayEventInfoList.length !== 0) {
+            const body = this.constructEvents(templateEvent.nextDayEventInfoList);
+            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.NEXT_BUSINESS_DAY}<br>`, body);
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.NEXT_BUSINESS_DAY, body);
+        }
+
+        if (templateEvent.previousDayEventInfoList.length !== 0) {
+            const body = this.constructEvents(templateEvent.previousDayEventInfoList);
+            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY}<br>`, body);
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, body);
+        }
+        return templateHtml;
     }
 
     public constructScheduleTitle(specificDateStr: string | undefined): string {
