@@ -79,6 +79,8 @@ const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> =>
     }
 };
 
+const pasteEventsByMarkdown = async (message: RecieveEventMessage): Promise<void> => {};
+
 chrome.runtime.sendMessage({ domain: document.domain });
 
 // messageの中の参照型はすべてstringで帰ってくるので注意！！
@@ -93,7 +95,12 @@ chrome.runtime.onMessage.addListener((message: RecieveEventMessage) => {
     } catch (error) {
         return;
     }
-    pasteEventsByHtml(message);
+
+    if (message.isPostMarkdown) {
+        pasteEventsByMarkdown(message);
+    } else {
+        pasteEventsByHtml(message);
+    }
 });
 
 changeProgress(NoticeStateType.FINISHED);

@@ -41,6 +41,8 @@ const executeNormalAction = async (
         return;
     }
 
+    const userSetting = UserSettingServiceImpl.getInstance();
+    const isPostMarkdown = await userSetting.getPostMarkdownFlag();
     const dateRange = await normalActionService.findDateRangeByDateId(setting.dayId, setting.specifiedDate);
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
@@ -48,6 +50,7 @@ const executeNormalAction = async (
             const message: RecieveEventMessage = {
                 actionId: ContextMenuActionId.MYSELF,
                 events: events,
+                isPostMarkdown: isPostMarkdown,
                 specificDateStr: dateRange.startDate.toJSON(),
             };
             chrome.tabs.sendMessage(tabId, message);
@@ -55,10 +58,11 @@ const executeNormalAction = async (
         }
         case ContextMenuActionId.TEMPLATE: {
             const events = await normalActionService.getEventsByTemplate(setting.filterSetting, setting.templateText);
-            const templateText = await UserSettingServiceImpl.getInstance().getTemplateText();
+            const templateText = await userSetting.getTemplateText();
             const message: RecieveEventMessage = {
                 actionId: ContextMenuActionId.TEMPLATE,
                 events: events,
+                isPostMarkdown: isPostMarkdown,
                 templateText: templateText,
             };
             chrome.tabs.sendMessage(tabId, message);
@@ -73,6 +77,7 @@ const executeNormalAction = async (
             const message: RecieveEventMessage = {
                 actionId: ContextMenuActionId.MYGROUP,
                 events: myGroupEvents,
+                isPostMarkdown: isPostMarkdown,
                 specificDateStr: dateRange.startDate.toJSON(),
             };
             chrome.tabs.sendMessage(tabId, message);
