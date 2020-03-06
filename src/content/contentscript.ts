@@ -55,7 +55,7 @@ const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> =>
         document.execCommand('insertHtml', false, title + body);
     }
 
-    if (message.actionId === ContextMenuActionId.TEMPLATE) {
+    if (message.actionId === ContextMenuActionId.TEMPLATE && message.templateText) {
         const templateEvent = message.events as TemplateEvent;
         let templateHtml = message.templateText.replace(/\r?\n/g, '<br>');
         if (templateEvent.todayEventInfoList.length !== 0) {

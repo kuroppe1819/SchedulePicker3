@@ -1,5 +1,5 @@
 import { ContextMenuActionId, ContextMenuDayId } from 'src/types/contextmenu';
-import { NoticeStateType } from 'src/types/notice';
+import { NoticeStateType, RecieveEventMessage } from 'src/types/notice';
 import { UserSetting } from 'src/types/storage';
 import { UserSettingServiceImpl } from '../storage/usersettingservice';
 import { GaroonDataSourceImpl } from './data/garoondatasource';
@@ -45,21 +45,23 @@ const executeNormalAction = async (
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
             const events = await normalActionService.getEventsByMySelf(setting.filterSetting, dateRange);
-            chrome.tabs.sendMessage(tabId, {
+            const message: RecieveEventMessage = {
                 actionId: ContextMenuActionId.MYSELF,
                 events: events,
                 specificDateStr: dateRange.startDate.toJSON(),
-            });
+            };
+            chrome.tabs.sendMessage(tabId, message);
             break;
         }
         case ContextMenuActionId.TEMPLATE: {
             const events = await normalActionService.getEventsByTemplate(setting.filterSetting, setting.templateText);
             const templateText = await UserSettingServiceImpl.getInstance().getTemplateText();
-            chrome.tabs.sendMessage(tabId, {
+            const message: RecieveEventMessage = {
                 actionId: ContextMenuActionId.TEMPLATE,
                 events: events,
                 templateText: templateText,
-            });
+            };
+            chrome.tabs.sendMessage(tabId, message);
             break;
         }
         default: {
@@ -68,11 +70,12 @@ const executeNormalAction = async (
                 setting.filterSetting,
                 dateRange
             );
-            chrome.tabs.sendMessage(tabId, {
+            const message: RecieveEventMessage = {
                 actionId: ContextMenuActionId.MYGROUP,
                 events: myGroupEvents,
                 specificDateStr: dateRange.startDate.toJSON(),
-            });
+            };
+            chrome.tabs.sendMessage(tabId, message);
             break;
         }
     }
