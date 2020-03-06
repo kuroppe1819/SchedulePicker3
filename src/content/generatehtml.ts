@@ -1,15 +1,15 @@
+import moment from 'moment';
 import { EventInfo, MyGroupEvent, Participant } from 'src/types/event';
-import moment, { Moment } from 'moment';
 import { pickEventMenuColor } from './eventmenucolor';
 
 export interface GenerateHtml {
-    constructHtmlScheduleTitle(specificDateStr: string | undefined): string;
-    constructHtmlForEvents(events: EventInfo[]): string;
-    constructHtmlForMyGroupEvents(events: MyGroupEvent[], specificDateStr?: string): string;
+    constructScheduleTitle(specificDateStr: string | undefined): string;
+    constructEvents(events: EventInfo[]): string;
+    constructMyGroupEvents(events: MyGroupEvent[], specificDateStr?: string): string;
 }
 
 export class GenerateHtmlImpl implements GenerateHtml {
-    private createHtmlScheduleTitle(moment: moment.Moment): string {
+    private createScheduleTitle(moment: moment.Moment): string {
         return `<div>【 ${moment.format('YYYY-MM-DD')} の予定 】</div>`;
     }
 
@@ -27,7 +27,7 @@ export class GenerateHtmlImpl implements GenerateHtml {
             >${planName}</span>`;
     }
 
-    private createHtmlForTimeRange(eventInfo: EventInfo): string {
+    private createTimeRange(eventInfo: EventInfo): string {
         const startTime = moment(eventInfo.startTime).format('HH:mm');
         if (eventInfo.isStartOnly || eventInfo.endTime == null) {
             return `<span>${startTime}</span>`;
@@ -37,11 +37,11 @@ export class GenerateHtmlImpl implements GenerateHtml {
         }
     }
 
-    private createHtmlForEventName(eventInfo: EventInfo): string {
+    private createEventName(eventInfo: EventInfo): string {
         return `<a href="https://bozuman.cybozu.com/g/schedule/view.csp?event=${eventInfo.id}">${eventInfo.subject}</a>`;
     }
 
-    private createHtmlForEventParticipant(moment: moment.Moment, participants: Participant[]): string {
+    private createEventParticipant(moment: moment.Moment, participants: Participant[]): string {
         const formattedDate = moment.format('YYYY-MM-DD');
 
         return `
@@ -56,78 +56,69 @@ export class GenerateHtmlImpl implements GenerateHtml {
             .join('')}`;
     }
 
-    private constructHtmlForAllDayEvent(eventInfo: EventInfo): string {
+    private bundleEventMenuAndName(eventInfo: EventInfo): string {
         let body = '';
-        body += this.createEventMenu('終日');
-        if (eventInfo.eventMenu !== '') {
-            body += this.createEventMenu(eventInfo.eventMenu);
-        }
-
-        body += ` ${this.createHtmlForEventName(eventInfo)}`; // スペース1つ分の余白を付けてデザインの微調整
-        return `<div>${body}</div>`;
-    }
-
-    private constructHtmlForRegularEvent(eventInfo: EventInfo): string {
-        let body = '';
-        body += this.createHtmlForTimeRange(eventInfo);
-
         if (eventInfo.eventMenu !== '') {
             body += ` ${this.createEventMenu(eventInfo.eventMenu)}`; // スペース1つ分の余白を付けてデザインの微調整
         }
-        body += ` ${this.createHtmlForEventName(eventInfo)}`; // スペース1つ分の余白を付けてデザインの微調整
+        body += ` ${this.createEventName(eventInfo)}`; // スペース1つ分の余白を付けてデザインの微調整
+        return body;
+    }
 
+    private constructAllDayEvent(eventInfo: EventInfo): string {
+        let body = this.createEventMenu('終日');
+        body += this.bundleEventMenuAndName(eventInfo);
         return `<div>${body}</div>`;
     }
 
-    private constructHtmlForRegularEventIncludeParticipant(
+    private constructRegularEvent(eventInfo: EventInfo): string {
+        let body = this.createTimeRange(eventInfo);
+        body += this.bundleEventMenuAndName(eventInfo);
+        return `<div>${body}</div>`;
+    }
+
+    private constructRegularEventIncludeParticipant(
         eventInfo: EventInfo,
         dateStr?: string,
         participants: Participant[] = []
     ): string {
-        let body = '';
-        body += this.createHtmlForTimeRange(eventInfo);
-
-        if (eventInfo.eventMenu !== '') {
-            body += ` ${this.createEventMenu(eventInfo.eventMenu)}`; // スペース1つ分の余白を付けてデザインの微調整
-        }
-        body += ` ${this.createHtmlForEventName(eventInfo)}`; // スペース1つ分の余白を付けてデザインの微調整
+        let body = this.createTimeRange(eventInfo);
+        body += this.bundleEventMenuAndName(eventInfo);
 
         if (participants.length !== 0 && dateStr !== undefined) {
-            body += this.createHtmlForEventParticipant(moment(dateStr), participants);
+            body += this.createEventParticipant(moment(dateStr), participants);
         }
         return `<div>${body}</div>`;
     }
 
-    public constructHtmlForEvents(eventInfoList: EventInfo[]): string {
+    public constructEvents(eventInfoList: EventInfo[]): string {
         const regularAndRepeatingEvents: EventInfo[] = eventInfoList.filter(
             eventInfo => eventInfo.eventType === 'REGULAR' || eventInfo.eventType === 'REPEATING'
         );
 
-        let body = '';
-        body += regularAndRepeatingEvents
+        const body = regularAndRepeatingEvents
             .map(eventInfo => {
                 if (eventInfo.isAllDay) {
-                    return this.constructHtmlForAllDayEvent(eventInfo);
+                    return this.constructAllDayEvent(eventInfo);
                 } else {
-                    return this.constructHtmlForRegularEvent(eventInfo);
+                    return this.constructRegularEvent(eventInfo);
                 }
             })
             .join('');
         return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
     }
 
-    public constructHtmlForMyGroupEvents(myGroupEventList: MyGroupEvent[], specificDateStr?: string): string {
+    public constructMyGroupEvents(myGroupEventList: MyGroupEvent[], specificDateStr?: string): string {
         const regularAndRepeatingEvents: MyGroupEvent[] = myGroupEventList.filter(
             groupEvent => groupEvent.eventInfo.eventType === 'REGULAR' || groupEvent.eventInfo.eventType === 'REPEATING'
         );
 
-        let body = '';
-        body += regularAndRepeatingEvents
+        const body = regularAndRepeatingEvents
             .map(groupEvent => {
                 if (groupEvent.eventInfo.isAllDay) {
-                    return this.constructHtmlForAllDayEvent(groupEvent.eventInfo);
+                    return this.constructAllDayEvent(groupEvent.eventInfo);
                 } else {
-                    return this.constructHtmlForRegularEventIncludeParticipant(
+                    return this.constructRegularEventIncludeParticipant(
                         groupEvent.eventInfo,
                         specificDateStr,
                         groupEvent.participants
@@ -138,9 +129,9 @@ export class GenerateHtmlImpl implements GenerateHtml {
         return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
     }
 
-    public constructHtmlScheduleTitle(specificDateStr: string | undefined): string {
+    public constructScheduleTitle(specificDateStr: string | undefined): string {
         if (specificDateStr) {
-            return this.createHtmlScheduleTitle(moment(specificDateStr));
+            return this.createScheduleTitle(moment(specificDateStr));
         }
         return '日付の取得に失敗しました';
     }

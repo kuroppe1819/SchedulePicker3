@@ -41,17 +41,14 @@ const replaceText = (source: string, from: string, to: string): string => {
 const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> => {
     const generateHtml = new GenerateHtmlImpl();
     if (message.actionId === ContextMenuActionId.MYSELF) {
-        const title = generateHtml.constructHtmlScheduleTitle(message.specificDateStr);
-        const body = generateHtml.constructHtmlForEvents(message.events as EventInfo[]);
+        const title = generateHtml.constructScheduleTitle(message.specificDateStr);
+        const body = generateHtml.constructEvents(message.events as EventInfo[]);
         document.execCommand('insertHtml', false, title + body);
     }
 
     if (message.actionId === ContextMenuActionId.MYGROUP) {
-        const title = generateHtml.constructHtmlScheduleTitle(message.specificDateStr);
-        const body = generateHtml.constructHtmlForMyGroupEvents(
-            message.events as MyGroupEvent[],
-            message.specificDateStr
-        );
+        const title = generateHtml.constructScheduleTitle(message.specificDateStr);
+        const body = generateHtml.constructMyGroupEvents(message.events as MyGroupEvent[], message.specificDateStr);
         document.execCommand('insertHtml', false, title + body);
     }
 
@@ -59,19 +56,19 @@ const pasteEventsByHtml = async (message: RecieveEventMessage): Promise<void> =>
         const templateEvent = message.events as TemplateEvent;
         let templateHtml = message.templateText.replace(/\r?\n/g, '<br>');
         if (templateEvent.todayEventInfoList.length !== 0) {
-            const body = generateHtml.constructHtmlForEvents(templateEvent.todayEventInfoList);
+            const body = generateHtml.constructEvents(templateEvent.todayEventInfoList);
             templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.TODAY}<br>`, body);
             templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.TODAY, body);
         }
 
         if (templateEvent.nextDayEventInfoList.length !== 0) {
-            const body = generateHtml.constructHtmlForEvents(templateEvent.nextDayEventInfoList);
+            const body = generateHtml.constructEvents(templateEvent.nextDayEventInfoList);
             templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.NEXT_BUSINESS_DAY}<br>`, body);
             templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.NEXT_BUSINESS_DAY, body);
         }
 
         if (templateEvent.previousDayEventInfoList.length !== 0) {
-            const body = generateHtml.constructHtmlForEvents(templateEvent.previousDayEventInfoList);
+            const body = generateHtml.constructEvents(templateEvent.previousDayEventInfoList);
             templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY}<br>`, body);
             templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, body);
         }
