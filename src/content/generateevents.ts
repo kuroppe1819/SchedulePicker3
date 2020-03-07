@@ -1,8 +1,8 @@
-import { EventInfo, MyGroupEvent, TemplateEvent } from 'src/types/event';
+import { Event, MyGroupEvent, TemplateEventsInfo } from 'src/types/event';
 
 export interface GenerateEvents {
     constructScheduleTitle(specificDateStr: string | undefined): string;
-    constructEvents(events: EventInfo[]): string;
+    constructEvents(events: Event[]): string;
     constructMyGroupEvents(events: MyGroupEvent[], specificDateStr?: string): string;
-    constructTemplateEvents(templateText: string, templateEvent: TemplateEvent): string;
+    constructTemplateEvents(templateText: string, templateEventsInfo: TemplateEventsInfo): string;
 }

@@ -1,4 +1,9 @@
-export type EventInfo = {
+export type Participant = {
+    id: string;
+    name: string;
+};
+
+export type Event = {
     id: string;
     subject: string;
     startTime: Date;
@@ -11,20 +16,30 @@ export type EventInfo = {
     isStartOnly: boolean;
 };
 
-export type Participant = {
-    id: string;
-    name: string;
-};
-
 export type MyGroupEvent = {
-    eventInfo: EventInfo;
+    event: Event;
     participants: Participant[];
 };
 
-export type TemplateEvent = {
-    todayEventInfoList: EventInfo[];
-    nextDayEventInfoList: EventInfo[];
-    previousDayEventInfoList: EventInfo[];
+export type EventsInfo = {
+    specifiedDateStr: string;
+    events: Event[];
+};
+
+export type MyGroupEventsInfo = {
+    specifiedDateStr: string;
+    myGroupEvents: MyGroupEvent[];
+};
+
+export type TemplateEventsInfo = {
+    specifiedDate: {
+        todayStr: string;
+        nextDayStr: string;
+        previousDayStr: string;
+    };
+    todayEvents: Event[];
+    nextDayEvents: Event[];
+    previousDayEvents: Event[];
 };
 
 export type TemplateCharactorInText = {

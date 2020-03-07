@@ -1,6 +1,6 @@
 import { ContextMenuActionId } from 'src/types/contextmenu';
-import { NoticeStateType, RecieveEventMessage } from 'src/types/notice';
-import { EventInfo, MyGroupEvent, TemplateEvent } from '../types/event';
+import { NoticeStateType, RecieveEventMessage, RecieveStateMessage } from 'src/types/notice';
+import { EventsInfo, MyGroupEventsInfo, TemplateEventsInfo } from '../types/event';
 import { GenerateEvents } from './generateevents';
 import { GenerateHtmlImpl } from './generatehtml';
 import { GenerateMarkdownImpl } from './generatemarkdown';
@@ -32,22 +32,30 @@ const changeProgress = (state: NoticeStateType): void => {
 };
 
 const pasteEvents = async (message: RecieveEventMessage, generateEvents: GenerateEvents): Promise<void> => {
-    const command = message.isPostMarkdown ? 'insertText' : 'insertHtml';
+    const command = message.userSetting.isPostMarkdown ? 'insertText' : 'insertHtml';
 
     if (message.actionId === ContextMenuActionId.MYSELF) {
-        const title = generateEvents.constructScheduleTitle(message.specificDateStr);
-        const body = generateEvents.constructEvents(message.events as EventInfo[]);
+        const eventsInfo = message.eventsInfo as EventsInfo;
+        const title = generateEvents.constructScheduleTitle(eventsInfo.specifiedDateStr);
+        const body = generateEvents.constructEvents(eventsInfo.events);
         document.execCommand(command, false, title + body);
     }
 
     if (message.actionId === ContextMenuActionId.MYGROUP) {
-        const title = generateEvents.constructScheduleTitle(message.specificDateStr);
-        const body = generateEvents.constructMyGroupEvents(message.events as MyGroupEvent[], message.specificDateStr);
+        const myGroupEventsInfo = message.eventsInfo as MyGroupEventsInfo;
+        const title = generateEvents.constructScheduleTitle(myGroupEventsInfo.specifiedDateStr);
+        const body = generateEvents.constructMyGroupEvents(
+            myGroupEventsInfo.myGroupEvents,
+            myGroupEventsInfo.specifiedDateStr
+        );
         document.execCommand(command, false, title + body);
     }
 
-    if (message.actionId === ContextMenuActionId.TEMPLATE && message.templateText) {
-        const body = generateEvents.constructTemplateEvents(message.templateText, message.events as TemplateEvent);
+    if (message.actionId === ContextMenuActionId.TEMPLATE && message.userSetting.templateText) {
+        const body = generateEvents.constructTemplateEvents(
+            message.userSetting.templateText,
+            message.eventsInfo as TemplateEventsInfo
+        );
         document.execCommand(command, false, body);
     }
 };
@@ -55,9 +63,10 @@ const pasteEvents = async (message: RecieveEventMessage, generateEvents: Generat
 chrome.runtime.sendMessage({ domain: document.domain });
 
 // messageの中の参照型はすべてstringで帰ってくるので注意！！
-chrome.runtime.onMessage.addListener((message: RecieveEventMessage) => {
-    if (message.state !== undefined) {
-        changeProgress(message.state);
+chrome.runtime.onMessage.addListener((message: RecieveEventMessage | RecieveStateMessage) => {
+    if ('state' in message && message.state != undefined) {
+        const stateMessage = message as RecieveStateMessage;
+        changeProgress(stateMessage.state);
         return;
     }
 
@@ -67,8 +76,11 @@ chrome.runtime.onMessage.addListener((message: RecieveEventMessage) => {
         return;
     }
 
-    const generateEvents = message.isPostMarkdown ? new GenerateMarkdownImpl() : new GenerateHtmlImpl();
-    pasteEvents(message, generateEvents);
+    const eventMessage = message as RecieveEventMessage;
+    const generateEvents = eventMessage.userSetting.isPostMarkdown
+        ? new GenerateMarkdownImpl()
+        : new GenerateHtmlImpl();
+    pasteEvents(eventMessage, generateEvents);
 });
 
 changeProgress(NoticeStateType.FINISHED);

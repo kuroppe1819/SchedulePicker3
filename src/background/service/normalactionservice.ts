@@ -2,11 +2,11 @@ import moment from 'moment';
 import { ContextMenu, ContextMenuDayId, ContextMenuParentId } from 'src/types/contextmenu';
 import { DateRange } from 'src/types/date';
 import {
-    EventInfo,
+    Event,
     MyGroupEvent,
     SpecialTemplateCharactor,
     TemplateCharactorInText,
-    TemplateEvent,
+    TemplateEventsInfo,
 } from 'src/types/event';
 import { FilterSetting } from 'src/types/storage';
 import { ScheduleEventsLogic } from '../data/scheduleeventslogic';
@@ -17,9 +17,9 @@ import { defaultMenuItems } from '../helper/defaultcontextmenu';
 export interface NormalActionService {
     findDateRangeByDateId(dayId: ContextMenuDayId, specifiedDate?: Date): Promise<DateRange>;
     updateContextMenus(): Promise<void>;
-    getEventsByMySelf(setting: FilterSetting, dateRange: DateRange): Promise<EventInfo[]>;
+    getEventsByMySelf(setting: FilterSetting, dateRange: DateRange): Promise<Event[]>;
     getEventsByMyGroup(groupId: string, setting: FilterSetting, dateRange: DateRange): Promise<MyGroupEvent[]>;
-    getEventsByTemplate(setting: FilterSetting, templateText: string): Promise<TemplateEvent>;
+    getEventsByTemplate(setting: FilterSetting, templateText: string): Promise<TemplateEventsInfo>;
 }
 
 export class NormalActionServiceImpl implements NormalActionService {
@@ -69,7 +69,7 @@ export class NormalActionServiceImpl implements NormalActionService {
         ContextMenuHelper.addAll(newContextMenuItems);
     }
 
-    public async getEventsByMySelf(setting: FilterSetting, dateRange: DateRange): Promise<EventInfo[]> {
+    public async getEventsByMySelf(setting: FilterSetting, dateRange: DateRange): Promise<Event[]> {
         const events = await this.logic.getSortedMyEvents(dateRange);
         return events.filter(event => {
             if (!setting.isIncludePrivateEvent && event.visibilityType === 'PRIVATE') {
@@ -91,11 +91,11 @@ export class NormalActionServiceImpl implements NormalActionService {
     ): Promise<MyGroupEvent[]> {
         const myGroupEvents = await this.logic.getMyGroupEvents(dateRange, groupId);
         return myGroupEvents.filter(myGroupevent => {
-            if (!setting.isIncludePrivateEvent && myGroupevent.eventInfo.visibilityType === 'PRIVATE') {
+            if (!setting.isIncludePrivateEvent && myGroupevent.event.visibilityType === 'PRIVATE') {
                 return false;
             }
 
-            if (!setting.isIncludeAllDayEvent && myGroupevent.eventInfo.isAllDay) {
+            if (!setting.isIncludeAllDayEvent && myGroupevent.event.isAllDay) {
                 return false;
             }
 
@@ -103,34 +103,42 @@ export class NormalActionServiceImpl implements NormalActionService {
         });
     }
 
-    public async getEventsByTemplate(setting: FilterSetting, templateText: string): Promise<TemplateEvent> {
-        const templateEvent: TemplateEvent = {
-            todayEventInfoList: [],
-            nextDayEventInfoList: [],
-            previousDayEventInfoList: [],
+    public async getEventsByTemplate(setting: FilterSetting, templateText: string): Promise<TemplateEventsInfo> {
+        const templateEventsInfo: TemplateEventsInfo = {
+            specifiedDate: {
+                todayStr: '',
+                nextDayStr: '',
+                previousDayStr: '',
+            },
+            todayEvents: [],
+            nextDayEvents: [],
+            previousDayEvents: [],
         };
 
         if (!templateText) {
-            return templateEvent;
+            return templateEventsInfo;
         }
 
         const templateCharactorInText = await this.findSpecialTemplateCharacter(templateText);
         if (templateCharactorInText.isIncludeToday) {
             const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.TODAY);
-            templateEvent.todayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
+            templateEventsInfo.specifiedDate.todayStr = dateRange.startDate.toJSON();
+            templateEventsInfo.todayEvents = await this.getEventsByMySelf(setting, dateRange);
         }
 
         if (templateCharactorInText.isIncludeNextDay) {
             const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.NEXT_BUSINESS_DAY);
-            templateEvent.nextDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
+            templateEventsInfo.specifiedDate.nextDayStr = dateRange.startDate.toJSON();
+            templateEventsInfo.nextDayEvents = await this.getEventsByMySelf(setting, dateRange);
         }
 
         if (templateCharactorInText.isIncludePreviousDay) {
             const dateRange = await this.findDateRangeByDateId(ContextMenuDayId.PREVIOUS_BUSINESS_DAY);
-            templateEvent.previousDayEventInfoList = await this.getEventsByMySelf(setting, dateRange);
+            templateEventsInfo.specifiedDate.previousDayStr = dateRange.startDate.toJSON();
+            templateEventsInfo.previousDayEvents = await this.getEventsByMySelf(setting, dateRange);
         }
 
-        return templateEvent;
+        return templateEventsInfo;
     }
 
     private async getPublicHolidays(specificDate: Date): Promise<string[]> {

@@ -1,10 +1,10 @@
 import GaroonSoap from 'garoon-soap';
 import * as base from 'garoon-soap/dist/type/base';
-import { EventInfo } from '../../types/event';
+import { Event } from '../../types/event';
 import { EventConverter } from './eventconverter';
 
 export interface GaroonDataSource {
-    getScheduleEvents(rangeStart: string, rangeEnd: string, targetType: string, target: string): Promise<EventInfo[]>;
+    getScheduleEvents(rangeStart: string, rangeEnd: string, targetType: string, target: string): Promise<Event[]>;
     getMyGroupVersions(myGroupItems: base.ItemVersionType[]): Promise<base.ItemVersionResultType[]>;
     getMyGroupsById(id: string[]): Promise<base.MyGroupType[]>;
     getCalendarEvents(): Promise<base.BaseGetCalendarEventType[]>;
@@ -35,7 +35,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
         rangeEnd: string,
         targetType = '',
         target = ''
-    ): Promise<EventInfo[]> {
+    ): Promise<Event[]> {
         const url = new URL(`${this.baseUrl}${this.PATH}schedule/events`);
         url.searchParams.append('orderBy', 'start asc');
 
@@ -72,7 +72,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
             );
         }
         return respJson.events.map(event => {
-            return EventConverter.convertToEventInfo(event);
+            return EventConverter.convertToEvent(event);
         });
     }
 

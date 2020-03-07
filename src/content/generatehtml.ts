@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { EventInfo, MyGroupEvent, Participant, SpecialTemplateCharactor, TemplateEvent } from 'src/types/event';
+import { Event, MyGroupEvent, Participant, SpecialTemplateCharactor, TemplateEventsInfo } from 'src/types/event';
 import { pickEventMenuColor } from './eventmenucolor';
 import { GenerateEvents } from './generateevents';
 import { replaceText } from './replacetext';
@@ -23,18 +23,18 @@ export class GenerateHtmlImpl implements GenerateEvents {
             >${planName}</span>`;
     }
 
-    private createTimeRange(eventInfo: EventInfo): string {
-        const startTime = moment(eventInfo.startTime).format('HH:mm');
-        if (eventInfo.isStartOnly || eventInfo.endTime == null) {
+    private createTimeRange(event: Event): string {
+        const startTime = moment(event.startTime).format('HH:mm');
+        if (event.isStartOnly || event.endTime == null) {
             return `<span>${startTime}</span>`;
         } else {
-            const endTime = moment(eventInfo.endTime).format('HH:mm');
+            const endTime = moment(event.endTime).format('HH:mm');
             return `<span>${startTime}-${endTime}</span>`;
         }
     }
 
-    private createEventName(eventInfo: EventInfo): string {
-        return `<a href="https://bozuman.cybozu.com/g/schedule/view.csp?event=${eventInfo.id}">${eventInfo.subject}</a>`;
+    private createEventName(event: Event): string {
+        return `<a href="https://bozuman.cybozu.com/g/schedule/view.csp?event=${event.id}">${event.subject}</a>`;
     }
 
     private createEventParticipant(moment: moment.Moment, participants: Participant[]): string {
@@ -51,34 +51,34 @@ export class GenerateHtmlImpl implements GenerateEvents {
             .join('')}`;
     }
 
-    private bundleEventMenuAndName(eventInfo: EventInfo): string {
+    private bundleEventMenuAndName(event: Event): string {
         let body = '';
-        if (eventInfo.eventMenu !== '') {
-            body += ` ${this.createEventMenu(eventInfo.eventMenu)}`; // スペース1つ分の余白を付けてデザインの微調整
+        if (event.eventMenu !== '') {
+            body += ` ${this.createEventMenu(event.eventMenu)}`; // スペース1つ分の余白を付けてデザインの微調整
         }
-        body += ` ${this.createEventName(eventInfo)}`; // スペース1つ分の余白を付けてデザインの微調整
+        body += ` ${this.createEventName(event)}`; // スペース1つ分の余白を付けてデザインの微調整
         return body;
     }
 
-    private constructAllDayEvent(eventInfo: EventInfo): string {
+    private constructAllDayEvent(event: Event): string {
         let body = this.createEventMenu('終日');
-        body += this.bundleEventMenuAndName(eventInfo);
+        body += this.bundleEventMenuAndName(event);
         return `<div>${body}</div>`;
     }
 
-    private constructRegularEvent(eventInfo: EventInfo): string {
-        let body = this.createTimeRange(eventInfo);
-        body += this.bundleEventMenuAndName(eventInfo);
+    private constructRegularEvent(event: Event): string {
+        let body = this.createTimeRange(event);
+        body += this.bundleEventMenuAndName(event);
         return `<div>${body}</div>`;
     }
 
     private constructRegularEventIncludeParticipant(
-        eventInfo: EventInfo,
+        event: Event,
         dateStr?: string,
         participants: Participant[] = []
     ): string {
-        let body = this.createTimeRange(eventInfo);
-        body += this.bundleEventMenuAndName(eventInfo);
+        let body = this.createTimeRange(event);
+        body += this.bundleEventMenuAndName(event);
 
         if (participants.length !== 0 && dateStr !== undefined) {
             body += this.createEventParticipant(moment(dateStr), participants);
@@ -86,17 +86,17 @@ export class GenerateHtmlImpl implements GenerateEvents {
         return `<div>${body}</div>`;
     }
 
-    public constructEvents(eventInfoList: EventInfo[]): string {
-        const regularAndRepeatingEvents: EventInfo[] = eventInfoList.filter(
-            eventInfo => eventInfo.eventType === 'REGULAR' || eventInfo.eventType === 'REPEATING'
+    public constructEvents(eventList: Event[]): string {
+        const regularAndRepeatingEvents: Event[] = eventList.filter(
+            event => event.eventType === 'REGULAR' || event.eventType === 'REPEATING'
         );
 
         const body = regularAndRepeatingEvents
-            .map(eventInfo => {
-                if (eventInfo.isAllDay) {
-                    return this.constructAllDayEvent(eventInfo);
+            .map(event => {
+                if (event.isAllDay) {
+                    return this.constructAllDayEvent(event);
                 } else {
-                    return this.constructRegularEvent(eventInfo);
+                    return this.constructRegularEvent(event);
                 }
             })
             .join('');
@@ -105,16 +105,16 @@ export class GenerateHtmlImpl implements GenerateEvents {
 
     public constructMyGroupEvents(myGroupEventList: MyGroupEvent[], specificDateStr?: string): string {
         const regularAndRepeatingEvents: MyGroupEvent[] = myGroupEventList.filter(
-            groupEvent => groupEvent.eventInfo.eventType === 'REGULAR' || groupEvent.eventInfo.eventType === 'REPEATING'
+            groupEvent => groupEvent.event.eventType === 'REGULAR' || groupEvent.event.eventType === 'REPEATING'
         );
 
         const body = regularAndRepeatingEvents
             .map(groupEvent => {
-                if (groupEvent.eventInfo.isAllDay) {
-                    return this.constructAllDayEvent(groupEvent.eventInfo);
+                if (groupEvent.event.isAllDay) {
+                    return this.constructAllDayEvent(groupEvent.event);
                 } else {
                     return this.constructRegularEventIncludeParticipant(
-                        groupEvent.eventInfo,
+                        groupEvent.event,
                         specificDateStr,
                         groupEvent.participants
                     );
@@ -124,24 +124,31 @@ export class GenerateHtmlImpl implements GenerateEvents {
         return `${body}<div></div>`; // 挿入位置の下に文字列が入力されている時、入力されている文字列が予定の末尾にマージされてしまうので、div要素を無理矢理差し込んで改行する
     }
 
-    public constructTemplateEvents(templateText: string, templateEvent: TemplateEvent): string {
+    public constructTemplateEvents(templateText: string, templateEventsInfo: TemplateEventsInfo): string {
         let templateHtml = templateText.replace(/\r?\n/g, '<br>');
-        if (templateEvent.todayEventInfoList.length !== 0) {
-            const body = this.constructEvents(templateEvent.todayEventInfoList);
-            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.TODAY}<br>`, body);
-            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.TODAY, body);
+        if (templateEventsInfo.todayEvents.length !== 0) {
+            const title = this.constructScheduleTitle(templateEventsInfo.specifiedDate.todayStr);
+            const body = this.constructEvents(templateEventsInfo.todayEvents);
+            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.TODAY}<br>`, title + body);
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.TODAY, title + body);
         }
 
-        if (templateEvent.nextDayEventInfoList.length !== 0) {
-            const body = this.constructEvents(templateEvent.nextDayEventInfoList);
-            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.NEXT_BUSINESS_DAY}<br>`, body);
-            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.NEXT_BUSINESS_DAY, body);
+        if (templateEventsInfo.nextDayEvents.length !== 0) {
+            const title = this.constructScheduleTitle(templateEventsInfo.specifiedDate.nextDayStr);
+            const body = this.constructEvents(templateEventsInfo.nextDayEvents);
+            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.NEXT_BUSINESS_DAY}<br>`, title + body);
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.NEXT_BUSINESS_DAY, title + body);
         }
 
-        if (templateEvent.previousDayEventInfoList.length !== 0) {
-            const body = this.constructEvents(templateEvent.previousDayEventInfoList);
-            templateHtml = replaceText(templateHtml, `${SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY}<br>`, body);
-            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, body);
+        if (templateEventsInfo.previousDayEvents.length !== 0) {
+            const title = this.constructScheduleTitle(templateEventsInfo.specifiedDate.previousDayStr);
+            const body = this.constructEvents(templateEventsInfo.previousDayEvents);
+            templateHtml = replaceText(
+                templateHtml,
+                `${SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY}<br>`,
+                title + body
+            );
+            templateHtml = replaceText(templateHtml, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, title + body);
         }
         return templateHtml;
     }

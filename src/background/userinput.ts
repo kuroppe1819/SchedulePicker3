@@ -1,5 +1,6 @@
 import { ContextMenuActionId, ContextMenuDayId } from 'src/types/contextmenu';
-import { NoticeStateType, RecieveEventMessage } from 'src/types/notice';
+import { EventsInfo, MyGroupEventsInfo } from 'src/types/event';
+import { NoticeStateType, RecieveEventMessage, RecieveStateMessage } from 'src/types/notice';
 import { UserSetting } from 'src/types/storage';
 import { UserSettingServiceImpl } from '../storage/usersettingservice';
 import { GaroonDataSourceImpl } from './data/garoondatasource';
@@ -17,8 +18,10 @@ const changeDomain = (message: { domain: string }): void => {
     currentDomain = message.domain;
 };
 
-const noticeStateToContent = (tabId: number, state: NoticeStateType): void =>
-    chrome.tabs.sendMessage(tabId, { state: state });
+const noticeStateToContent = (tabId: number, state: NoticeStateType): void => {
+    const message: RecieveStateMessage = { state: state };
+    chrome.tabs.sendMessage(tabId, message);
+};
 
 const executeRadioAction = async (menuItemId: ContextMenuDayId): Promise<void> => {
     await UserSettingServiceImpl.getInstance().setDayId(menuItemId);
@@ -47,38 +50,49 @@ const executeNormalAction = async (
     switch (menuItemId) {
         case ContextMenuActionId.MYSELF: {
             const events = await normalActionService.getEventsByMySelf(setting.filterSetting, dateRange);
+            const eventsInfo: EventsInfo = {
+                specifiedDateStr: dateRange.startDate.toJSON(),
+                events: events,
+            };
             const message: RecieveEventMessage = {
                 actionId: ContextMenuActionId.MYSELF,
-                events: events,
-                isPostMarkdown: isPostMarkdown,
-                specificDateStr: dateRange.startDate.toJSON(),
+                eventsInfo: eventsInfo,
+                userSetting: {
+                    isPostMarkdown: isPostMarkdown,
+                },
             };
             chrome.tabs.sendMessage(tabId, message);
             break;
         }
         case ContextMenuActionId.TEMPLATE: {
-            const events = await normalActionService.getEventsByTemplate(setting.filterSetting, setting.templateText);
+            const eventsInfo = await normalActionService.getEventsByTemplate(
+                setting.filterSetting,
+                setting.templateText
+            );
             const templateText = await userSetting.getTemplateText();
             const message: RecieveEventMessage = {
                 actionId: ContextMenuActionId.TEMPLATE,
-                events: events,
-                isPostMarkdown: isPostMarkdown,
-                templateText: templateText,
+                eventsInfo: eventsInfo,
+                userSetting: {
+                    isPostMarkdown: isPostMarkdown,
+                    templateText: templateText,
+                },
             };
             chrome.tabs.sendMessage(tabId, message);
             break;
         }
         default: {
-            const myGroupEvents = await normalActionService.getEventsByMyGroup(
-                menuItemId,
-                setting.filterSetting,
-                dateRange
-            );
+            const events = await normalActionService.getEventsByMyGroup(menuItemId, setting.filterSetting, dateRange);
+            const eventsInfo: MyGroupEventsInfo = {
+                specifiedDateStr: dateRange.startDate.toJSON(),
+                myGroupEvents: events,
+            };
             const message: RecieveEventMessage = {
                 actionId: ContextMenuActionId.MYGROUP,
-                events: myGroupEvents,
-                isPostMarkdown: isPostMarkdown,
-                specificDateStr: dateRange.startDate.toJSON(),
+                eventsInfo: eventsInfo,
+                userSetting: {
+                    isPostMarkdown: isPostMarkdown,
+                },
             };
             chrome.tabs.sendMessage(tabId, message);
             break;

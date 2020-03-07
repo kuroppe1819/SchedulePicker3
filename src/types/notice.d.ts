@@ -1,16 +1,20 @@
 import { ContextMenuActionId } from './contextmenu';
-import { EventInfo, MyGroupEvent, TemplateEvent } from './event';
+import { EventsInfo, MyGroupEventsInfo, TemplateEventsInfo } from './event';
 
 export const enum NoticeStateType {
     NOW_LOADING,
     FINISHED,
 }
 
+export type RecieveStateMessage = {
+    state: NoticeStateType;
+};
+
 export type RecieveEventMessage = {
     actionId: ContextMenuActionId;
-    events: EventInfo[] | MyGroupEvent[] | TemplateEvent;
-    isPostMarkdown: boolean;
-    templateText?: string;
-    specificDateStr?: string;
-    state?: NoticeStateType;
+    eventsInfo: EventsInfo | MyGroupEventsInfo | TemplateEventsInfo;
+    userSetting: {
+        isPostMarkdown: boolean;
+        templateText?: string;
+    };
 };

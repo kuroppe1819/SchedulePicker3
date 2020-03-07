@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { EventInfo, Participant, MyGroupEvent, TemplateEvent, SpecialTemplateCharactor } from 'src/types/event';
+import { Event, Participant, MyGroupEvent, TemplateEventsInfo, SpecialTemplateCharactor } from 'src/types/event';
 import { GenerateEvents } from './generateevents';
 import { replaceText } from './replacetext';
 
@@ -12,18 +12,18 @@ export class GenerateMarkdownImpl implements GenerateEvents {
         return `[${planName}]`;
     }
 
-    private createTimeRange(eventInfo: EventInfo): string {
-        const startTime = moment(eventInfo.startTime).format('HH:mm');
-        if (eventInfo.isStartOnly || eventInfo.endTime == null) {
+    private createTimeRange(event: Event): string {
+        const startTime = moment(event.startTime).format('HH:mm');
+        if (event.isStartOnly || event.endTime == null) {
             return startTime.toString();
         } else {
-            const endTime = moment(eventInfo.endTime).format('HH:mm');
+            const endTime = moment(event.endTime).format('HH:mm');
             return `${startTime}-${endTime}`;
         }
     }
 
-    private createEventName(eventInfo: EventInfo): string {
-        return `[${eventInfo.subject}](https://bozuman.cybozu.com/g/schedule/view.csp?event=${eventInfo.id})`;
+    private createEventName(event: Event): string {
+        return `[${event.subject}](https://bozuman.cybozu.com/g/schedule/view.csp?event=${event.id})`;
     }
 
     private createEventParticipant(moment: moment.Moment, participants: Participant[]): string {
@@ -40,7 +40,7 @@ export class GenerateMarkdownImpl implements GenerateEvents {
             .join('')}`;
     }
 
-    private bundleEventMenuAndName(eventInfo: EventInfo): string {
+    private bundleEventMenuAndName(eventInfo: Event): string {
         let body = '';
         if (eventInfo.eventMenu !== '') {
             body += ` ${this.createEventMenu(eventInfo.eventMenu)}`;
@@ -49,20 +49,20 @@ export class GenerateMarkdownImpl implements GenerateEvents {
         return body;
     }
 
-    private constructAllDayEvent(eventInfo: EventInfo): string {
+    private constructAllDayEvent(eventInfo: Event): string {
         let body = this.createEventMenu('終日');
         body += this.bundleEventMenuAndName(eventInfo);
         return body + '\n';
     }
 
-    private constructRegularEvent(eventInfo: EventInfo): string {
+    private constructRegularEvent(eventInfo: Event): string {
         let body = this.createTimeRange(eventInfo);
         body += this.bundleEventMenuAndName(eventInfo);
         return body + '\n';
     }
 
     private constructRegularEventIncludeParticipant(
-        eventInfo: EventInfo,
+        eventInfo: Event,
         dateStr?: string,
         participants: Participant[] = []
     ): string {
@@ -75,8 +75,8 @@ export class GenerateMarkdownImpl implements GenerateEvents {
         return body + '\n';
     }
 
-    public constructEvents(eventInfoList: EventInfo[]): string {
-        const regularAndRepeatingEvents: EventInfo[] = eventInfoList.filter(
+    public constructEvents(eventInfoList: Event[]): string {
+        const regularAndRepeatingEvents: Event[] = eventInfoList.filter(
             eventInfo => eventInfo.eventType === 'REGULAR' || eventInfo.eventType === 'REPEATING'
         );
 
@@ -94,16 +94,16 @@ export class GenerateMarkdownImpl implements GenerateEvents {
 
     public constructMyGroupEvents(myGroupEventList: MyGroupEvent[], specificDateStr?: string): string {
         const regularAndRepeatingEvents: MyGroupEvent[] = myGroupEventList.filter(
-            groupEvent => groupEvent.eventInfo.eventType === 'REGULAR' || groupEvent.eventInfo.eventType === 'REPEATING'
+            groupEvent => groupEvent.event.eventType === 'REGULAR' || groupEvent.event.eventType === 'REPEATING'
         );
 
         return regularAndRepeatingEvents
             .map(groupEvent => {
-                if (groupEvent.eventInfo.isAllDay) {
-                    return this.constructAllDayEvent(groupEvent.eventInfo);
+                if (groupEvent.event.isAllDay) {
+                    return this.constructAllDayEvent(groupEvent.event);
                 } else {
                     return this.constructRegularEventIncludeParticipant(
-                        groupEvent.eventInfo,
+                        groupEvent.event,
                         specificDateStr,
                         groupEvent.participants
                     );
@@ -113,20 +113,23 @@ export class GenerateMarkdownImpl implements GenerateEvents {
             .trim();
     }
 
-    public constructTemplateEvents(templateText: string, templateEvent: TemplateEvent): string {
-        if (templateEvent.todayEventInfoList.length !== 0) {
-            const body = this.constructEvents(templateEvent.todayEventInfoList);
-            templateText = replaceText(templateText, SpecialTemplateCharactor.TODAY, body);
+    public constructTemplateEvents(templateText: string, templateEventsInfo: TemplateEventsInfo): string {
+        if (templateEventsInfo.todayEvents.length !== 0) {
+            const title = this.constructScheduleTitle(templateEventsInfo.specifiedDate.todayStr);
+            const body = this.constructEvents(templateEventsInfo.todayEvents);
+            templateText = replaceText(templateText, SpecialTemplateCharactor.TODAY, title + body);
         }
 
-        if (templateEvent.nextDayEventInfoList.length !== 0) {
-            const body = this.constructEvents(templateEvent.nextDayEventInfoList);
-            templateText = replaceText(templateText, SpecialTemplateCharactor.NEXT_BUSINESS_DAY, body);
+        if (templateEventsInfo.nextDayEvents.length !== 0) {
+            const title = this.constructScheduleTitle(templateEventsInfo.specifiedDate.nextDayStr);
+            const body = this.constructEvents(templateEventsInfo.nextDayEvents);
+            templateText = replaceText(templateText, SpecialTemplateCharactor.NEXT_BUSINESS_DAY, title + body);
         }
 
-        if (templateEvent.previousDayEventInfoList.length !== 0) {
-            const body = this.constructEvents(templateEvent.previousDayEventInfoList);
-            templateText = replaceText(templateText, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, body);
+        if (templateEventsInfo.previousDayEvents.length !== 0) {
+            const title = this.constructScheduleTitle(templateEventsInfo.specifiedDate.previousDayStr);
+            const body = this.constructEvents(templateEventsInfo.previousDayEvents);
+            templateText = replaceText(templateText, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, title + body);
         }
         return templateText.trim();
     }
