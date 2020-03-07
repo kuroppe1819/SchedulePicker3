@@ -31,7 +31,7 @@ export class GenerateMarkdownImpl implements GenerateEvents {
         return `${participants
             .map(
                 participant =>
-                    `([${
+                    ` ([${
                         participant.name.split(' ')[0]
                     }](https://bozuman.cybozu.com/g/schedule/personal_day.csp?bdate=${formattedDate}&uid=${
                         participant.id
