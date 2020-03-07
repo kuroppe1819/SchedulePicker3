@@ -19,11 +19,11 @@
     "content_scripts": [
         {
             "matches": ["https://bozuman.cybozu.com/*", "https://bozuman.s.cybozu.com/*"],
-            "js": ["js/contentscript.js", "js/vendor.js"]
+            "js": ["js/contentscript.js"]
         }
     ],
     "background": {
-        "scripts": ["js/initialize.js", "js/userinput.js", "js/vendor.js"]
+        "scripts": ["js/initialize.js", "js/userinput.js"]
     },
     "browser_action": {
         "default_title": "SchedulePicker",

@@ -1,7 +1,7 @@
 const path = require('path'); // eslint-disable-line
 const CopyPlugin = require('copy-webpack-plugin'); // eslint-disable-line
 const webpack = require('webpack') // eslint-disable-line
-const EncodingPlugin = require('webpack-encoding-plugin');
+const EncodingPlugin = require('webpack-encoding-plugin'); // eslint-disable-line
 const srcDir = '../src/';
 
 module.exports = {
@@ -15,12 +15,6 @@ module.exports = {
     output: {
         path: path.join(__dirname, '../dist/js'),
         filename: '[name].js',
-    },
-    optimization: {
-        splitChunks: {
-            name: 'vendor',
-            chunks: 'initial',
-        },
     },
     module: {
         rules: [
