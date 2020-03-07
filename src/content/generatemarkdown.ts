@@ -9,7 +9,7 @@ export class GenerateMarkdownImpl implements GenerateEvents {
     }
 
     private createEventMenu(planName: string): string {
-        return `\`${planName}\``;
+        return `[${planName}]`;
     }
 
     private createTimeRange(eventInfo: EventInfo): string {
@@ -28,8 +28,7 @@ export class GenerateMarkdownImpl implements GenerateEvents {
 
     private createEventParticipant(moment: moment.Moment, participants: Participant[]): string {
         const formattedDate = moment.format('YYYY-MM-DD');
-        return `
-        ${participants
+        return `${participants
             .map(
                 participant =>
                     `([${
@@ -53,13 +52,13 @@ export class GenerateMarkdownImpl implements GenerateEvents {
     private constructAllDayEvent(eventInfo: EventInfo): string {
         let body = this.createEventMenu('終日');
         body += this.bundleEventMenuAndName(eventInfo);
-        return body;
+        return body + '\n';
     }
 
     private constructRegularEvent(eventInfo: EventInfo): string {
         let body = this.createTimeRange(eventInfo);
         body += this.bundleEventMenuAndName(eventInfo);
-        return body;
+        return body + '\n';
     }
 
     private constructRegularEventIncludeParticipant(
@@ -71,9 +70,9 @@ export class GenerateMarkdownImpl implements GenerateEvents {
         body += this.bundleEventMenuAndName(eventInfo);
 
         if (participants.length !== 0 && dateStr !== undefined) {
-            body += this.createEventParticipant(moment(dateStr), participants);
+            body += ` ${this.createEventParticipant(moment(dateStr), participants)}`;
         }
-        return body;
+        return body + '\n';
     }
 
     public constructEvents(eventInfoList: EventInfo[]): string {
@@ -132,7 +131,7 @@ export class GenerateMarkdownImpl implements GenerateEvents {
 
     public constructScheduleTitle(specificDateStr: string | undefined): string {
         if (specificDateStr) {
-            return this.createScheduleTitle(moment(specificDateStr));
+            return this.createScheduleTitle(moment(specificDateStr)) + '\n';
         }
         return '日付の取得に失敗しました';
     }

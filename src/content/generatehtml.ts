@@ -40,8 +40,7 @@ export class GenerateHtmlImpl implements GenerateEvents {
     private createEventParticipant(moment: moment.Moment, participants: Participant[]): string {
         const formattedDate = moment.format('YYYY-MM-DD');
 
-        return `
-        ${participants
+        return `${participants
             .map(
                 participant =>
                     `<a style="color: chocolate;" 
