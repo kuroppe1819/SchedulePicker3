@@ -88,7 +88,8 @@ export class GenerateMarkdownImpl implements GenerateEvents {
                     return this.constructRegularEvent(eventInfo);
                 }
             })
-            .join('');
+            .join('')
+            .trim();
     }
 
     public constructMyGroupEvents(myGroupEventList: MyGroupEvent[], specificDateStr?: string): string {
@@ -108,7 +109,8 @@ export class GenerateMarkdownImpl implements GenerateEvents {
                     );
                 }
             })
-            .join('');
+            .join('')
+            .trim();
     }
 
     public constructTemplateEvents(templateText: string, templateEvent: TemplateEvent): string {
@@ -126,7 +128,7 @@ export class GenerateMarkdownImpl implements GenerateEvents {
             const body = this.constructEvents(templateEvent.previousDayEventInfoList);
             templateText = replaceText(templateText, SpecialTemplateCharactor.PREVIOUS_BUSINESS_DAY, body);
         }
-        return templateText;
+        return templateText.trim();
     }
 
     public constructScheduleTitle(specificDateStr: string | undefined): string {
