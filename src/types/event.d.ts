@@ -49,7 +49,7 @@ export type TemplateCharactorInText = {
 };
 
 export const enum SpecialTemplateCharactor {
-    TODAY = '{%今日%}',
-    NEXT_BUSINESS_DAY = '{%翌営業日%}',
-    PREVIOUS_BUSINESS_DAY = '{%前営業日%}',
+    TODAY = '{%TODAY%}',
+    NEXT_BUSINESS_DAY = '{%NEXT_BUSINESS_DAY%}',
+    PREVIOUS_BUSINESS_DAY = '{%PREVIOUS_BUSINESS_DAY%}',
 }
