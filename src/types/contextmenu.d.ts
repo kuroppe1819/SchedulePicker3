@@ -1,6 +1,5 @@
 export const enum ContextMenuParentId {
     ROOT = 'root',
-    MYGROUPS = 'mygroups',
 }
 
 export const enum ContextMenuActionId {
@@ -18,7 +17,7 @@ export const enum ContextMenuDayId {
 }
 
 export type ContextMenu = {
-    id: string;
+    id?: string;
     title: string;
     parentId?: ContextMenuParentId | ContextMenuActionId | ContextMenuDayId;
     type: string;
