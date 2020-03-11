@@ -12,7 +12,6 @@ export class UserSettingConverter {
     static convertToUserSetting(item: StorageItem): UserSetting {
         const specifiedDate = this.convertToSpecifiedDate(item.specifiedDateStr);
         return {
-            dayId: item.dayId,
             specifiedDate: specifiedDate,
             filterSetting: {
                 isIncludePrivateEvent: item.isIncludePrivateEvent,
@@ -26,7 +25,6 @@ export class UserSettingConverter {
     static convertToStorageItem(setting: UserSetting): StorageItem {
         const specifiedDateStr = this.convertToSpecifiedDateStr(setting.specifiedDate);
         return {
-            dayId: setting.dayId,
             specifiedDateStr: specifiedDateStr,
             isIncludePrivateEvent: setting.filterSetting.isIncludePrivateEvent,
             isIncludeAllDayEvent: setting.filterSetting.isIncludeAllDayEvent,

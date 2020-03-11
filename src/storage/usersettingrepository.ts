@@ -4,7 +4,6 @@ import { ContextMenuDayId } from 'src/types/contextmenu';
 export interface UserSettingRepository {
     getStorageItem(): Promise<StorageItem>;
     setStorageItem(item: StorageItem): Promise<void>;
-    setDayId(dayId: ContextMenuDayId): Promise<void>;
     setSpecifiedDateStr(specifiedDateStr?: string): Promise<void>;
     getSpecifiedDateStr(): Promise<string | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
@@ -20,7 +19,6 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
         return new Promise(resolve =>
             chrome.storage.sync.get(
                 [
-                    StorageKeys.DAY_ID,
                     StorageKeys.SPECIFIED_DATE_STR,
                     StorageKeys.IS_INCLUDE_ALL_DAY_EVENT,
                     StorageKeys.IS_INCLUDE_PRIVATE_EVENT,
@@ -29,7 +27,6 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
                 ],
                 items => {
                     return resolve({
-                        dayId: items[StorageKeys.DAY_ID],
                         specifiedDateStr: items[StorageKeys.SPECIFIED_DATE_STR],
                         isIncludePrivateEvent: items[StorageKeys.IS_INCLUDE_PRIVATE_EVENT],
                         isIncludeAllDayEvent: items[StorageKeys.IS_INCLUDE_ALL_DAY_EVENT],
@@ -45,7 +42,6 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
         return new Promise(resolve => {
             chrome.storage.sync.set(
                 {
-                    dayId: item.dayId,
                     specifiedDateStr: item.specifiedDateStr,
                     isIncludePrivateEvent: item.isIncludePrivateEvent,
                     isIncludeAllDayEvent: item.isIncludeAllDayEvent,
@@ -55,10 +51,6 @@ export class UserSettingRepositoryImpl implements UserSettingRepository {
                 () => resolve()
             );
         });
-    }
-
-    public setDayId(dayId: ContextMenuDayId): Promise<void> {
-        return new Promise(resolve => chrome.storage.sync.set({ dayId: dayId }, () => resolve()));
     }
 
     public setSpecifiedDateStr(specifiedDateStr?: string): Promise<void> {

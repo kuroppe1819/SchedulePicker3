@@ -8,7 +8,6 @@ export interface UserSettingService {
     initialDefaultValue(): Promise<void>;
     setUserSetting(setting: UserSetting): Promise<void>;
     getUserSetting(): Promise<UserSetting>;
-    setDayId(dayId: ContextMenuDayId): Promise<void>;
     setSpecifiedDate(specifiedDate?: Date): Promise<void>;
     getSpecifiedDate(): Promise<Date | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
@@ -56,7 +55,6 @@ export class UserSettingServiceImpl implements UserSettingService {
     public async initialDefaultValue(): Promise<void> {
         const setting = await this.userSettingLogic.getUserSetting();
         await this.userSettingLogic.setUserSetting({
-            dayId: setting.dayId || ContextMenuDayId.TODAY,
             specifiedDate: setting.specifiedDate,
             filterSetting: {
                 isIncludePrivateEvent: setting.filterSetting.isIncludePrivateEvent || true,
@@ -73,10 +71,6 @@ export class UserSettingServiceImpl implements UserSettingService {
 
     public async getUserSetting(): Promise<UserSetting> {
         return await this.userSettingLogic.getUserSetting();
-    }
-
-    public async setDayId(dayId: ContextMenuDayId): Promise<void> {
-        await this.userSettingLogic.setDayId(dayId);
     }
 
     public async setSpecifiedDate(specifiedDate?: Date | undefined): Promise<void> {

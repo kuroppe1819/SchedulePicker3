@@ -6,7 +6,6 @@ import { UserSettingConverter } from './usersettingconverter';
 export interface UserSettingLogic {
     setUserSetting(setting: UserSetting): Promise<void>;
     getUserSetting(): Promise<UserSetting>;
-    setDayId(dayId: ContextMenuDayId): Promise<void>;
     setSpecifiedDate(specifiedDate?: Date): Promise<void>;
     getSpecifiedDate(): Promise<Date | undefined>;
     setTemplateText(templateText?: string): Promise<void>;
@@ -32,10 +31,6 @@ export class UserSettingLogicImpl implements UserSettingLogic {
     public async getUserSetting(): Promise<UserSetting> {
         const item = await this.userSettingRepository.getStorageItem();
         return UserSettingConverter.convertToUserSetting(item);
-    }
-
-    public async setDayId(dayId: ContextMenuDayId): Promise<void> {
-        await this.userSettingRepository.setDayId(dayId);
     }
 
     public async setSpecifiedDate(specifiedDate?: Date | undefined): Promise<void> {
