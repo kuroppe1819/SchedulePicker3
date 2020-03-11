@@ -100,7 +100,7 @@ const FilterSettingFrame = styled(Box)`
     border-radius: 5px;
     padding: 16px;
     position: relative;
-    margin: 0 0 24px 0;
+    margin: 8px 0 24px 0;
 
     &:hover {
         border-color: ${grey[900]};
