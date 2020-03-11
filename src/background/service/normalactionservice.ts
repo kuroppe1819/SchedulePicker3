@@ -57,9 +57,25 @@ export class NormalActionServiceImpl implements NormalActionService {
 
     private async getMyGroupMenuItems(): Promise<ContextMenu[]> {
         const myGroups = await this.logic.getMyGroups();
-        return myGroups.map(g => {
-            return { id: g.key, title: g.name, parentId: ContextMenuParentId.MYGROUPS, type: 'normal' };
+
+        const ContextMenuDayIdList = [
+            ContextMenuDayId.TODAY,
+            ContextMenuDayId.NEXT_BUSINESS_DAY,
+            ContextMenuDayId.PREVIOUS_BUSINESS_DAY,
+            ContextMenuDayId.SPECIFIED_DAY,
+        ];
+        const MyGroupMenuItems: ContextMenu[] = [];
+        myGroups.forEach(g => {
+            ContextMenuDayIdList.forEach(menuId =>
+                MyGroupMenuItems.push({
+                    id: g.key + menuId,
+                    title: g.name,
+                    parentId: menuId,
+                    type: 'normal',
+                })
+            );
         });
+        return MyGroupMenuItems;
     }
 
     public async updateContextMenus(): Promise<void> {
