@@ -1,4 +1,4 @@
-import { ContextMenu, ContextMenuActionId, ContextMenuDayId } from 'src/types/contextmenu';
+import { ContextMenu, ContextMenuDayId } from 'src/types/contextmenu';
 
 export class ContextMenuHelper {
     public static add(menu: ContextMenu): Promise<void> {
@@ -26,12 +26,11 @@ export class ContextMenuHelper {
         return new Promise(resolve => chrome.contextMenus.removeAll(() => resolve()));
     }
 
-    public static isContextMenuDayId(menuId: ContextMenuActionId | ContextMenuDayId): boolean {
-        return (
-            menuId === ContextMenuDayId.TODAY ||
-            menuId === ContextMenuDayId.NEXT_BUSINESS_DAY ||
-            menuId === ContextMenuDayId.PREVIOUS_BUSINESS_DAY ||
-            menuId === ContextMenuDayId.SPECIFIED_DAY
-        );
+    public static removeSuffixOfId(menuItemId: string): string {
+        menuItemId = menuItemId.replace(ContextMenuDayId.TODAY, '');
+        menuItemId = menuItemId.replace(ContextMenuDayId.NEXT_BUSINESS_DAY, '');
+        menuItemId = menuItemId.replace(ContextMenuDayId.PREVIOUS_BUSINESS_DAY, '');
+        menuItemId = menuItemId.replace(ContextMenuDayId.SPECIFIED_DAY, '');
+        return menuItemId;
     }
 }
