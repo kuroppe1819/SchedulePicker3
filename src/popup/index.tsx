@@ -9,7 +9,9 @@ import { IndexContainer, IndexContainerProps } from './indexcontainer';
     const filterSetting = await userSetting.getFilterSetting();
     const postMarkdownFlag = await userSetting.getPostMarkdownFlag();
     const templateText = await userSetting.getTemplateText();
+    const specifiedDate = (await userSetting.getSpecifiedDate()) || new Date();
     const indexContainerProps: IndexContainerProps = {
+        initSpecifiedDate: specifiedDate,
         initFilterSetting: filterSetting,
         initPostMarkdownFlag: postMarkdownFlag,
         initTemplateText: templateText,
