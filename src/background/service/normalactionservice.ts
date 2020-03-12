@@ -79,10 +79,10 @@ export class NormalActionServiceImpl implements NormalActionService {
     }
 
     public async updateContextMenus(): Promise<void> {
-        await ContextMenuHelper.removeAll();
         const myGroupMenuItems = await this.getMyGroupMenuItems();
         const newContextMenuItems = defaultMenuItems.concat(myGroupMenuItems);
-        ContextMenuHelper.addAll(newContextMenuItems);
+
+        await ContextMenuHelper.refresh(newContextMenuItems);
     }
 
     public async getEventsByMySelf(setting: FilterSetting, dateRange: DateRange): Promise<Event[]> {

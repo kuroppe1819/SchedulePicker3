@@ -1,18 +1,18 @@
 import { ContextMenuDayId } from './contextmenu';
 
 export type UserSetting = {
-    specifiedDate: Date | undefined;
+    specifiedDate?: Date;
     filterSetting: FilterSetting;
     isPostMarkdown: boolean;
     templateText: string;
 };
 
 export type StorageItem = {
-    specifiedDateStr: string | undefined;
+    specifiedDateStr?: string;
     isIncludePrivateEvent: boolean;
     isIncludeAllDayEvent: boolean;
     isPostMarkdown: boolean;
-    templateText: string | undefined;
+    templateText?: string;
 };
 
 export type FilterSetting = {

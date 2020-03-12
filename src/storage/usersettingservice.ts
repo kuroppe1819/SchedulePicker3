@@ -55,7 +55,7 @@ export class UserSettingServiceImpl implements UserSettingService {
     public async initialDefaultValue(): Promise<void> {
         const setting = await this.userSettingLogic.getUserSetting();
         await this.userSettingLogic.setUserSetting({
-            specifiedDate: setting.specifiedDate,
+            specifiedDate: setting.specifiedDate || new Date(),
             filterSetting: {
                 isIncludePrivateEvent: setting.filterSetting.isIncludePrivateEvent || true,
                 isIncludeAllDayEvent: setting.filterSetting.isIncludeAllDayEvent || true,

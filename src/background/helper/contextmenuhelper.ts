@@ -16,13 +16,14 @@ export class ContextMenuHelper {
         );
     }
 
-    public static async addAll(menus: ContextMenu[]): Promise<void> {
+    public static async refresh(menus: ContextMenu[]): Promise<void> {
+        this.removeAll();
         for (const menu of menus) {
             await this.add(menu);
         }
     }
 
-    public static removeAll(): Promise<void> {
+    private static removeAll(): Promise<void> {
         return new Promise(resolve => chrome.contextMenus.removeAll(() => resolve()));
     }
 
