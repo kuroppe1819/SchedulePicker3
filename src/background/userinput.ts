@@ -95,6 +95,10 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.runtime.onMessage.addListener(changeDomain);
 });
 
+chrome.runtime.onStartup.addListener(() => {
+    chrome.runtime.onMessage.addListener(changeDomain);
+});
+
 chrome.contextMenus.onClicked.addListener(async (info: chrome.contextMenus.OnClickData, tab?: chrome.tabs.Tab) => {
     if (tab === undefined || tab.id === undefined) {
         return;
