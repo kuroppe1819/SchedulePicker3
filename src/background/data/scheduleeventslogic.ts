@@ -1,4 +1,5 @@
 import * as base from 'garoon-soap/dist/type/base';
+import moment from 'moment';
 import { DateRange } from '../../types/date';
 import { Event, MyGroupEvent, Participant } from '../../types/event';
 import { EventConverter } from './eventconverter';
@@ -25,7 +26,17 @@ export class ScheduleEventsLogicImpl implements ScheduleEventsLogic {
         } else if (nextEvent.isAllDay) {
             return -1;
         } else {
-            return event.startTime.getHours() > nextEvent.startTime.getHours() ? 1 : -1;
+            const eventDate = moment()
+                .hours(event.startTime.getHours())
+                .minute(event.startTime.getMinutes())
+                .seconds(event.startTime.getSeconds());
+
+            const nextEventDate = moment()
+                .hours(nextEvent.startTime.getHours())
+                .minute(nextEvent.startTime.getMinutes())
+                .seconds(nextEvent.startTime.getSeconds());
+
+            return eventDate.isAfter(nextEventDate) ? 1 : -1;
         }
     }
 
