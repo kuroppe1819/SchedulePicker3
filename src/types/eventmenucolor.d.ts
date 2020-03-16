@@ -2,13 +2,14 @@ export const enum EventMenuColor {
     BLUE,
     SKYBLUE,
     ORANGE,
+    DEEP_ORANGE,
     RED,
     PINK,
     PURPULE,
     BROWN,
     GRAY,
     GREEN,
-    YELLOWGREEN,
+    YELLOW_GREEN,
     TEAL,
 }
 

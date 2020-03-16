@@ -11,6 +11,9 @@ const getEventMenuColor = (color: EventMenuColor): EventMenuRgbValue => {
         case EventMenuColor.ORANGE: {
             return { R: 239, G: 146, B: 1 };
         }
+        case EventMenuColor.DEEP_ORANGE: {
+            return { R: 255, G: 87, B: 34 };
+        }
         case EventMenuColor.RED: {
             return { R: 244, G: 72, B: 72 };
         }
@@ -29,15 +32,15 @@ const getEventMenuColor = (color: EventMenuColor): EventMenuRgbValue => {
         case EventMenuColor.GREEN: {
             return { R: 44, G: 190, B: 78 };
         }
-        case EventMenuColor.YELLOWGREEN: {
+        case EventMenuColor.YELLOW_GREEN: {
             return { R: 154, G: 205, B: 50 };
         }
         case EventMenuColor.TEAL: {
             return { R: 38, G: 166, B: 154 };
         }
         default: {
-            // EventMenuColor.GREEN;
-            return { R: 44, G: 190, B: 78 };
+            // EventMenuColor.DEEP_ORANGE;
+            return { R: 255, G: 87, B: 34 };
         }
     }
 };
@@ -79,8 +82,8 @@ export const pickEventMenuColor = (planName: string): EventMenuRgbValue => {
         case 'その他':
             return getEventMenuColor(EventMenuColor.GRAY);
         case '終日':
-            return getEventMenuColor(EventMenuColor.YELLOWGREEN);
+            return getEventMenuColor(EventMenuColor.YELLOW_GREEN);
         default:
-            return getEventMenuColor(EventMenuColor.GREEN);
+            return getEventMenuColor(EventMenuColor.DEEP_ORANGE);
     }
 };
