@@ -40,18 +40,18 @@ export class GenerateMarkdownImpl implements GenerateEvents {
             .join('')}`;
     }
 
-    private bundleEventMenuAndName(eventInfo: Event): string {
+    private bundleEventMenuAndName(event: Event): string {
         let body = '';
-        if (eventInfo.eventMenu !== '') {
-            body += ` ${this.createEventMenu(eventInfo.eventMenu)}`;
+        if (event.eventMenu !== '') {
+            body += ` ${this.createEventMenu(event.eventMenu)}`;
         }
-        body += ` ${this.createEventName(eventInfo)}`;
+        body += ` ${this.createEventName(event)}`;
         return body;
     }
 
-    private constructAllDayEvent(eventInfo: Event): string {
+    private constructAllDayEvent(event: Event): string {
         let body = this.createEventMenu('終日');
-        body += this.bundleEventMenuAndName(eventInfo);
+        body += this.bundleEventMenuAndName(event);
         return body + '\n';
     }
 
@@ -62,19 +62,19 @@ export class GenerateMarkdownImpl implements GenerateEvents {
         return body + '\n';
     }
 
-    private constructRegularEvent(eventInfo: Event): string {
-        let body = this.createTimeRange(eventInfo);
-        body += this.bundleEventMenuAndName(eventInfo);
+    private constructRegularEvent(event: Event): string {
+        let body = this.createTimeRange(event);
+        body += this.bundleEventMenuAndName(event);
         return body + '\n';
     }
 
     private constructRegularEventIncludeParticipant(
-        eventInfo: Event,
+        event: Event,
         dateStr?: string,
         participants: Participant[] = []
     ): string {
-        let body = this.createTimeRange(eventInfo);
-        body += this.bundleEventMenuAndName(eventInfo);
+        let body = this.createTimeRange(event);
+        body += this.bundleEventMenuAndName(event);
 
         if (participants.length !== 0 && dateStr !== undefined) {
             body += ` ${this.createEventParticipant(moment(dateStr), participants)}`;
@@ -82,19 +82,19 @@ export class GenerateMarkdownImpl implements GenerateEvents {
         return body + '\n';
     }
 
-    public constructEvents(eventInfoList: Event[]): string {
-        const regularAndRepeatingEvents: Event[] = eventInfoList.filter(
-            eventInfo => eventInfo.eventType === 'REGULAR' || eventInfo.eventType === 'REPEATING'
+    public constructEvents(events: Event[]): string {
+        const regularAndRepeatingEvents: Event[] = events.filter(
+            event => event.eventType === 'REGULAR' || event.eventType === 'REPEATING'
         );
 
         return regularAndRepeatingEvents
-            .map(eventInfo => {
-                if (eventInfo.isAllDay) {
-                    return this.constructAllDayEvent(eventInfo);
-                } else if (eventInfo.isLastForDays) {
-                    return this.constructLastForDayEvent(eventInfo);
+            .map(event => {
+                if (event.isAllDay) {
+                    return this.constructAllDayEvent(event);
+                } else if (event.isLastForDays) {
+                    return this.constructLastForDayEvent(event);
                 } else {
-                    return this.constructRegularEvent(eventInfo);
+                    return this.constructRegularEvent(event);
                 }
             })
             .join('')
