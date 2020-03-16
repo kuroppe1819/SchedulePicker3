@@ -83,6 +83,8 @@ export const pickEventMenuColor = (planName: string): EventMenuRgbValue => {
             return getEventMenuColor(EventMenuColor.GRAY);
         case '終日':
             return getEventMenuColor(EventMenuColor.YELLOW_GREEN);
+        case '日跨ぎ':
+            return getEventMenuColor(EventMenuColor.GREEN);
         default:
             return getEventMenuColor(EventMenuColor.DEEP_ORANGE);
     }

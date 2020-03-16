@@ -55,6 +55,13 @@ export class GenerateMarkdownImpl implements GenerateEvents {
         return body + '\n';
     }
 
+    private constructLastForDayEvent(event: Event): string {
+        let body = this.createTimeRange(event);
+        body += ` ${this.createEventMenu('日跨ぎ')}`;
+        body += this.bundleEventMenuAndName(event);
+        return body + '\n';
+    }
+
     private constructRegularEvent(eventInfo: Event): string {
         let body = this.createTimeRange(eventInfo);
         body += this.bundleEventMenuAndName(eventInfo);
@@ -84,6 +91,8 @@ export class GenerateMarkdownImpl implements GenerateEvents {
             .map(eventInfo => {
                 if (eventInfo.isAllDay) {
                     return this.constructAllDayEvent(eventInfo);
+                } else if (eventInfo.isLastForDays) {
+                    return this.constructLastForDayEvent(eventInfo);
                 } else {
                     return this.constructRegularEvent(eventInfo);
                 }
@@ -101,6 +110,8 @@ export class GenerateMarkdownImpl implements GenerateEvents {
             .map(groupEvent => {
                 if (groupEvent.event.isAllDay) {
                     return this.constructAllDayEvent(groupEvent.event);
+                } else if (groupEvent.event.isLastForDays) {
+                    return this.constructLastForDayEvent(groupEvent.event);
                 } else {
                     return this.constructRegularEventIncludeParticipant(
                         groupEvent.event,

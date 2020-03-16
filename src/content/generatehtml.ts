@@ -66,6 +66,13 @@ export class GenerateHtmlImpl implements GenerateEvents {
         return `<div>${body}</div>`;
     }
 
+    private constructLastForDayEvent(event: Event): string {
+        let body = this.createTimeRange(event);
+        body += ` ${this.createEventMenu('日跨ぎ')}`;
+        body += this.bundleEventMenuAndName(event);
+        return `<div>${body}</div>`;
+    }
+
     private constructRegularEvent(event: Event): string {
         let body = this.createTimeRange(event);
         body += this.bundleEventMenuAndName(event);
@@ -95,6 +102,8 @@ export class GenerateHtmlImpl implements GenerateEvents {
             .map(event => {
                 if (event.isAllDay) {
                     return this.constructAllDayEvent(event);
+                } else if (event.isLastForDays) {
+                    return this.constructLastForDayEvent(event);
                 } else {
                     return this.constructRegularEvent(event);
                 }
@@ -112,6 +121,8 @@ export class GenerateHtmlImpl implements GenerateEvents {
             .map(groupEvent => {
                 if (groupEvent.event.isAllDay) {
                     return this.constructAllDayEvent(groupEvent.event);
+                } else if (groupEvent.event.isLastForDays) {
+                    return this.constructLastForDayEvent(groupEvent.event);
                 } else {
                     return this.constructRegularEventIncludeParticipant(
                         groupEvent.event,
