@@ -72,7 +72,7 @@ export class GaroonDataSourceImpl implements GaroonDataSource {
             );
         }
         return respJson.events.map(event => {
-            return EventConverter.convertToEvent(event);
+            return EventConverter.convertToEvent(event, rangeStart, rangeEnd);
         });
     }
 

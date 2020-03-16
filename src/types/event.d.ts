@@ -14,6 +14,7 @@ export type Event = {
     attendees: Participant[];
     isAllDay: boolean;
     isStartOnly: boolean;
+    isLastForDays: boolean;
 };
 
 export type MyGroupEvent = {
