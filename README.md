@@ -1,4 +1,5 @@
-# Schedule Picker
+<img width="1304" alt="cover image of SchedulePicker" src="https://user-images.githubusercontent.com/17245737/76805075-3f187b80-6821-11ea-9359-de46ba6c416c.png">
+
 - ガルーンの今日のスケジュール情報を取得して、kintoneスレッドなどに挿入するChrome拡張です。
 
 ## バージョンアップ情報
@@ -22,7 +23,6 @@
         - Markdown投稿機能を追加
     - Fix
         - ポップアップ画面のデザイン変更
-        - 繰り越し予定のソートを時間順に変更
         - テンプレート投稿時に日付も投稿される
         - Garoon予定のタグの色を一部変更
         - オプション画面を削除
