@@ -8,17 +8,10 @@
         "48": "icons/Artboard-n@2x.png",
         "128": "icons/Artboard-n@2x.png"
     },
-    "permissions": [
-        "storage",
-        "activeTab",
-        "background",
-        "contextMenus",
-        "https://bozuman.cybozu.com/*",
-        "https://bozuman.s.cybozu.com/*"
-    ],
+    "permissions": ["storage", "activeTab", "background", "contextMenus", "https://*.cybozu.com/k/*"],
     "content_scripts": [
         {
-            "matches": ["https://bozuman.cybozu.com/*", "https://bozuman.s.cybozu.com/*"],
+            "matches": ["https://*.cybozu.com/k/*"],
             "js": ["js/contentscript.js"]
         }
     ],
@@ -31,4 +24,3 @@
     },
     "author": "Atsusuke Murata"
 }
-  
