@@ -58,6 +58,8 @@
     - 繰返し予定のソート処理追加
 - Ver1.0.0
     - 製品リリース
+## Disclaimer
+This OSS is my own personal work and does not have any relationship with Cybozu Inc. or any other organization which I belong to.
 
 ## 初期バージョン開発日
 2017.12.19-21
